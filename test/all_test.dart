@@ -9,6 +9,13 @@ import 'lisp_test.dart' as lisp_test;
 import 'xml_test.dart' as xml_test;
 
 void main() {
+  testCore(new Configuration());
+}
+
+void testCore(Configuration config) {
+  unittestConfiguration = config;
+  groupSep = ' - ';
+
   group('PetitParser', core_test.main);
   group('JSON', json_test.main);
   group('LISP', xml_test.main);
