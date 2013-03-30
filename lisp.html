@@ -1,0 +1,151 @@
+        <!DOCTYPE html>
+        <html>
+        <head>
+                <meta charset="utf-8">
+        <title>lisp Library / Dart Documentation</title>
+        <link rel="stylesheet" type="text/css"
+            href="styles.css">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link rel="shortcut icon" href="favicon.ico">
+        
+        </head>
+        <body data-library="lisp">
+        <div class="page">
+        <div class="header">
+          <a href="index.html"><div class="logo"></div></a>
+          <a href="index.html">Dart Documentation</a>
+         &rsaquo; <a href="lisp.html">lisp</a>        <div id="search-box">
+          <input type="search" name="q" id="q" autocomplete="off"
+              class="search-input" placeholder="Search API">
+        </div>
+        
+      </div>
+      <div class="drop-down" id="drop-down"></div>
+      
+        <div class="nav">
+        
+</div>
+<div class="content">
+<h2><strong>lisp</strong> library</h2>
+<div>
+<h3>Functions</h3>
+<div class="method"><h4 id="evalString">
+<button class="show-code">Code</button>
+<strong>evalString</strong>(<a href="lisp/LispParser.html">LispParser</a> parser, <a href="lisp/Environment.html">Environment</a> env, <a href="http://api.dartlang.org/dart_core/String.html">String</a> script) <a class="anchor-link" href="#evalString"
+              title="Permalink to evalString">#</a></h4>
+<div class="doc">
+<p>Reads and evaluates a script <code>contents</code>. </p>
+<pre class="source">
+dynamic evalString(LispParser parser, Environment env, String script) {
+ var result = null;
+ for (var cell in parser.parse(script).result) {
+   result = eval(env, cell);
+ }
+ return result;
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="evalArguments">
+<button class="show-code">Code</button>
+<strong>evalArguments</strong>(<a href="lisp/Environment.html">Environment</a> env, args) <a class="anchor-link" href="#evalArguments"
+              title="Permalink to evalArguments">#</a></h4>
+<div class="doc">
+<p>The arguments evaluatation function. </p>
+<pre class="source">
+dynamic evalArguments(Environment env, dynamic args) {
+ if (args is Cons) {
+   return new Cons(eval(env, args.head), evalArguments(env, args.tail));
+ } else {
+   return null;
+ }
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="evalList">
+<button class="show-code">Code</button>
+<strong>evalList</strong>(<a href="lisp/Environment.html">Environment</a> env, expr) <a class="anchor-link" href="#evalList"
+              title="Permalink to evalList">#</a></h4>
+<div class="doc">
+<p>Evaluate a cons of instructions. </p>
+<pre class="source">
+dynamic evalList(Environment env, dynamic expr) {
+ var result = null;
+ while (expr is Cons) {
+   result = eval(env, expr.head);
+   expr = expr.tail;
+ }
+ return result;
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="eval">
+<button class="show-code">Code</button>
+<strong>eval</strong>(<a href="lisp/Environment.html">Environment</a> env, expr) <a class="anchor-link" href="#eval"
+              title="Permalink to eval">#</a></h4>
+<div class="doc">
+<p>The evaluation function. </p>
+<pre class="source">
+dynamic eval(Environment env, dynamic expr) {
+ if (expr is Cons) {
+   return eval(env, expr.head)(env, expr.tail);
+ } else if (expr is Symbol) {
+   return env[expr];
+ } else {
+   return expr;
+ }
+}
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Classes</h3>
+          <div class="type">
+          <h4>
+            <a href="lisp/Cons.html"><strong>Cons</strong></a>
+          </h4>
+          </div>
+          
+          <div class="type">
+          <h4>
+            <a href="lisp/Environment.html"><strong>Environment</strong></a>
+          </h4>
+          </div>
+          
+          <div class="type">
+          <h4>
+            <a href="lisp/LispGrammar.html"><strong>LispGrammar</strong></a>
+          </h4>
+          </div>
+          
+          <div class="type">
+          <h4>
+            <a href="lisp/LispParser.html"><strong>LispParser</strong></a>
+          </h4>
+          </div>
+          
+          <div class="type">
+          <h4>
+            <a href="lisp/Natives.html"><strong>Natives</strong></a>
+          </h4>
+          </div>
+          
+          <div class="type">
+          <h4>
+            <a href="lisp/Symbol.html"><strong>Symbol</strong></a>
+          </h4>
+          </div>
+          
+</div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        <div class="footer">
+          
+        </div>
+        <script async src="client-live-nav.js"></script>
+        </body></html>
+        

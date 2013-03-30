@@ -1,0 +1,1 @@
+{"name":"dart:","dependencies":[],"description":"Dart System Libraries","libraries":[{"refId":"json"},{"refId":"lisp"},{"refId":"petitparser"},{"refId":"xml"}],"revision":"0"}

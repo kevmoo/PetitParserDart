@@ -1,0 +1,914 @@
+        <!DOCTYPE html>
+        <html>
+        <head>
+                <meta charset="utf-8">
+        <title>Parser abstract class / petitparser Library / Dart Documentation</title>
+        <link rel="stylesheet" type="text/css"
+            href="../styles.css">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link rel="shortcut icon" href="../favicon.ico">
+        
+        </head>
+        <body data-library="petitparser" data-type="Parser">
+        <div class="page">
+        <div class="header">
+          <a href="../index.html"><div class="logo"></div></a>
+          <a href="../index.html">Dart Documentation</a>
+         &rsaquo; <a href="../petitparser.html">petitparser</a> &rsaquo; <a href="../petitparser/Parser.html">Parser</a>        <div id="search-box">
+          <input type="search" name="q" id="q" autocomplete="off"
+              class="search-input" placeholder="Search API">
+        </div>
+        
+      </div>
+      <div class="drop-down" id="drop-down"></div>
+      
+        <div class="nav">
+        
+</div>
+<div class="content">
+        <h2><strong>Parser</strong>
+          abstract class
+        </h2>
+        
+<button id="show-inherited" class="show-inherited">Hide inherited</button>
+<div class="doc">
+<p>Abstract base class of all parsers.</p>
+<pre class="source">
+abstract class Parser {
+
+ /**
+  * Private abstract method doing the actual parsing.
+  *
+  * The methods takes a parse [context] and returns the resulting context,
+  * which is either a [Success] or [Failure] context.
+  */
+ Result _parse(Context context);
+
+ /**
+  * Returns the parse result of the [input].
+  *
+  * The implementation creates a default parse context on the input and calls
+  * the internal parsing logic of the receiving parser.
+  *
+  * For example, [:letter().plus().parse('abc'):] results in an instance of
+  * [Success], where [Result#position] is [:3:] and [Success.result] is
+  * [:[a, b, c]:].
+  *
+  * Similarly, [:letter().plus().parse('123'):] results in an instance of
+  * [Failure], where [Result#position] is [:0:] and [Failure.message] is
+  * ['letter expected'].
+  */
+ Result parse(dynamic input) {
+   return _parse(new Context(input, 0));
+ }
+
+ /**
+  * Tests if the [input] can be successfully parsed.
+  *
+  * For example, [:letter().plus().accept('abc'):] returns [:true:], and
+  * [:letter().plus().accept('123'):] returns [:false:].
+  */
+ bool accept(dynamic input) {
+   return parse(input).isSuccess;
+ }
+
+ /**
+  * Returns a list of all successful overlapping parses of the [input].
+  *
+  * For example, [:letter().plus().matches('abc de'):] results in the list
+  * [:[['a', 'b', 'c'], ['b', 'c'], ['c'], ['d', 'e'], ['e']]:]. See
+  * [Parser.matchesSkipping] to retrieve non-overlapping parse results.
+  */
+ Iterable matches(dynamic input) {
+   var list = new List();
+   and().map((each) =&gt; list.add(each)).seq(any()).or(any()).star().parse(input);
+   return list;
+ }
+
+ /**
+  * Returns a list of all successful non-overlapping parses of the input.
+  *
+  * For example, [:letter().plus().matchesSkipping('abc de'):] results in the
+  * list [:[['a', 'b', 'c'], ['d', 'e']]:]. See [Parser.matches] to retrieve
+  * overlapping parse results.
+  */
+ Iterable matchesSkipping(dynamic input) {
+   var list = new List();
+   map((each) =&gt; list.add(each)).or(any()).star().parse(input);
+   return list;
+ }
+
+ /**
+  * Returns new parser that accepts the receiver, if possible. The resulting
+  * parser returns the result of the receiver, or [:null:] if not applicable.
+  * The returned value can be provided as an optional argument [otherwise].
+  *
+  * For example, the parser [:letter().optional():] accepts a letter as input
+  * and returns that letter. When given something else the parser succeeds as
+  * well, does not consume anything and returns [:null:].
+  */
+ Parser optional([dynamic otherwise]) =&gt; new _OptionalParser(this, otherwise);
+
+ /**
+  * Returns a parser that accepts the receiver zero or more times. The
+  * resulting parser returns a list of the parse results of the receiver.
+  *
+  * This is a greedy and blind implementation that tries to consume as much
+  * input as possible and that does not consider what comes afterwards.
+  *
+  * For example, the parser [:letter().star():] accepts the empty string or
+  * any sequence of letters and returns a possibly empty list of the parsed
+  * letters.
+  */
+ Parser star() =&gt; repeat(0, 65536);
+
+ /**
+  * Returns a parser that accepts the receiver one or more times. The
+  * resulting parser returns a list of the parse results of the receiver.
+  *
+  * This is a greedy and blind implementation that tries to consume as much
+  * input as possible and that does not consider what comes afterwards.
+  *
+  * For example, the parser [:letter().plus():] accepts any sequence of
+  * letters and returns a list of the parsed letters.
+  */
+ Parser plus() =&gt; repeat(1, 65536);
+
+ /**
+  * Returns a parser that accepts the receiver exactly [count] times. The
+  * resulting parser returns a list of the parse results of the receiver.
+  *
+  * For example, the parser [:letter().times(2):] accepts two letters and
+  * returns a list of the two parsed letters.
+  */
+ Parser times(int count) =&gt; repeat(count, count);
+
+ /**
+  * Returns a parser that accepts the receiver between [min] and [max] times.
+  * The resulting parser returns a list of the parse results of the receiver.
+  *
+  * This is a greedy and blind implementation that tries to consume as much
+  * input as possible and that does not consider what comes afterwards.
+  *
+  * For example, the parser [:letter().repeat(2, 4):] accepts a sequence of
+  * two, three, or four letters and returns the accepted letters as a list.
+  */
+ Parser repeat(int min, int max) =&gt; new _RepeatingParser(this, min, max);
+
+ /**
+  * Returns a parser that accepts the receiver followed by [other]. The
+  * resulting parser returns a list of the parse result of the receiver
+  * followed by the parse result of [other]. Calling [SequenceParser#seq]
+  * causes the sequences to be concatenated instead of nested.
+  *
+  * For example, the parser [:letter().seq(digit()).seq(letter()):] accepts a
+  * letter followed by a digit and another letter. The parse result of the
+  * input string [:'a1b':] is the list [:['a', '1', 'b']:].
+  */
+ Parser seq(Parser other) =&gt; new _SequenceParser([this, other]);
+
+ /**
+  * Convenience operator returning a parser accepts the receiver followed
+  * by [other]. See [Parser#seq] for details.
+  */
+ Parser operator &amp; (Parser other) =&gt; this.seq(other);
+
+ /**
+  * Returns a parser that accepts the receiver or [other]. The resulting
+  * parser returns the parse result of the receiver, if the receiver fails
+  * it returns the parse result of [other] (exclusive ordered choice).
+  *
+  * For example, the parser [:letter().or(digit()):] accepts a letter or a
+  * digit. An example where the order matters is the following choice between
+  * overlapping parsers: [:letter().or(char('a')):]. In the example the parser
+  * [:char('a'):] will never be activated, because the input is always consumed
+  * [:letter():]. This can be problematic if the author intended to attach a
+  * production action to [:char('a'):].
+  */
+ Parser or(Parser other) =&gt; new _ChoiceParser([this, other]);
+
+ /**
+  * Convenience operator returning a parser accepts the receiver or
+  * [other]. See [Parser#or] for details.
+  */
+ Parser operator | (Parser other) =&gt; this.or(other);
+
+ /**
+  * Returns a parser (logical and-predicate) that succeeds whenever the
+  * receiver does, but never consumes input.
+  *
+  * For example, the parser [:char('_').and().seq(identifier):] accepts
+  * identifiers that start with an underscore character. Since the predicate
+  * does not consume accepted input, the parser [:identifier:] is given the
+  * ability to process the complete identifier.
+  */
+ Parser and() =&gt; new _AndParser(this);
+
+ /**
+  * Returns a parser (logical not-predicate) that succeeds whenever the
+  * receiver fails, but never consumes input.
+  *
+  * For example, the parser [:char('_').not().seq(identifier):] accepts
+  * identifiers that do not start with an underscore character. If the parser
+  * [:char('_'):] accepts the input, the negation and subsequently the
+  * complete parser fails. Otherwise the parser [:identifier:] is given the
+  * ability to process the complete identifier.
+  */
+ Parser not([String message]) =&gt; new _NotParser(this, message);
+
+ /**
+  * Returns a parser that consumes any input token (character), but the
+  * receiver.
+  *
+  * For example, the parser [:letter().neg():] accepts any input but a letter.
+  * The parser fails for inputs like [:'a':] or [:'Z':], but succeeds for
+  * input like [:'1':], [:'_':] or [:'$':].
+  */
+ Parser neg([String message]) =&gt; not(message).seq(any()).pick(1);
+
+ /**
+  * Returns a parser that discards the result of the receiver, and returns
+  * a sub-string of the consumed elements in the string/list being parsed.
+  *
+  * For example, the parser [:letter().plus().flatten():] returns [:'abc':]
+  * for the input [:'abc':]. In contrast, the parser [:letter().plus():] would
+  * return [:['a', 'b', 'c']:] for the same input instead.
+  */
+ Parser flatten() =&gt; new _FlattenParser(this);
+
+ /**
+  * Returns a parser that discards the result of the receiver and returns
+  * a [Token]. The token carries information about where the token started and
+  * stopped in the input stream.
+  *
+  * For example, the parser [:letter().plus().token():] returns the token
+  * [:Token[start: 0, stop: 3, value: abc]:] for the input [:'abc':].
+  */
+ Parser token() =&gt; new _TokenParser(this);
+
+ /**
+  * Returns a parser that consumes input before and after the receiver. The
+  * optional argument [trimmer] is a parser that consumes the excess input. By
+  * default [:whitespace():] is used.
+  *
+  * For example, the parser [:letter().plus().trim():] returns [:['a', 'b']:]
+  * for the input [:' ab\n':] and consumes the complete input string.
+  */
+ Parser trim([Parser trimmer]) {
+   return new _TrimmingParser(this, trimmer == null ? whitespace() : trimmer);
+ }
+
+ /**
+  * Returns a parser that succeeds only if the receiver consumes the complete
+  * input, otherwise return a failure with the optional [message].
+  *
+  * For example, the parser [:letter().end():] succeeds on the input [:'a':]
+  * and fails on [:'ab':]. In contrast the parser [:letter():] alone would
+  * succeed on both inputs, but not consume everything for the second input.
+  */
+ Parser end({String message: 'end of input expected'}) {
+   return new _EndOfInputParser(this, message);
+ }
+
+ /**
+  * Returns a parser that points to the receiver, but can be changed to point
+  * to something else at a later point in time.
+  *
+  * For example, the parser [:letter().setable():] behaves exactly the same
+  * as [:letter():], but it can be replaced with another parser using
+  * [SetableParser#set].
+  */
+ SetableParser setable() =&gt; new _SetableParser(this);
+
+ /**
+  * Returns a parser that evaluates [function] as action handler on success
+  * of the receiver.
+  *
+  * For example, the parser [:digit().map((char) =&gt; int.parse(char)):] returns
+  * the number [:1:] for the input string [:'1':].
+  */
+ Parser map(Function function) =&gt; new _ActionParser(this, function);
+
+ /**
+  * Returns a parser that transform a successful parse result by returning
+  * the element at [index] of a list. A negative index can be used to access
+  * the elements from the back of the list.
+  *
+  * For example, the parser [:letter().star().pick(-1):] returns the last
+  * letter parsed. For the input [:'abc':] it returns [:'c':].
+  */
+ Parser pick(int index) {
+   return this.map((List list) {
+     return list[index &lt; 0 ? list.length + index : index];
+   });
+ }
+
+ /**
+  * Returns a parser that transforms a successful parse result by returning
+  * the permuted elements at [indexes] of a list. Negative indexes can be
+  * used to access the elements from the back of the list.
+  *
+  * For example, the parser [:letter().star().permute([0, -1]):] returns the
+  * first and last letter parsed. For the input [:'abc':] it returns
+  * [:['a', 'c']:].
+  */
+ Parser permute(List&lt;int&gt; indexes) {
+   return this.map((List list) {
+     return indexes.map((index) {
+       return list[index &lt; 0 ? list.length + index : index];
+     }).toList();
+   });
+ }
+
+ /**
+  * Returns a parser that consumes the receiver one or more times separated
+  * by the [separator] parser. The resulting parser returns a flat list of
+  * the parse results of the receiver interleaved with the parse result of the
+  * separator parser.
+  *
+  * If the optional argument [includeSeparators] is set to [:false:], then the
+  * separators are not included in the parse result. If the optional argument
+  * [optionalSeparatorAtEnd] is set to [:true:] the parser also accepts an
+  * optional separator at the end.
+  *
+  * For example, the parser [:digit().separatedBy(char('-')):] returns a parser
+  * that consumes input like [:'1-2-3':] and returns a list of the elements and
+  * separators: [:['1', '-', '2', '-', '3']:].
+  */
+ Parser separatedBy(Parser separator, {bool includeSeparators: true,
+     bool optionalSeparatorAtEnd: false}) {
+   var repeater = new _SequenceParser([separator, this]).star();
+   var parser = new _SequenceParser(optionalSeparatorAtEnd
+       ? [this, repeater, separator.optional(separator)]
+       : [this, repeater]);
+   return parser.map((List list) {
+     var result = new List();
+     result.add(list[0]);
+     for (var tuple in list[1]) {
+       if (includeSeparators) {
+         result.add(tuple[0]);
+       }
+       result.add(tuple[1]);
+     }
+     if (includeSeparators &amp;&amp; optionalSeparatorAtEnd
+         &amp;&amp; !identical(list[2], separator)) {
+       result.add(list[2]);
+     }
+     return result;
+   });
+ }
+
+ /**
+  * Returns a list of directly referenced parsers.
+  *
+  * For example, [:letter().children:] returns the empty collection [:[]:],
+  * because the letter parser is a primitive or leaf parser that does not
+  * depend or call any other parser.
+  *
+  * In contrast, [:letter().or(digit()).children:] returns a collection
+  * containing both the [:letter():] and [:digit():] parser.
+  */
+ List&lt;Parser&gt; get children =&gt; [];
+
+ /**
+  * Changes the receiver by replacing [source] with [target]. Does nothing
+  * if [source] does not exist in [Parser#children].
+  *
+  * The following example creates a letter parser and then defines a parser
+  * called [:example:] that accepts one or more letters. Eventually the parser
+  * [:example:] is modified by replacing the [:letter:] parser with a new
+  * parser that accepts a digit. The resulting [:example:] parser accepts one
+  * or more digits.
+  *
+  *     var letter = letter();
+  *     var example = letter.plus();
+  *     example.replace(letter, digit());
+  */
+ void replace(Parser source, Parser target) {
+   // no children, nothing to do
+ }
+
+}
+</pre>
+</div>
+<h3>Subclasses</h3>
+<p>
+<span class="type-box"><span class="icon-class"></span><a href="../petitparser/SetableParser.html">SetableParser</a></span></p>
+<div>
+<h3>Properties</h3>
+<div class="field"><h4 id="children">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/List.html">List</a>&lt;<a href="../petitparser/Parser.html">Parser</a>&gt;         <strong>children</strong> <a class="anchor-link"
+            href="#children"
+            title="Permalink to Parser.children">#</a>
+        </h4>
+        <div class="doc">
+<p>Returns a list of directly referenced parsers.</p>
+<p>For example, <code>letter().children</code> returns the empty collection <code>[]</code>,
+because the letter parser is a primitive or leaf parser that does not
+depend or call any other parser.</p>
+<p>In contrast, <code>letter().or(digit()).children</code> returns a collection
+containing both the <code>letter()</code> and <code>digit()</code> parser.</p>
+<pre class="source">
+List&lt;Parser&gt; get children =&gt; [];
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Operators</h3>
+<div class="method"><h4 id="&">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>operator &</strong>(<a href="../petitparser/Parser.html">Parser</a> other) <a class="anchor-link" href="#&"
+              title="Permalink to Parser.operator &">#</a></h4>
+<div class="doc">
+<p>Convenience operator returning a parser accepts the receiver followed
+by 
+<span class="param">other</span>. See <code>Parser#seq</code> for details.</p>
+<pre class="source">
+Parser operator &amp; (Parser other) =&gt; this.seq(other);
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="|">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>operator |</strong>(<a href="../petitparser/Parser.html">Parser</a> other) <a class="anchor-link" href="#|"
+              title="Permalink to Parser.operator |">#</a></h4>
+<div class="doc">
+<p>Convenience operator returning a parser accepts the receiver or
+
+<span class="param">other</span>. See <code>Parser#or</code> for details.</p>
+<pre class="source">
+Parser operator | (Parser other) =&gt; this.or(other);
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Methods</h3>
+<div class="method"><h4 id="accept">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>accept</strong>(input) <a class="anchor-link" href="#accept"
+              title="Permalink to Parser.accept">#</a></h4>
+<div class="doc">
+<p>Tests if the 
+<span class="param">input</span> can be successfully parsed.</p>
+<p>For example, <code>letter().plus().accept('abc')</code> returns <code>true</code>, and
+<code>letter().plus().accept('123')</code> returns <code>false</code>.</p>
+<pre class="source">
+bool accept(dynamic input) {
+ return parse(input).isSuccess;
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="and">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>and</strong>() <a class="anchor-link" href="#and"
+              title="Permalink to Parser.and">#</a></h4>
+<div class="doc">
+<p>Returns a parser (logical and-predicate) that succeeds whenever the
+receiver does, but never consumes input.</p>
+<p>For example, the parser <code>char('_').and().seq(identifier)</code> accepts
+identifiers that start with an underscore character. Since the predicate
+does not consume accepted input, the parser <code>identifier</code> is given the
+ability to process the complete identifier.</p>
+<pre class="source">
+Parser and() =&gt; new _AndParser(this);
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="end">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>end</strong>({<a href="http://api.dartlang.org/dart_core/String.html">String</a> message: 'end of input expected'}) <a class="anchor-link" href="#end"
+              title="Permalink to Parser.end">#</a></h4>
+<div class="doc">
+<p>Returns a parser that succeeds only if the receiver consumes the complete
+input, otherwise return a failure with the optional 
+<span class="param">message</span>.</p>
+<p>For example, the parser <code>letter().end()</code> succeeds on the input <code>'a'</code>
+and fails on <code>'ab'</code>. In contrast the parser <code>letter()</code> alone would
+succeed on both inputs, but not consume everything for the second input.</p>
+<pre class="source">
+Parser end({String message: 'end of input expected'}) {
+ return new _EndOfInputParser(this, message);
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="flatten">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>flatten</strong>() <a class="anchor-link" href="#flatten"
+              title="Permalink to Parser.flatten">#</a></h4>
+<div class="doc">
+<p>Returns a parser that discards the result of the receiver, and returns
+a sub-string of the consumed elements in the string/list being parsed.</p>
+<p>For example, the parser <code>letter().plus().flatten()</code> returns <code>'abc'</code>
+for the input <code>'abc'</code>. In contrast, the parser <code>letter().plus()</code> would
+return <code>['a', 'b', 'c']</code> for the same input instead.</p>
+<pre class="source">
+Parser flatten() =&gt; new _FlattenParser(this);
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="map">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>map</strong>(<a href="http://api.dartlang.org/dart_core/Function.html">Function</a> function) <a class="anchor-link" href="#map"
+              title="Permalink to Parser.map">#</a></h4>
+<div class="doc">
+<p>Returns a parser that evaluates 
+<span class="param">function</span> as action handler on success
+of the receiver.</p>
+<p>For example, the parser <code>digit().map((char) =&gt; int.parse(char))</code> returns
+the number <code>1</code> for the input string <code>'1'</code>.</p>
+<pre class="source">
+Parser map(Function function) =&gt; new _ActionParser(this, function);
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="matches">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> <strong>matches</strong>(input) <a class="anchor-link" href="#matches"
+              title="Permalink to Parser.matches">#</a></h4>
+<div class="doc">
+<p>Returns a list of all successful overlapping parses of the 
+<span class="param">input</span>.</p>
+<p>For example, <code>letter().plus().matches('abc de')</code> results in the list
+<code>[['a', 'b', 'c'], ['b', 'c'], ['c'], ['d', 'e'], ['e']]</code>. See
+<a class="crossref" href="../petitparser/Parser.html#matchesSkipping">Parser.matchesSkipping</a> to retrieve non-overlapping parse results.</p>
+<pre class="source">
+Iterable matches(dynamic input) {
+ var list = new List();
+ and().map((each) =&gt; list.add(each)).seq(any()).or(any()).star().parse(input);
+ return list;
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="matchesSkipping">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> <strong>matchesSkipping</strong>(input) <a class="anchor-link" href="#matchesSkipping"
+              title="Permalink to Parser.matchesSkipping">#</a></h4>
+<div class="doc">
+<p>Returns a list of all successful non-overlapping parses of the input.</p>
+<p>For example, <code>letter().plus().matchesSkipping('abc de')</code> results in the
+list <code>[['a', 'b', 'c'], ['d', 'e']]</code>. See <a class="crossref" href="../petitparser/Parser.html#matches">Parser.matches</a> to retrieve
+overlapping parse results.</p>
+<pre class="source">
+Iterable matchesSkipping(dynamic input) {
+ var list = new List();
+ map((each) =&gt; list.add(each)).or(any()).star().parse(input);
+ return list;
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="neg">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>neg</strong>([<a href="http://api.dartlang.org/dart_core/String.html">String</a> message]) <a class="anchor-link" href="#neg"
+              title="Permalink to Parser.neg">#</a></h4>
+<div class="doc">
+<p>Returns a parser that consumes any input token (character), but the
+receiver.</p>
+<p>For example, the parser <code>letter().neg()</code> accepts any input but a letter.
+The parser fails for inputs like <code>'a'</code> or <code>'Z'</code>, but succeeds for
+input like <code>'1'</code>, <code>'_'</code> or <code>'$'</code>.</p>
+<pre class="source">
+Parser neg([String message]) =&gt; not(message).seq(any()).pick(1);
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="not">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>not</strong>([<a href="http://api.dartlang.org/dart_core/String.html">String</a> message]) <a class="anchor-link" href="#not"
+              title="Permalink to Parser.not">#</a></h4>
+<div class="doc">
+<p>Returns a parser (logical not-predicate) that succeeds whenever the
+receiver fails, but never consumes input.</p>
+<p>For example, the parser <code>char('_').not().seq(identifier)</code> accepts
+identifiers that do not start with an underscore character. If the parser
+<code>char('_')</code> accepts the input, the negation and subsequently the
+complete parser fails. Otherwise the parser <code>identifier</code> is given the
+ability to process the complete identifier.</p>
+<pre class="source">
+Parser not([String message]) =&gt; new _NotParser(this, message);
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="optional">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>optional</strong>([otherwise]) <a class="anchor-link" href="#optional"
+              title="Permalink to Parser.optional">#</a></h4>
+<div class="doc">
+<p>Returns new parser that accepts the receiver, if possible. The resulting
+parser returns the result of the receiver, or <code>null</code> if not applicable.
+The returned value can be provided as an optional argument 
+<span class="param">otherwise</span>.</p>
+<p>For example, the parser <code>letter().optional()</code> accepts a letter as input
+and returns that letter. When given something else the parser succeeds as
+well, does not consume anything and returns <code>null</code>.</p>
+<pre class="source">
+Parser optional([dynamic otherwise]) =&gt; new _OptionalParser(this, otherwise);
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="or">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>or</strong>(<a href="../petitparser/Parser.html">Parser</a> other) <a class="anchor-link" href="#or"
+              title="Permalink to Parser.or">#</a></h4>
+<div class="doc">
+<p>Returns a parser that accepts the receiver or 
+<span class="param">other</span>. The resulting
+parser returns the parse result of the receiver, if the receiver fails
+it returns the parse result of 
+<span class="param">other</span> (exclusive ordered choice).</p>
+<p>For example, the parser <code>letter().or(digit())</code> accepts a letter or a
+digit. An example where the order matters is the following choice between
+overlapping parsers: <code>letter().or(char('a'))</code>. In the example the parser
+<code>char('a')</code> will never be activated, because the input is always consumed
+<code>letter()</code>. This can be problematic if the author intended to attach a
+production action to <code>char('a')</code>.</p>
+<pre class="source">
+Parser or(Parser other) =&gt; new _ChoiceParser([this, other]);
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="parse">
+<button class="show-code">Code</button>
+<a href="../petitparser/Result.html">Result</a> <strong>parse</strong>(input) <a class="anchor-link" href="#parse"
+              title="Permalink to Parser.parse">#</a></h4>
+<div class="doc">
+<p>Returns the parse result of the 
+<span class="param">input</span>.</p>
+<p>The implementation creates a default parse context on the input and calls
+the internal parsing logic of the receiving parser.</p>
+<p>For example, <code>letter().plus().parse('abc')</code> results in an instance of
+<a class="crossref" href="../petitparser/Success.html">Success</a>, where <code>Result#position</code> is <code>3</code> and <a class="crossref" href="../petitparser/Success.html#result">Success.result</a> is
+<code>[a, b, c]</code>.</p>
+<p>Similarly, <code>letter().plus().parse('123')</code> results in an instance of
+<a class="crossref" href="../petitparser/Failure.html">Failure</a>, where <code>Result#position</code> is <code>0</code> and <a class="crossref" href="../petitparser/Failure.html#message">Failure.message</a> is
+<code>'letter expected'</code>.</p>
+<pre class="source">
+Result parse(dynamic input) {
+ return _parse(new Context(input, 0));
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="permute">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>permute</strong>(<a href="http://api.dartlang.org/dart_core/List.html">List</a>&lt;<a href="http://api.dartlang.org/dart_core/int.html">int</a>&gt; indexes) <a class="anchor-link" href="#permute"
+              title="Permalink to Parser.permute">#</a></h4>
+<div class="doc">
+<p>Returns a parser that transforms a successful parse result by returning
+the permuted elements at 
+<span class="param">indexes</span> of a list. Negative indexes can be
+used to access the elements from the back of the list.</p>
+<p>For example, the parser <code>letter().star().permute([0, -1])</code> returns the
+first and last letter parsed. For the input <code>'abc'</code> it returns
+<code>['a', 'c']</code>.</p>
+<pre class="source">
+Parser permute(List&lt;int&gt; indexes) {
+ return this.map((List list) {
+   return indexes.map((index) {
+     return list[index &lt; 0 ? list.length + index : index];
+   }).toList();
+ });
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="pick">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>pick</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> index) <a class="anchor-link" href="#pick"
+              title="Permalink to Parser.pick">#</a></h4>
+<div class="doc">
+<p>Returns a parser that transform a successful parse result by returning
+the element at 
+<span class="param">index</span> of a list. A negative index can be used to access
+the elements from the back of the list.</p>
+<p>For example, the parser <code>letter().star().pick(-1)</code> returns the last
+letter parsed. For the input <code>'abc'</code> it returns <code>'c'</code>.</p>
+<pre class="source">
+Parser pick(int index) {
+ return this.map((List list) {
+   return list[index &lt; 0 ? list.length + index : index];
+ });
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="plus">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>plus</strong>() <a class="anchor-link" href="#plus"
+              title="Permalink to Parser.plus">#</a></h4>
+<div class="doc">
+<p>Returns a parser that accepts the receiver one or more times. The
+resulting parser returns a list of the parse results of the receiver.</p>
+<p>This is a greedy and blind implementation that tries to consume as much
+input as possible and that does not consider what comes afterwards.</p>
+<p>For example, the parser <code>letter().plus()</code> accepts any sequence of
+letters and returns a list of the parsed letters.</p>
+<pre class="source">
+Parser plus() =&gt; repeat(1, 65536);
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="repeat">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>repeat</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> min, <a href="http://api.dartlang.org/dart_core/int.html">int</a> max) <a class="anchor-link" href="#repeat"
+              title="Permalink to Parser.repeat">#</a></h4>
+<div class="doc">
+<p>Returns a parser that accepts the receiver between 
+<span class="param">min</span> and 
+<span class="param">max</span> times.
+The resulting parser returns a list of the parse results of the receiver.</p>
+<p>This is a greedy and blind implementation that tries to consume as much
+input as possible and that does not consider what comes afterwards.</p>
+<p>For example, the parser <code>letter().repeat(2, 4)</code> accepts a sequence of
+two, three, or four letters and returns the accepted letters as a list.</p>
+<pre class="source">
+Parser repeat(int min, int max) =&gt; new _RepeatingParser(this, min, max);
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="replace">
+<button class="show-code">Code</button>
+void <strong>replace</strong>(<a href="../petitparser/Parser.html">Parser</a> source, <a href="../petitparser/Parser.html">Parser</a> target) <a class="anchor-link" href="#replace"
+              title="Permalink to Parser.replace">#</a></h4>
+<div class="doc">
+<p>Changes the receiver by replacing 
+<span class="param">source</span> with 
+<span class="param">target</span>. Does nothing
+if 
+<span class="param">source</span> does not exist in <code>Parser#children</code>.</p>
+<p>The following example creates a letter parser and then defines a parser
+called <code>example</code> that accepts one or more letters. Eventually the parser
+<code>example</code> is modified by replacing the <code>letter</code> parser with a new
+parser that accepts a digit. The resulting <code>example</code> parser accepts one
+or more digits.</p>
+<pre><code>var letter = letter();
+var example = letter.plus();
+example.replace(letter, digit());
+</code></pre>
+<pre class="source">
+void replace(Parser source, Parser target) {
+ // no children, nothing to do
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="separatedBy">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>separatedBy</strong>(<a href="../petitparser/Parser.html">Parser</a> separator, {<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> includeSeparators: true, <a href="http://api.dartlang.org/dart_core/bool.html">bool</a> optionalSeparatorAtEnd: false}) <a class="anchor-link" href="#separatedBy"
+              title="Permalink to Parser.separatedBy">#</a></h4>
+<div class="doc">
+<p>Returns a parser that consumes the receiver one or more times separated
+by the 
+<span class="param">separator</span> parser. The resulting parser returns a flat list of
+the parse results of the receiver interleaved with the parse result of the
+separator parser.</p>
+<p>If the optional argument 
+<span class="param">includeSeparators</span> is set to <code>false</code>, then the
+separators are not included in the parse result. If the optional argument
+
+<span class="param">optionalSeparatorAtEnd</span> is set to <code>true</code> the parser also accepts an
+optional separator at the end.</p>
+<p>For example, the parser <code>digit().separatedBy(char('-'))</code> returns a parser
+that consumes input like <code>'1-2-3'</code> and returns a list of the elements and
+separators: <code>['1', '-', '2', '-', '3']</code>.</p>
+<pre class="source">
+Parser separatedBy(Parser separator, {bool includeSeparators: true,
+   bool optionalSeparatorAtEnd: false}) {
+ var repeater = new _SequenceParser([separator, this]).star();
+ var parser = new _SequenceParser(optionalSeparatorAtEnd
+     ? [this, repeater, separator.optional(separator)]
+     : [this, repeater]);
+ return parser.map((List list) {
+   var result = new List();
+   result.add(list[0]);
+   for (var tuple in list[1]) {
+     if (includeSeparators) {
+       result.add(tuple[0]);
+     }
+     result.add(tuple[1]);
+   }
+   if (includeSeparators &amp;&amp; optionalSeparatorAtEnd
+       &amp;&amp; !identical(list[2], separator)) {
+     result.add(list[2]);
+   }
+   return result;
+ });
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="seq">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>seq</strong>(<a href="../petitparser/Parser.html">Parser</a> other) <a class="anchor-link" href="#seq"
+              title="Permalink to Parser.seq">#</a></h4>
+<div class="doc">
+<p>Returns a parser that accepts the receiver followed by 
+<span class="param">other</span>. The
+resulting parser returns a list of the parse result of the receiver
+followed by the parse result of 
+<span class="param">other</span>. Calling <code>SequenceParser#seq</code>
+causes the sequences to be concatenated instead of nested.</p>
+<p>For example, the parser <code>letter().seq(digit()).seq(letter())</code> accepts a
+letter followed by a digit and another letter. The parse result of the
+input string <code>'a1b'</code> is the list <code>['a', '1', 'b']</code>.</p>
+<pre class="source">
+Parser seq(Parser other) =&gt; new _SequenceParser([this, other]);
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="setable">
+<button class="show-code">Code</button>
+<a href="../petitparser/SetableParser.html">SetableParser</a> <strong>setable</strong>() <a class="anchor-link" href="#setable"
+              title="Permalink to Parser.setable">#</a></h4>
+<div class="doc">
+<p>Returns a parser that points to the receiver, but can be changed to point
+to something else at a later point in time.</p>
+<p>For example, the parser <code>letter().setable()</code> behaves exactly the same
+as <code>letter()</code>, but it can be replaced with another parser using
+<code>SetableParser#set</code>.</p>
+<pre class="source">
+SetableParser setable() =&gt; new _SetableParser(this);
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="star">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>star</strong>() <a class="anchor-link" href="#star"
+              title="Permalink to Parser.star">#</a></h4>
+<div class="doc">
+<p>Returns a parser that accepts the receiver zero or more times. The
+resulting parser returns a list of the parse results of the receiver.</p>
+<p>This is a greedy and blind implementation that tries to consume as much
+input as possible and that does not consider what comes afterwards.</p>
+<p>For example, the parser <code>letter().star()</code> accepts the empty string or
+any sequence of letters and returns a possibly empty list of the parsed
+letters.</p>
+<pre class="source">
+Parser star() =&gt; repeat(0, 65536);
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="times">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>times</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> count) <a class="anchor-link" href="#times"
+              title="Permalink to Parser.times">#</a></h4>
+<div class="doc">
+<p>Returns a parser that accepts the receiver exactly 
+<span class="param">count</span> times. The
+resulting parser returns a list of the parse results of the receiver.</p>
+<p>For example, the parser <code>letter().times(2)</code> accepts two letters and
+returns a list of the two parsed letters.</p>
+<pre class="source">
+Parser times(int count) =&gt; repeat(count, count);
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="token">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>token</strong>() <a class="anchor-link" href="#token"
+              title="Permalink to Parser.token">#</a></h4>
+<div class="doc">
+<p>Returns a parser that discards the result of the receiver and returns
+a <a class="crossref" href="../petitparser/Token.html">Token</a>. The token carries information about where the token started and
+stopped in the input stream.</p>
+<p>For example, the parser <code>letter().plus().token()</code> returns the token
+<code>Token[start: 0, stop: 3, value: abc]</code> for the input <code>'abc'</code>.</p>
+<pre class="source">
+Parser token() =&gt; new _TokenParser(this);
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="trim">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>trim</strong>([<a href="../petitparser/Parser.html">Parser</a> trimmer]) <a class="anchor-link" href="#trim"
+              title="Permalink to Parser.trim">#</a></h4>
+<div class="doc">
+<p>Returns a parser that consumes input before and after the receiver. The
+optional argument 
+<span class="param">trimmer</span> is a parser that consumes the excess input. By
+default <code>whitespace()</code> is used.</p>
+<p>For example, the parser <code>letter().plus().trim()</code> returns <code>['a', 'b']</code>
+for the input <code>' ab\n'</code> and consumes the complete input string.</p>
+<pre class="source">
+Parser trim([Parser trimmer]) {
+ return new _TrimmingParser(this, trimmer == null ? whitespace() : trimmer);
+}
+</pre>
+</div>
+</div>
+</div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        <div class="footer">
+          
+        </div>
+        <script async src="../client-live-nav.js"></script>
+        </body></html>
+        

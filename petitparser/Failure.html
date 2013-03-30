@@ -1,0 +1,203 @@
+        <!DOCTYPE html>
+        <html>
+        <head>
+                <meta charset="utf-8">
+        <title>Failure class / petitparser Library / Dart Documentation</title>
+        <link rel="stylesheet" type="text/css"
+            href="../styles.css">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link rel="shortcut icon" href="../favicon.ico">
+        
+        </head>
+        <body data-library="petitparser" data-type="Failure">
+        <div class="page">
+        <div class="header">
+          <a href="../index.html"><div class="logo"></div></a>
+          <a href="../index.html">Dart Documentation</a>
+         &rsaquo; <a href="../petitparser.html">petitparser</a> &rsaquo; <a href="../petitparser/Failure.html">Failure</a>        <div id="search-box">
+          <input type="search" name="q" id="q" autocomplete="off"
+              class="search-input" placeholder="Search API">
+        </div>
+        
+      </div>
+      <div class="drop-down" id="drop-down"></div>
+      
+        <div class="nav">
+        
+</div>
+<div class="content">
+        <h2><strong>Failure</strong>
+          class
+        </h2>
+        
+<button id="show-inherited" class="show-inherited">Hide inherited</button>
+<div class="doc">
+<p>An immutable parse result in case of a failed parse.</p>
+<pre class="source">
+class Failure extends Result {
+
+ const Failure(buffer, position, this.message) : super(buffer, position);
+
+ bool get isFailure =&gt; true;
+
+ dynamic get result { throw new ParserError(this); }
+
+ final String message;
+
+ String toString() =&gt; 'Failure[$position]: $message';
+
+}
+</pre>
+</div>
+<h3>Extends</h3>
+<p>
+<span class="type-box"><span class="icon-class"></span><a href="../petitparser/Context.html">Context</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/Result.html">Result</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><strong>Failure</strong></span></p>
+<div>
+<h3>Constructors</h3>
+<div class="method"><h4 id="Failure">
+<button class="show-code">Code</button>
+const <strong>Failure</strong>(buffer, position, <a href="http://api.dartlang.org/dart_core/String.html">String</a> message) <a class="anchor-link" href="#Failure"
+              title="Permalink to Failure.Failure">#</a></h4>
+<div class="doc">
+<pre class="source">
+const Failure(buffer, position, this.message) : super(buffer, position);
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Properties</h3>
+<div class="field inherited"><h4 id="buffer">
+<button class="show-code">Code</button>
+final         <strong>buffer</strong> <a class="anchor-link"
+            href="#buffer"
+            title="Permalink to Failure.buffer">#</a>
+        </h4>
+        <div class="inherited-from">inherited from <a href="../petitparser/Context.html">Context</a> </div><div class="doc">
+<pre class="source">
+buffer
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="isFailure">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/bool.html">bool</a>         <strong>isFailure</strong> <a class="anchor-link"
+            href="#isFailure"
+            title="Permalink to Failure.isFailure">#</a>
+        </h4>
+        <div class="doc">
+<div class="inherited">
+<p>Returns <code>true</code> if this context indicates a parse failure. </p>
+<div class="docs-inherited-from">docs inherited from <a href="../petitparser/Context.html">Context</a> </div></div>
+<pre class="source">
+bool get isFailure =&gt; true;
+</pre>
+</div>
+</div>
+<div class="field inherited"><h4 id="isSuccess">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/bool.html">bool</a>         <strong>isSuccess</strong> <a class="anchor-link"
+            href="#isSuccess"
+            title="Permalink to Failure.isSuccess">#</a>
+        </h4>
+        <div class="inherited-from">inherited from <a href="../petitparser/Context.html">Context</a> </div><div class="doc">
+<p>Returns <code>true</code> if this context indicates a parse success. </p>
+<pre class="source">
+bool get isSuccess =&gt; false;
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="message">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/String.html">String</a>         <strong>message</strong> <a class="anchor-link"
+            href="#message"
+            title="Permalink to Failure.message">#</a>
+        </h4>
+        <div class="doc">
+<div class="inherited">
+<p>Returns the parse message of the current context. </p>
+<div class="docs-inherited-from">docs inherited from <a href="../petitparser/Result.html">Result</a> </div></div>
+<pre class="source">
+message
+</pre>
+</div>
+</div>
+<div class="field inherited"><h4 id="position">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>position</strong> <a class="anchor-link"
+            href="#position"
+            title="Permalink to Failure.position">#</a>
+        </h4>
+        <div class="inherited-from">inherited from <a href="../petitparser/Context.html">Context</a> </div><div class="doc">
+<pre class="source">
+position
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="result">
+<button class="show-code">Code</button>
+final         <strong>result</strong> <a class="anchor-link"
+            href="#result"
+            title="Permalink to Failure.result">#</a>
+        </h4>
+        <div class="doc">
+<div class="inherited">
+<p>Returns the parse result of the current context. </p>
+<div class="docs-inherited-from">docs inherited from <a href="../petitparser/Result.html">Result</a> </div></div>
+<pre class="source">
+dynamic get result { throw new ParserError(this); }
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Methods</h3>
+<div class="method inherited"><h4 id="failure">
+<button class="show-code">Code</button>
+<a href="../petitparser/Failure.html">Failure</a> <strong>failure</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> message, [<a href="http://api.dartlang.org/dart_core/int.html">int</a> pos]) <a class="anchor-link" href="#failure"
+              title="Permalink to Failure.failure">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Context.html">Context</a> </div><div class="doc">
+<p>Copies the current context to indicate a parse failure. </p>
+<pre class="source">
+Failure failure(String message, [int pos]) {
+ return new Failure(buffer, pos == null ? position : pos, message);
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="success">
+<button class="show-code">Code</button>
+<a href="../petitparser/Success.html">Success</a> <strong>success</strong>(result, [<a href="http://api.dartlang.org/dart_core/int.html">int</a> pos]) <a class="anchor-link" href="#success"
+              title="Permalink to Failure.success">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Context.html">Context</a> </div><div class="doc">
+<p>Copies the current context to indicate a parse success. </p>
+<pre class="source">
+Success success(dynamic result, [int pos]) {
+ return new Success(buffer, pos == null ? position : pos, result);
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="toString">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/String.html">String</a> <strong>toString</strong>() <a class="anchor-link" href="#toString"
+              title="Permalink to Failure.toString">#</a></h4>
+<div class="doc">
+<div class="inherited">
+<p>Returns a human readable string of the current context </p>
+<div class="docs-inherited-from">docs inherited from <a href="../petitparser/Context.html">Context</a> </div></div>
+<pre class="source">
+String toString() =&gt; 'Failure[$position]: $message';
+</pre>
+</div>
+</div>
+</div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        <div class="footer">
+          
+        </div>
+        <script async src="../client-live-nav.js"></script>
+        </body></html>
+        

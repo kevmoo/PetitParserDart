@@ -1,0 +1,321 @@
+        <!DOCTYPE html>
+        <html>
+        <head>
+                <meta charset="utf-8">
+        <title>Token class / petitparser Library / Dart Documentation</title>
+        <link rel="stylesheet" type="text/css"
+            href="../styles.css">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link rel="shortcut icon" href="../favicon.ico">
+        
+        </head>
+        <body data-library="petitparser" data-type="Token">
+        <div class="page">
+        <div class="header">
+          <a href="../index.html"><div class="logo"></div></a>
+          <a href="../index.html">Dart Documentation</a>
+         &rsaquo; <a href="../petitparser.html">petitparser</a> &rsaquo; <a href="../petitparser/Token.html">Token</a>        <div id="search-box">
+          <input type="search" name="q" id="q" autocomplete="off"
+              class="search-input" placeholder="Search API">
+        </div>
+        
+      </div>
+      <div class="drop-down" id="drop-down"></div>
+      
+        <div class="nav">
+        
+</div>
+<div class="content">
+        <h2><strong>Token</strong>
+          class
+        </h2>
+        
+<button id="show-inherited" class="show-inherited">Hide inherited</button>
+<div class="doc">
+<p>A token represents a parsed part of the input stream. The token holds
+the parsed input, the input buffer, and the start and stop position
+in the input buffer.</p>
+<pre class="source">
+class Token {
+
+ /**
+  * Returns the parsed value.
+  */
+ final dynamic value;
+
+ /**
+  * Returns the input buffer.
+  */
+ final dynamic buffer;
+
+ /**
+  * Returns the start position in the input buffer.
+  */
+ final int start;
+
+ /**
+  * Returns the stop position in the input buffer.
+  */
+ final int stop;
+
+ const Token(this.value, this.buffer, this.start, this.stop);
+
+ bool operator == (Token other) {
+   return other is Token
+     &amp;&amp; value == other._value
+     &amp;&amp; start == other._start
+     &amp;&amp; stop == other._stop;
+ }
+
+ int get hashCode =&gt; value.hashCode + start.hashCode + stop.hashCode;
+
+ /**
+  * Returns the length of the token.
+  */
+ int get length =&gt; stop - start;
+
+ /**
+  * Returns the line number of the token.
+  */
+ int get line {
+   var line = 1;
+   for (var each in newlineParser().token().matchesSkipping(buffer)) {
+     if (start &lt; each.stop) {
+       return line;
+     }
+     line++;
+   }
+   return line;
+ }
+
+ /**
+  * Returns the column number of this token.
+  */
+ int get column {
+   var position = 0;
+   for (var each in newlineParser().token().matchesSkipping(buffer)) {
+     if (start &lt; each.stop) {
+       return start - position + 1;
+     }
+     position = each.stop;
+   }
+   return start - position + 1;
+ }
+
+ String toString() =&gt; 'Token[start: $start, stop: $stop, value: $value]';
+
+ static final Parser _NEWLINE_PARSER =
+     char('\n').or(char('\r').seq(char('\n').optional()));
+
+ static Parser newlineParser() =&gt; _NEWLINE_PARSER;
+
+}
+</pre>
+</div>
+<div>
+<h3>Static Methods</h3>
+<div class="method"><h4 id="newlineParser">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>newlineParser</strong>() <a class="anchor-link" href="#newlineParser"
+              title="Permalink to Token.newlineParser">#</a></h4>
+<div class="doc">
+<pre class="source">
+static Parser newlineParser() =&gt; _NEWLINE_PARSER;
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Constructors</h3>
+<div class="method"><h4 id="Token">
+<button class="show-code">Code</button>
+const <strong>Token</strong>(value, buffer, <a href="http://api.dartlang.org/dart_core/int.html">int</a> start, <a href="http://api.dartlang.org/dart_core/int.html">int</a> stop) <a class="anchor-link" href="#Token"
+              title="Permalink to Token.Token">#</a></h4>
+<div class="doc">
+<pre class="source">
+const Token(this.value, this.buffer, this.start, this.stop);
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Properties</h3>
+<div class="field"><h4 id="buffer">
+<button class="show-code">Code</button>
+final         <strong>buffer</strong> <a class="anchor-link"
+            href="#buffer"
+            title="Permalink to Token.buffer">#</a>
+        </h4>
+        <div class="doc">
+<pre class="source">
+buffer
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="column">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>column</strong> <a class="anchor-link"
+            href="#column"
+            title="Permalink to Token.column">#</a>
+        </h4>
+        <div class="doc">
+<p>Returns the column number of this token.</p>
+<pre class="source">
+int get column {
+ var position = 0;
+ for (var each in newlineParser().token().matchesSkipping(buffer)) {
+   if (start &lt; each.stop) {
+     return start - position + 1;
+   }
+   position = each.stop;
+ }
+ return start - position + 1;
+}
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="hashCode">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>hashCode</strong> <a class="anchor-link"
+            href="#hashCode"
+            title="Permalink to Token.hashCode">#</a>
+        </h4>
+        <div class="doc">
+<div class="inherited">
+<p>Get a hash code for this object.</p>
+<p>All objects have hash codes. Hash codes are guaranteed to be the
+same for objects that are equal when compared using the equality
+operator <code>==</code>. Other than that there are no guarantees about
+the hash codes. They will not be consistent between runs and
+there are no distribution guarantees.</p>
+<p>If a subclass overrides <a class="crossref" href="../petitparser/Token.html#hashCode">hashCode</a> it should override the
+equality operator as well to maintain consistency.</p>
+<div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
+<pre class="source">
+int get hashCode =&gt; value.hashCode + start.hashCode + stop.hashCode;
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="length">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>length</strong> <a class="anchor-link"
+            href="#length"
+            title="Permalink to Token.length">#</a>
+        </h4>
+        <div class="doc">
+<p>Returns the length of the token.</p>
+<pre class="source">
+int get length =&gt; stop - start;
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="line">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>line</strong> <a class="anchor-link"
+            href="#line"
+            title="Permalink to Token.line">#</a>
+        </h4>
+        <div class="doc">
+<p>Returns the line number of the token.</p>
+<pre class="source">
+int get line {
+ var line = 1;
+ for (var each in newlineParser().token().matchesSkipping(buffer)) {
+   if (start &lt; each.stop) {
+     return line;
+   }
+   line++;
+ }
+ return line;
+}
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="start">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>start</strong> <a class="anchor-link"
+            href="#start"
+            title="Permalink to Token.start">#</a>
+        </h4>
+        <div class="doc">
+<pre class="source">
+start
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="stop">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>stop</strong> <a class="anchor-link"
+            href="#stop"
+            title="Permalink to Token.stop">#</a>
+        </h4>
+        <div class="doc">
+<pre class="source">
+stop
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="value">
+<button class="show-code">Code</button>
+final         <strong>value</strong> <a class="anchor-link"
+            href="#value"
+            title="Permalink to Token.value">#</a>
+        </h4>
+        <div class="doc">
+<pre class="source">
+value
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Operators</h3>
+<div class="method"><h4 id="==">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>operator ==</strong>(<a href="../petitparser/Token.html">Token</a> other) <a class="anchor-link" href="#=="
+              title="Permalink to Token.operator ==">#</a></h4>
+<div class="doc">
+<div class="inherited">
+<p>The equality operator.</p>
+<p>The default behavior for all <code>Object</code>s is to return true if and
+only if <code>this</code> and 
+<span class="param">other</span> are the same object.</p>
+<p>If a subclass overrides the equality operator it should override
+the <a class="crossref" href="../petitparser/Token.html#hashCode">hashCode</a> method as well to maintain consistency.</p>
+<div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
+<pre class="source">
+bool operator == (Token other) {
+ return other is Token
+   &amp;&amp; value == other._value
+   &amp;&amp; start == other._start
+   &amp;&amp; stop == other._stop;
+}
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Methods</h3>
+<div class="method"><h4 id="toString">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/String.html">String</a> <strong>toString</strong>() <a class="anchor-link" href="#toString"
+              title="Permalink to Token.toString">#</a></h4>
+<div class="doc">
+<div class="inherited">
+<p>Returns a string representation of this object.</p>
+<div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
+<pre class="source">
+String toString() =&gt; 'Token[start: $start, stop: $stop, value: $value]';
+</pre>
+</div>
+</div>
+</div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        <div class="footer">
+          
+        </div>
+        <script async src="../client-live-nav.js"></script>
+        </body></html>
+        

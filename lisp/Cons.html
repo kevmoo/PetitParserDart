@@ -1,0 +1,188 @@
+        <!DOCTYPE html>
+        <html>
+        <head>
+                <meta charset="utf-8">
+        <title>Cons class / lisp Library / Dart Documentation</title>
+        <link rel="stylesheet" type="text/css"
+            href="../styles.css">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link rel="shortcut icon" href="../favicon.ico">
+        
+        </head>
+        <body data-library="lisp" data-type="Cons">
+        <div class="page">
+        <div class="header">
+          <a href="../index.html"><div class="logo"></div></a>
+          <a href="../index.html">Dart Documentation</a>
+         &rsaquo; <a href="../lisp.html">lisp</a> &rsaquo; <a href="../lisp/Cons.html">Cons</a>        <div id="search-box">
+          <input type="search" name="q" id="q" autocomplete="off"
+              class="search-input" placeholder="Search API">
+        </div>
+        
+      </div>
+      <div class="drop-down" id="drop-down"></div>
+      
+        <div class="nav">
+        
+</div>
+<div class="content">
+        <h2><strong>Cons</strong>
+          class
+        </h2>
+        
+<button id="show-inherited" class="show-inherited">Hide inherited</button>
+<div class="doc">
+<p>The basic data structure of LISP.</p>
+<pre class="source">
+class Cons {
+
+ /** The head of the cons. */
+ dynamic _head;
+
+ /** The tail of the cons. */
+ dynamic _tail;
+
+ /** Constructs a cons. */
+ Cons(this._head, this._tail);
+
+ /** Accessors for the head of this cons. */
+ dynamic get head =&gt; _head;
+ set head(dynamic head) =&gt; _head = head;
+
+ /** Accessors for the tail of this cons. */
+ dynamic get tail =&gt; _tail;
+ set tail(dynamic tail) =&gt; _tail = tail;
+
+ /** Compare the cells. */
+ bool operator ==(Cons cons) {
+   return cons is Cons &amp;&amp; head == cons.head &amp;&amp; tail == cons.tail;
+ }
+
+ /** Returns the string representation of the cons. */
+ String toString() {
+   var buffer = new StringBuffer();
+   buffer.write('(');
+   var current = this;
+   while (current is Cons) {
+     buffer.write(current.head.toString());
+     current = current.tail;
+     if (current != null) {
+       buffer.write(' ');
+     }
+   }
+   if (current != null) {
+     buffer.write('. ');
+     buffer.write(current);
+   }
+   buffer.write(')');
+   return buffer.toString();
+ }
+
+}
+</pre>
+</div>
+<div>
+<h3>Constructors</h3>
+<div class="method"><h4 id="Cons">
+<button class="show-code">Code</button>
+new <strong>Cons</strong>(_head, _tail) <a class="anchor-link" href="#Cons"
+              title="Permalink to Cons.Cons">#</a></h4>
+<div class="doc">
+<p>Constructs a cons. </p>
+<pre class="source">
+Cons(this._head, this._tail);
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Properties</h3>
+<div class="field"><h4 id="head">
+<button class="show-code">Code</button>
+var         <strong>head</strong> <a class="anchor-link"
+            href="#head"
+            title="Permalink to Cons.head">#</a>
+        </h4>
+        <div class="doc">
+<p>Accessors for the head of this cons. </p>
+<pre class="source">
+dynamic get head =&gt; _head;
+</pre>
+<pre class="source">
+set head(dynamic head) =&gt; _head = head;
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="tail">
+<button class="show-code">Code</button>
+var         <strong>tail</strong> <a class="anchor-link"
+            href="#tail"
+            title="Permalink to Cons.tail">#</a>
+        </h4>
+        <div class="doc">
+<p>Accessors for the tail of this cons. </p>
+<pre class="source">
+dynamic get tail =&gt; _tail;
+</pre>
+<pre class="source">
+set tail(dynamic tail) =&gt; _tail = tail;
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Operators</h3>
+<div class="method"><h4 id="==">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>operator ==</strong>(<a href="../lisp/Cons.html">Cons</a> cons) <a class="anchor-link" href="#=="
+              title="Permalink to Cons.operator ==">#</a></h4>
+<div class="doc">
+<p>Compare the cells. </p>
+<pre class="source">
+bool operator ==(Cons cons) {
+ return cons is Cons &amp;&amp; head == cons.head &amp;&amp; tail == cons.tail;
+}
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Methods</h3>
+<div class="method"><h4 id="toString">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/String.html">String</a> <strong>toString</strong>() <a class="anchor-link" href="#toString"
+              title="Permalink to Cons.toString">#</a></h4>
+<div class="doc">
+<p>Returns the string representation of the cons. </p>
+<pre class="source">
+String toString() {
+ var buffer = new StringBuffer();
+ buffer.write('(');
+ var current = this;
+ while (current is Cons) {
+   buffer.write(current.head.toString());
+   current = current.tail;
+   if (current != null) {
+     buffer.write(' ');
+   }
+ }
+ if (current != null) {
+   buffer.write('. ');
+   buffer.write(current);
+ }
+ buffer.write(')');
+ return buffer.toString();
+}
+</pre>
+</div>
+</div>
+</div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        <div class="footer">
+          
+        </div>
+        <script async src="../client-live-nav.js"></script>
+        </body></html>
+        

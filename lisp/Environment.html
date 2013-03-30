@@ -1,0 +1,216 @@
+        <!DOCTYPE html>
+        <html>
+        <head>
+                <meta charset="utf-8">
+        <title>Environment class / lisp Library / Dart Documentation</title>
+        <link rel="stylesheet" type="text/css"
+            href="../styles.css">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link rel="shortcut icon" href="../favicon.ico">
+        
+        </head>
+        <body data-library="lisp" data-type="Environment">
+        <div class="page">
+        <div class="header">
+          <a href="../index.html"><div class="logo"></div></a>
+          <a href="../index.html">Dart Documentation</a>
+         &rsaquo; <a href="../lisp.html">lisp</a> &rsaquo; <a href="../lisp/Environment.html">Environment</a>        <div id="search-box">
+          <input type="search" name="q" id="q" autocomplete="off"
+              class="search-input" placeholder="Search API">
+        </div>
+        
+      </div>
+      <div class="drop-down" id="drop-down"></div>
+      
+        <div class="nav">
+        
+</div>
+<div class="content">
+        <h2><strong>Environment</strong>
+          class
+        </h2>
+        
+<button id="show-inherited" class="show-inherited">Hide inherited</button>
+<div class="doc">
+<p>Environment of bindings. </p>
+<pre class="source">
+class Environment {
+
+ /** The owning environemnt. */
+ final Environment _owner;
+
+ /** The internal environment bindings. */
+ final Map&lt;Symbol, dynamic&gt; _bindings;
+
+ /** Constructor for the nested environment. */
+ Environment([this._owner]) : _bindings = new Map();
+
+ /** Constructor for a nested environment. */
+ Environment create() =&gt; new Environment(this);
+
+ /** Return the binding for [key]. */
+ dynamic operator [](Symbol key) {
+   if (_bindings.containsKey(key)) {
+     return _bindings[key];
+   } else if (_owner != null) {
+     return _owner[key];
+   } else {
+     return _invalidBinding(key);
+   }
+ }
+
+ /** Updates the binding for [key] with a [value]. */
+ void operator []=(Symbol key, dynamic value) {
+   if (_bindings.containsKey(key)) {
+     _bindings[key] = value;
+   } else if (_owner != null) {
+     _owner[key] = value;
+   } else {
+     _invalidBinding(key);
+   }
+ }
+
+ /** Defines a new binding from [key] to [value]. */
+ dynamic define(Symbol key, dynamic value) {
+   return _bindings[key] = value;
+ }
+
+ /** Returns the keys of the bindings. */
+ Iterable&lt;Symbol&gt; get keys =&gt; _bindings.keys;
+
+ /** Returns the parent of the bindings. */
+ Environment get owner =&gt; _owner;
+
+ /** Called when a missing binding is accessed. */
+ dynamic _invalidBinding(Symbol key) {
+   throw new ArgumentError('Unknown binding for $key');
+ }
+
+}
+</pre>
+</div>
+<div>
+<h3>Constructors</h3>
+<div class="method"><h4 id="Environment">
+<button class="show-code">Code</button>
+new <strong>Environment</strong>([<a href="../lisp/Environment.html">Environment</a> _owner]) <a class="anchor-link" href="#Environment"
+              title="Permalink to Environment.Environment">#</a></h4>
+<div class="doc">
+<p>Constructor for the nested environment. </p>
+<pre class="source">
+Environment([this._owner]) : _bindings = new Map();
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Properties</h3>
+<div class="field"><h4 id="keys">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../lisp/Symbol.html">Symbol</a>&gt;         <strong>keys</strong> <a class="anchor-link"
+            href="#keys"
+            title="Permalink to Environment.keys">#</a>
+        </h4>
+        <div class="doc">
+<p>Returns the keys of the bindings. </p>
+<pre class="source">
+Iterable&lt;Symbol&gt; get keys =&gt; _bindings.keys;
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="owner">
+<button class="show-code">Code</button>
+final <a href="../lisp/Environment.html">Environment</a>         <strong>owner</strong> <a class="anchor-link"
+            href="#owner"
+            title="Permalink to Environment.owner">#</a>
+        </h4>
+        <div class="doc">
+<p>Returns the parent of the bindings. </p>
+<pre class="source">
+Environment get owner =&gt; _owner;
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Operators</h3>
+<div class="method"><h4 id="[]">
+<button class="show-code">Code</button>
+<strong>operator []</strong>(<a href="../lisp/Symbol.html">Symbol</a> key) <a class="anchor-link" href="#[]"
+              title="Permalink to Environment.operator []">#</a></h4>
+<div class="doc">
+<p>Return the binding for 
+<span class="param">key</span>. </p>
+<pre class="source">
+dynamic operator [](Symbol key) {
+ if (_bindings.containsKey(key)) {
+   return _bindings[key];
+ } else if (_owner != null) {
+   return _owner[key];
+ } else {
+   return _invalidBinding(key);
+ }
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="[]=">
+<button class="show-code">Code</button>
+void <strong>operator []=</strong>(<a href="../lisp/Symbol.html">Symbol</a> key, value) <a class="anchor-link" href="#[]="
+              title="Permalink to Environment.operator []=">#</a></h4>
+<div class="doc">
+<p>Updates the binding for 
+<span class="param">key</span> with a 
+<span class="param">value</span>. </p>
+<pre class="source">
+void operator []=(Symbol key, dynamic value) {
+ if (_bindings.containsKey(key)) {
+   _bindings[key] = value;
+ } else if (_owner != null) {
+   _owner[key] = value;
+ } else {
+   _invalidBinding(key);
+ }
+}
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Methods</h3>
+<div class="method"><h4 id="create">
+<button class="show-code">Code</button>
+<a href="../lisp/Environment.html">Environment</a> <strong>create</strong>() <a class="anchor-link" href="#create"
+              title="Permalink to Environment.create">#</a></h4>
+<div class="doc">
+<p>Constructor for a nested environment. </p>
+<pre class="source">
+Environment create() =&gt; new Environment(this);
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="define">
+<button class="show-code">Code</button>
+<strong>define</strong>(<a href="../lisp/Symbol.html">Symbol</a> key, value) <a class="anchor-link" href="#define"
+              title="Permalink to Environment.define">#</a></h4>
+<div class="doc">
+<p>Defines a new binding from 
+<span class="param">key</span> to 
+<span class="param">value</span>. </p>
+<pre class="source">
+dynamic define(Symbol key, dynamic value) {
+ return _bindings[key] = value;
+}
+</pre>
+</div>
+</div>
+</div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        <div class="footer">
+          
+        </div>
+        <script async src="../client-live-nav.js"></script>
+        </body></html>
+        

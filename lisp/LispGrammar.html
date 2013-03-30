@@ -1,0 +1,862 @@
+        <!DOCTYPE html>
+        <html>
+        <head>
+                <meta charset="utf-8">
+        <title>LispGrammar class / lisp Library / Dart Documentation</title>
+        <link rel="stylesheet" type="text/css"
+            href="../styles.css">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link rel="shortcut icon" href="../favicon.ico">
+        
+        </head>
+        <body data-library="lisp" data-type="LispGrammar">
+        <div class="page">
+        <div class="header">
+          <a href="../index.html"><div class="logo"></div></a>
+          <a href="../index.html">Dart Documentation</a>
+         &rsaquo; <a href="../lisp.html">lisp</a> &rsaquo; <a href="../lisp/LispGrammar.html">LispGrammar</a>        <div id="search-box">
+          <input type="search" name="q" id="q" autocomplete="off"
+              class="search-input" placeholder="Search API">
+        </div>
+        
+      </div>
+      <div class="drop-down" id="drop-down"></div>
+      
+        <div class="nav">
+        
+</div>
+<div class="content">
+        <h2><strong>LispGrammar</strong>
+          class
+        </h2>
+        
+<button id="show-inherited" class="show-inherited">Hide inherited</button>
+<div class="doc">
+<p>Lisp grammar definition.</p>
+<pre class="source">
+class LispGrammar extends CompositeParser {
+
+ void initialize() {
+   def('start', ref('atom').star().end());
+
+   def('atom',
+     ref('list')
+       .or(ref('number'))
+       .or(ref('string'))
+       .or(ref('symbol'))
+       .or(ref('quote'))
+       .or(ref('quasiquote'))
+       .or(ref('unquote'))
+       .or(ref('splice'))
+       .trim(ref('whitespace')));
+
+   def('list',
+     bracket('()', 'atoms')
+       .or(bracket('[]', 'atoms'))
+       .or(bracket('{}', 'atoms')));
+   def('atoms',
+     ref('cell')
+       .or(ref('null')));
+   def('cell',
+     ref('atom')
+       .seq(ref('atoms')));
+   def('null',
+     ref('whitespace').star());
+
+   def('string',
+     char('"')
+       .seq(ref('character').star())
+       .seq(char('"')));
+   def('character',
+     ref('character escape')
+       .or(ref('character raw')));
+   def('character escape',
+     char('\\').seq(any()));
+   def('character raw',
+     pattern('^"'));
+
+   def('symbol',
+     pattern('a-zA-Z!#\$%&amp;*/:&lt;=&gt;?@\\^_|~+-')
+       .seq(pattern('a-zA-Z0-9!#\$%&amp;*/:&lt;=&gt;?@\\^_|~+-').star())
+       .flatten());
+
+   def('number',
+     anyIn('-+').optional()
+       .seq(char('0').or(digit().plus()))
+       .seq(char('.').seq(digit().plus()).optional())
+       .seq(anyIn('eE').seq(anyIn('-+').optional()).seq(digit().plus()).optional())
+       .flatten());
+
+   def('quote', char('\'').seq(ref('list')));
+   def('quasiquote', char('`').seq(ref('list')));
+   def('unquote', char(',').seq(ref('list')));
+   def('splice', char('@').seq(ref('list')));
+
+   def('whitespace', whitespace()
+     .or(ref('comment')));
+   def('comment', string(';')
+     .seq(Token.newlineParser().neg().star()));
+ }
+
+ /** Defines a bracketed reference. */
+ Parser bracket(String brackets, String reference) {
+   return char(brackets[0])
+       .seq(ref(reference))
+       .seq(char(brackets[1]));
+ }
+
+}
+</pre>
+</div>
+<h3>Extends</h3>
+<p>
+<span class="type-box"><span class="icon-class"></span><a href="../petitparser/Parser.html">Parser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/_DelegateParser.html">_DelegateParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/_SetableParser.html">_SetableParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/CompositeParser.html">CompositeParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><strong>LispGrammar</strong></span></p>
+<h3>Subclasses</h3>
+<p>
+<span class="type-box"><span class="icon-class"></span><a href="../lisp/LispParser.html">LispParser</a></span></p>
+<div class="inherited">
+<h3>Properties</h3>
+<div class="field inherited"><h4 id="children">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/List.html">List</a>&lt;<a href="../petitparser/Parser.html">Parser</a>&gt;         <strong>children</strong> <a class="anchor-link"
+            href="#children"
+            title="Permalink to LispGrammar.children">#</a>
+        </h4>
+        <div class="inherited-from">inherited from <a href="../petitparser/_DelegateParser.html">_DelegateParser</a> </div><div class="doc">
+<div class="inherited">
+<p>Returns a list of directly referenced parsers.</p>
+<p>For example, <code>letter().children</code> returns the empty collection <code>[]</code>,
+because the letter parser is a primitive or leaf parser that does not
+depend or call any other parser.</p>
+<p>In contrast, <code>letter().or(digit()).children</code> returns a collection
+containing both the <code>letter()</code> and <code>digit()</code> parser.</p>
+<div class="docs-inherited-from">docs inherited from <a href="../petitparser/Parser.html">Parser</a> </div></div>
+<pre class="source">
+List&lt;Parser&gt; get children =&gt; [_delegate];
+</pre>
+</div>
+</div>
+</div>
+<div class="inherited">
+<h3>Operators</h3>
+<div class="method inherited"><h4 id="[]">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>operator []</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name) <a class="anchor-link" href="#[]"
+              title="Permalink to LispGrammar.operator []">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/CompositeParser.html">CompositeParser</a> </div><div class="doc">
+<p>Convenience operator returning a reference to a production with
+a 
+<span class="param">name</span>. See <code>CompositeParser#ref</code> for details.</p>
+<pre class="source">
+Parser operator [](String name) =&gt; ref(name);
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="&">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>operator &</strong>(<a href="../petitparser/Parser.html">Parser</a> other) <a class="anchor-link" href="#&"
+              title="Permalink to LispGrammar.operator &">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Convenience operator returning a parser accepts the receiver followed
+by 
+<span class="param">other</span>. See <code>Parser#seq</code> for details.</p>
+<pre class="source">
+Parser operator &amp; (Parser other) =&gt; this.seq(other);
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="|">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>operator |</strong>(<a href="../petitparser/Parser.html">Parser</a> other) <a class="anchor-link" href="#|"
+              title="Permalink to LispGrammar.operator |">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Convenience operator returning a parser accepts the receiver or
+
+<span class="param">other</span>. See <code>Parser#or</code> for details.</p>
+<pre class="source">
+Parser operator | (Parser other) =&gt; this.or(other);
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Methods</h3>
+<div class="method inherited"><h4 id="accept">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>accept</strong>(input) <a class="anchor-link" href="#accept"
+              title="Permalink to LispGrammar.accept">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Tests if the 
+<span class="param">input</span> can be successfully parsed.</p>
+<p>For example, <code>letter().plus().accept('abc')</code> returns <code>true</code>, and
+<code>letter().plus().accept('123')</code> returns <code>false</code>.</p>
+<pre class="source">
+bool accept(dynamic input) {
+ return parse(input).isSuccess;
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="action">
+<button class="show-code">Code</button>
+void <strong>action</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name, function(Dynamic)) <a class="anchor-link" href="#action"
+              title="Permalink to LispGrammar.action">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/CompositeParser.html">CompositeParser</a> </div><div class="doc">
+<p>Attaches an action 
+<span class="param">function</span> to an existing production 
+<span class="param">name</span>. The code
+raises a <code>StateError</code> if 
+<span class="param">name</span> is an undefined production. Only call this
+method from <a class="crossref" href="../lisp/LispGrammar.html#initialize">initialize</a>.</p>
+<p>The following example attaches an action returning the size of list of
+the previously defined list production:</p>
+<pre><code>action('list', (list) =&gt; list.length);
+</code></pre>
+<pre class="source">
+void action(String name, dynamic function(Dynamic)) {
+ redef(name, (parser) =&gt; parser.map(function));
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="and">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>and</strong>() <a class="anchor-link" href="#and"
+              title="Permalink to LispGrammar.and">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Returns a parser (logical and-predicate) that succeeds whenever the
+receiver does, but never consumes input.</p>
+<p>For example, the parser <code>char('_').and().seq(identifier)</code> accepts
+identifiers that start with an underscore character. Since the predicate
+does not consume accepted input, the parser <code>identifier</code> is given the
+ability to process the complete identifier.</p>
+<pre class="source">
+Parser and() =&gt; new _AndParser(this);
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="bracket">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>bracket</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> brackets, <a href="http://api.dartlang.org/dart_core/String.html">String</a> reference) <a class="anchor-link" href="#bracket"
+              title="Permalink to LispGrammar.bracket">#</a></h4>
+<div class="doc">
+<p>Defines a bracketed reference. </p>
+<pre class="source">
+Parser bracket(String brackets, String reference) {
+ return char(brackets[0])
+     .seq(ref(reference))
+     .seq(char(brackets[1]));
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="def">
+<button class="show-code">Code</button>
+void <strong>def</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name, <a href="../petitparser/Parser.html">Parser</a> parser) <a class="anchor-link" href="#def"
+              title="Permalink to LispGrammar.def">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/CompositeParser.html">CompositeParser</a> </div><div class="doc">
+<p>Defines a production with a 
+<span class="param">name</span> and a 
+<span class="param">parser</span>. Only call this method
+from <a class="crossref" href="../lisp/LispGrammar.html#initialize">initialize</a>.</p>
+<p>The following example defines a list production that consumes
+several elements separated by a comma.</p>
+<pre><code>def('list', ref('element').separatedBy(char(',')));
+</code></pre>
+<pre class="source">
+void def(String name, Parser parser) {
+ if (_completed) {
+   throw new StateError('Completed parsers cannot be changed');
+ } else if (_defined.containsKey(name)) {
+   throw new StateError('Duplicate production: $name');
+ } else {
+   _defined[name] = parser;
+ }
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="end">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>end</strong>({<a href="http://api.dartlang.org/dart_core/String.html">String</a> message: 'end of input expected'}) <a class="anchor-link" href="#end"
+              title="Permalink to LispGrammar.end">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Returns a parser that succeeds only if the receiver consumes the complete
+input, otherwise return a failure with the optional 
+<span class="param">message</span>.</p>
+<p>For example, the parser <code>letter().end()</code> succeeds on the input <code>'a'</code>
+and fails on <code>'ab'</code>. In contrast the parser <code>letter()</code> alone would
+succeed on both inputs, but not consume everything for the second input.</p>
+<pre class="source">
+Parser end({String message: 'end of input expected'}) {
+ return new _EndOfInputParser(this, message);
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="flatten">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>flatten</strong>() <a class="anchor-link" href="#flatten"
+              title="Permalink to LispGrammar.flatten">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Returns a parser that discards the result of the receiver, and returns
+a sub-string of the consumed elements in the string/list being parsed.</p>
+<p>For example, the parser <code>letter().plus().flatten()</code> returns <code>'abc'</code>
+for the input <code>'abc'</code>. In contrast, the parser <code>letter().plus()</code> would
+return <code>['a', 'b', 'c']</code> for the same input instead.</p>
+<pre class="source">
+Parser flatten() =&gt; new _FlattenParser(this);
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="initialize">
+<button class="show-code">Code</button>
+void <strong>initialize</strong>() <a class="anchor-link" href="#initialize"
+              title="Permalink to LispGrammar.initialize">#</a></h4>
+<div class="doc">
+<div class="inherited">
+<p>Initializes the composite grammar.</p>
+<div class="docs-inherited-from">docs inherited from <a href="../petitparser/CompositeParser.html">CompositeParser</a> </div></div>
+<pre class="source">
+void initialize() {
+ def('start', ref('atom').star().end());
+
+ def('atom',
+   ref('list')
+     .or(ref('number'))
+     .or(ref('string'))
+     .or(ref('symbol'))
+     .or(ref('quote'))
+     .or(ref('quasiquote'))
+     .or(ref('unquote'))
+     .or(ref('splice'))
+     .trim(ref('whitespace')));
+
+ def('list',
+   bracket('()', 'atoms')
+     .or(bracket('[]', 'atoms'))
+     .or(bracket('{}', 'atoms')));
+ def('atoms',
+   ref('cell')
+     .or(ref('null')));
+ def('cell',
+   ref('atom')
+     .seq(ref('atoms')));
+ def('null',
+   ref('whitespace').star());
+
+ def('string',
+   char('"')
+     .seq(ref('character').star())
+     .seq(char('"')));
+ def('character',
+   ref('character escape')
+     .or(ref('character raw')));
+ def('character escape',
+   char('\\').seq(any()));
+ def('character raw',
+   pattern('^"'));
+
+ def('symbol',
+   pattern('a-zA-Z!#\$%&amp;*/:&lt;=&gt;?@\\^_|~+-')
+     .seq(pattern('a-zA-Z0-9!#\$%&amp;*/:&lt;=&gt;?@\\^_|~+-').star())
+     .flatten());
+
+ def('number',
+   anyIn('-+').optional()
+     .seq(char('0').or(digit().plus()))
+     .seq(char('.').seq(digit().plus()).optional())
+     .seq(anyIn('eE').seq(anyIn('-+').optional()).seq(digit().plus()).optional())
+     .flatten());
+
+ def('quote', char('\'').seq(ref('list')));
+ def('quasiquote', char('`').seq(ref('list')));
+ def('unquote', char(',').seq(ref('list')));
+ def('splice', char('@').seq(ref('list')));
+
+ def('whitespace', whitespace()
+   .or(ref('comment')));
+ def('comment', string(';')
+   .seq(Token.newlineParser().neg().star()));
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="map">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>map</strong>(<a href="http://api.dartlang.org/dart_core/Function.html">Function</a> function) <a class="anchor-link" href="#map"
+              title="Permalink to LispGrammar.map">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Returns a parser that evaluates 
+<span class="param">function</span> as action handler on success
+of the receiver.</p>
+<p>For example, the parser <code>digit().map((char) =&gt; int.parse(char))</code> returns
+the number <code>1</code> for the input string <code>'1'</code>.</p>
+<pre class="source">
+Parser map(Function function) =&gt; new _ActionParser(this, function);
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="matches">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> <strong>matches</strong>(input) <a class="anchor-link" href="#matches"
+              title="Permalink to LispGrammar.matches">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Returns a list of all successful overlapping parses of the 
+<span class="param">input</span>.</p>
+<p>For example, <code>letter().plus().matches('abc de')</code> results in the list
+<code>[['a', 'b', 'c'], ['b', 'c'], ['c'], ['d', 'e'], ['e']]</code>. See
+<code>Parser.matchesSkipping</code> to retrieve non-overlapping parse results.</p>
+<pre class="source">
+Iterable matches(dynamic input) {
+ var list = new List();
+ and().map((each) =&gt; list.add(each)).seq(any()).or(any()).star().parse(input);
+ return list;
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="matchesSkipping">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> <strong>matchesSkipping</strong>(input) <a class="anchor-link" href="#matchesSkipping"
+              title="Permalink to LispGrammar.matchesSkipping">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Returns a list of all successful non-overlapping parses of the input.</p>
+<p>For example, <code>letter().plus().matchesSkipping('abc de')</code> results in the
+list <code>[['a', 'b', 'c'], ['d', 'e']]</code>. See <code>Parser.matches</code> to retrieve
+overlapping parse results.</p>
+<pre class="source">
+Iterable matchesSkipping(dynamic input) {
+ var list = new List();
+ map((each) =&gt; list.add(each)).or(any()).star().parse(input);
+ return list;
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="neg">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>neg</strong>([<a href="http://api.dartlang.org/dart_core/String.html">String</a> message]) <a class="anchor-link" href="#neg"
+              title="Permalink to LispGrammar.neg">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Returns a parser that consumes any input token (character), but the
+receiver.</p>
+<p>For example, the parser <code>letter().neg()</code> accepts any input but a letter.
+The parser fails for inputs like <code>'a'</code> or <code>'Z'</code>, but succeeds for
+input like <code>'1'</code>, <code>'_'</code> or <code>'$'</code>.</p>
+<pre class="source">
+Parser neg([String message]) =&gt; not(message).seq(any()).pick(1);
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="not">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>not</strong>([<a href="http://api.dartlang.org/dart_core/String.html">String</a> message]) <a class="anchor-link" href="#not"
+              title="Permalink to LispGrammar.not">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Returns a parser (logical not-predicate) that succeeds whenever the
+receiver fails, but never consumes input.</p>
+<p>For example, the parser <code>char('_').not().seq(identifier)</code> accepts
+identifiers that do not start with an underscore character. If the parser
+<code>char('_')</code> accepts the input, the negation and subsequently the
+complete parser fails. Otherwise the parser <code>identifier</code> is given the
+ability to process the complete identifier.</p>
+<pre class="source">
+Parser not([String message]) =&gt; new _NotParser(this, message);
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="optional">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>optional</strong>([otherwise]) <a class="anchor-link" href="#optional"
+              title="Permalink to LispGrammar.optional">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Returns new parser that accepts the receiver, if possible. The resulting
+parser returns the result of the receiver, or <code>null</code> if not applicable.
+The returned value can be provided as an optional argument 
+<span class="param">otherwise</span>.</p>
+<p>For example, the parser <code>letter().optional()</code> accepts a letter as input
+and returns that letter. When given something else the parser succeeds as
+well, does not consume anything and returns <code>null</code>.</p>
+<pre class="source">
+Parser optional([dynamic otherwise]) =&gt; new _OptionalParser(this, otherwise);
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="or">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>or</strong>(<a href="../petitparser/Parser.html">Parser</a> other) <a class="anchor-link" href="#or"
+              title="Permalink to LispGrammar.or">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Returns a parser that accepts the receiver or 
+<span class="param">other</span>. The resulting
+parser returns the parse result of the receiver, if the receiver fails
+it returns the parse result of 
+<span class="param">other</span> (exclusive ordered choice).</p>
+<p>For example, the parser <code>letter().or(digit())</code> accepts a letter or a
+digit. An example where the order matters is the following choice between
+overlapping parsers: <code>letter().or(char('a'))</code>. In the example the parser
+<code>char('a')</code> will never be activated, because the input is always consumed
+<code>letter()</code>. This can be problematic if the author intended to attach a
+production action to <code>char('a')</code>.</p>
+<pre class="source">
+Parser or(Parser other) =&gt; new _ChoiceParser([this, other]);
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="parse">
+<button class="show-code">Code</button>
+<a href="../petitparser/Result.html">Result</a> <strong>parse</strong>(input) <a class="anchor-link" href="#parse"
+              title="Permalink to LispGrammar.parse">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Returns the parse result of the 
+<span class="param">input</span>.</p>
+<p>The implementation creates a default parse context on the input and calls
+the internal parsing logic of the receiving parser.</p>
+<p>For example, <code>letter().plus().parse('abc')</code> results in an instance of
+<code>Success</code>, where <code>Result#position</code> is <code>3</code> and <code>Success.result</code> is
+<code>[a, b, c]</code>.</p>
+<p>Similarly, <code>letter().plus().parse('123')</code> results in an instance of
+<code>Failure</code>, where <code>Result#position</code> is <code>0</code> and <code>Failure.message</code> is
+<code>'letter expected'</code>.</p>
+<pre class="source">
+Result parse(dynamic input) {
+ return _parse(new Context(input, 0));
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="permute">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>permute</strong>(<a href="http://api.dartlang.org/dart_core/List.html">List</a>&lt;<a href="http://api.dartlang.org/dart_core/int.html">int</a>&gt; indexes) <a class="anchor-link" href="#permute"
+              title="Permalink to LispGrammar.permute">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Returns a parser that transforms a successful parse result by returning
+the permuted elements at 
+<span class="param">indexes</span> of a list. Negative indexes can be
+used to access the elements from the back of the list.</p>
+<p>For example, the parser <code>letter().star().permute([0, -1])</code> returns the
+first and last letter parsed. For the input <code>'abc'</code> it returns
+<code>['a', 'c']</code>.</p>
+<pre class="source">
+Parser permute(List&lt;int&gt; indexes) {
+ return this.map((List list) {
+   return indexes.map((index) {
+     return list[index &lt; 0 ? list.length + index : index];
+   }).toList();
+ });
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="pick">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>pick</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> index) <a class="anchor-link" href="#pick"
+              title="Permalink to LispGrammar.pick">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Returns a parser that transform a successful parse result by returning
+the element at 
+<span class="param">index</span> of a list. A negative index can be used to access
+the elements from the back of the list.</p>
+<p>For example, the parser <code>letter().star().pick(-1)</code> returns the last
+letter parsed. For the input <code>'abc'</code> it returns <code>'c'</code>.</p>
+<pre class="source">
+Parser pick(int index) {
+ return this.map((List list) {
+   return list[index &lt; 0 ? list.length + index : index];
+ });
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="plus">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>plus</strong>() <a class="anchor-link" href="#plus"
+              title="Permalink to LispGrammar.plus">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Returns a parser that accepts the receiver one or more times. The
+resulting parser returns a list of the parse results of the receiver.</p>
+<p>This is a greedy and blind implementation that tries to consume as much
+input as possible and that does not consider what comes afterwards.</p>
+<p>For example, the parser <code>letter().plus()</code> accepts any sequence of
+letters and returns a list of the parsed letters.</p>
+<pre class="source">
+Parser plus() =&gt; repeat(1, 65536);
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="redef">
+<button class="show-code">Code</button>
+void <strong>redef</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name, replacement) <a class="anchor-link" href="#redef"
+              title="Permalink to LispGrammar.redef">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/CompositeParser.html">CompositeParser</a> </div><div class="doc">
+<p>Redefinies an existing production with a 
+<span class="param">name</span> and a 
+<span class="param">replacement</span>
+parser or function producing a new parser. The code raises a <code>StateError</code>
+if 
+<span class="param">name</span> is an undefined production. Only call this method from
+<a class="crossref" href="../lisp/LispGrammar.html#initialize">initialize</a>.</p>
+<p>The following example redefines the previously defined list production
+by making it optional:</p>
+<pre><code>redef('list', (parser) =&gt; parser.optional());
+</code></pre>
+<pre class="source">
+void redef(String name, dynamic replacement) {
+ if (_completed) {
+   throw new StateError('Completed parsers cannot be changed');
+ } else if (!_defined.containsKey(name)) {
+   throw new StateError('Undefined production: $name');
+ } else {
+   _defined[name] = replacement is Parser ? replacement
+       : replacement(_defined[name]);
+ }
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="ref">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>ref</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name) <a class="anchor-link" href="#ref"
+              title="Permalink to LispGrammar.ref">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/CompositeParser.html">CompositeParser</a> </div><div class="doc">
+<p>Returns a reference to a production with a 
+<span class="param">name</span>.</p>
+<p>This method works during initialization and after completion of the
+initialization. During the initialization it returns delegate parsers
+that are eventually replaced by the real parsers. Afterwards it
+returns the defined parser (mostly useful for testing).</p>
+<pre class="source">
+Parser ref(String name) {
+ if (_completed) {
+   if (_defined.containsKey(name)) {
+     return _defined[name];
+   } else {
+     throw new StateError('Undefined production: $name');
+   }
+ } else {
+   return _undefined.putIfAbsent(name, () {
+     return failure('Uninitalized production: $name').setable();
+   });
+ }
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="repeat">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>repeat</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> min, <a href="http://api.dartlang.org/dart_core/int.html">int</a> max) <a class="anchor-link" href="#repeat"
+              title="Permalink to LispGrammar.repeat">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Returns a parser that accepts the receiver between 
+<span class="param">min</span> and 
+<span class="param">max</span> times.
+The resulting parser returns a list of the parse results of the receiver.</p>
+<p>This is a greedy and blind implementation that tries to consume as much
+input as possible and that does not consider what comes afterwards.</p>
+<p>For example, the parser <code>letter().repeat(2, 4)</code> accepts a sequence of
+two, three, or four letters and returns the accepted letters as a list.</p>
+<pre class="source">
+Parser repeat(int min, int max) =&gt; new _RepeatingParser(this, min, max);
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="replace">
+<button class="show-code">Code</button>
+void <strong>replace</strong>(<a href="../petitparser/Parser.html">Parser</a> source, <a href="../petitparser/Parser.html">Parser</a> target) <a class="anchor-link" href="#replace"
+              title="Permalink to LispGrammar.replace">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/_DelegateParser.html">_DelegateParser</a> </div><div class="doc">
+<div class="inherited">
+<p>Changes the receiver by replacing 
+<span class="param">source</span> with 
+<span class="param">target</span>. Does nothing
+if 
+<span class="param">source</span> does not exist in <code>Parser#children</code>.</p>
+<p>The following example creates a letter parser and then defines a parser
+called <code>example</code> that accepts one or more letters. Eventually the parser
+<code>example</code> is modified by replacing the <code>letter</code> parser with a new
+parser that accepts a digit. The resulting <code>example</code> parser accepts one
+or more digits.</p>
+<pre><code>var letter = letter();
+var example = letter.plus();
+example.replace(letter, digit());
+</code></pre>
+<div class="docs-inherited-from">docs inherited from <a href="../petitparser/Parser.html">Parser</a> </div></div>
+<pre class="source">
+void replace(Parser source, Parser target) {
+ super.replace(source, target);
+ if (identical(_delegate, source)) {
+   _delegate = target;
+ }
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="separatedBy">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>separatedBy</strong>(<a href="../petitparser/Parser.html">Parser</a> separator, {<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> includeSeparators: true, <a href="http://api.dartlang.org/dart_core/bool.html">bool</a> optionalSeparatorAtEnd: false}) <a class="anchor-link" href="#separatedBy"
+              title="Permalink to LispGrammar.separatedBy">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Returns a parser that consumes the receiver one or more times separated
+by the 
+<span class="param">separator</span> parser. The resulting parser returns a flat list of
+the parse results of the receiver interleaved with the parse result of the
+separator parser.</p>
+<p>If the optional argument 
+<span class="param">includeSeparators</span> is set to <code>false</code>, then the
+separators are not included in the parse result. If the optional argument
+
+<span class="param">optionalSeparatorAtEnd</span> is set to <code>true</code> the parser also accepts an
+optional separator at the end.</p>
+<p>For example, the parser <code>digit().separatedBy(char('-'))</code> returns a parser
+that consumes input like <code>'1-2-3'</code> and returns a list of the elements and
+separators: <code>['1', '-', '2', '-', '3']</code>.</p>
+<pre class="source">
+Parser separatedBy(Parser separator, {bool includeSeparators: true,
+   bool optionalSeparatorAtEnd: false}) {
+ var repeater = new _SequenceParser([separator, this]).star();
+ var parser = new _SequenceParser(optionalSeparatorAtEnd
+     ? [this, repeater, separator.optional(separator)]
+     : [this, repeater]);
+ return parser.map((List list) {
+   var result = new List();
+   result.add(list[0]);
+   for (var tuple in list[1]) {
+     if (includeSeparators) {
+       result.add(tuple[0]);
+     }
+     result.add(tuple[1]);
+   }
+   if (includeSeparators &amp;&amp; optionalSeparatorAtEnd
+       &amp;&amp; !identical(list[2], separator)) {
+     result.add(list[2]);
+   }
+   return result;
+ });
+}
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="seq">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>seq</strong>(<a href="../petitparser/Parser.html">Parser</a> other) <a class="anchor-link" href="#seq"
+              title="Permalink to LispGrammar.seq">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Returns a parser that accepts the receiver followed by 
+<span class="param">other</span>. The
+resulting parser returns a list of the parse result of the receiver
+followed by the parse result of 
+<span class="param">other</span>. Calling <code>SequenceParser#seq</code>
+causes the sequences to be concatenated instead of nested.</p>
+<p>For example, the parser <code>letter().seq(digit()).seq(letter())</code> accepts a
+letter followed by a digit and another letter. The parse result of the
+input string <code>'a1b'</code> is the list <code>['a', '1', 'b']</code>.</p>
+<pre class="source">
+Parser seq(Parser other) =&gt; new _SequenceParser([this, other]);
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="set">
+<button class="show-code">Code</button>
+void <strong>set</strong>(<a href="../petitparser/Parser.html">Parser</a> parser) <a class="anchor-link" href="#set"
+              title="Permalink to LispGrammar.set">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/_SetableParser.html">_SetableParser</a> </div><div class="doc">
+<div class="inherited">
+<p>Sets the receiver to delegate to 
+<span class="param">parser</span>. </p>
+<div class="docs-inherited-from">docs inherited from <a href="../petitparser/SetableParser.html">SetableParser</a> </div></div>
+<pre class="source">
+void set(Parser parser) =&gt; replace(children[0], parser);
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="setable">
+<button class="show-code">Code</button>
+<a href="../petitparser/SetableParser.html">SetableParser</a> <strong>setable</strong>() <a class="anchor-link" href="#setable"
+              title="Permalink to LispGrammar.setable">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Returns a parser that points to the receiver, but can be changed to point
+to something else at a later point in time.</p>
+<p>For example, the parser <code>letter().setable()</code> behaves exactly the same
+as <code>letter()</code>, but it can be replaced with another parser using
+<code>SetableParser#set</code>.</p>
+<pre class="source">
+SetableParser setable() =&gt; new _SetableParser(this);
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="star">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>star</strong>() <a class="anchor-link" href="#star"
+              title="Permalink to LispGrammar.star">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Returns a parser that accepts the receiver zero or more times. The
+resulting parser returns a list of the parse results of the receiver.</p>
+<p>This is a greedy and blind implementation that tries to consume as much
+input as possible and that does not consider what comes afterwards.</p>
+<p>For example, the parser <code>letter().star()</code> accepts the empty string or
+any sequence of letters and returns a possibly empty list of the parsed
+letters.</p>
+<pre class="source">
+Parser star() =&gt; repeat(0, 65536);
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="times">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>times</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> count) <a class="anchor-link" href="#times"
+              title="Permalink to LispGrammar.times">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Returns a parser that accepts the receiver exactly 
+<span class="param">count</span> times. The
+resulting parser returns a list of the parse results of the receiver.</p>
+<p>For example, the parser <code>letter().times(2)</code> accepts two letters and
+returns a list of the two parsed letters.</p>
+<pre class="source">
+Parser times(int count) =&gt; repeat(count, count);
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="token">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>token</strong>() <a class="anchor-link" href="#token"
+              title="Permalink to LispGrammar.token">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Returns a parser that discards the result of the receiver and returns
+a <code>Token</code>. The token carries information about where the token started and
+stopped in the input stream.</p>
+<p>For example, the parser <code>letter().plus().token()</code> returns the token
+<code>Token[start: 0, stop: 3, value: abc]</code> for the input <code>'abc'</code>.</p>
+<pre class="source">
+Parser token() =&gt; new _TokenParser(this);
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="trim">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>trim</strong>([<a href="../petitparser/Parser.html">Parser</a> trimmer]) <a class="anchor-link" href="#trim"
+              title="Permalink to LispGrammar.trim">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Returns a parser that consumes input before and after the receiver. The
+optional argument 
+<span class="param">trimmer</span> is a parser that consumes the excess input. By
+default <code>whitespace()</code> is used.</p>
+<p>For example, the parser <code>letter().plus().trim()</code> returns <code>['a', 'b']</code>
+for the input <code>' ab\n'</code> and consumes the complete input string.</p>
+<pre class="source">
+Parser trim([Parser trimmer]) {
+ return new _TrimmingParser(this, trimmer == null ? whitespace() : trimmer);
+}
+</pre>
+</div>
+</div>
+</div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        <div class="footer">
+          
+        </div>
+        <script async src="../client-live-nav.js"></script>
+        </body></html>
+        

@@ -1,0 +1,207 @@
+        <!DOCTYPE html>
+        <html>
+        <head>
+                <meta charset="utf-8">
+        <title>XmlName class / xml Library / Dart Documentation</title>
+        <link rel="stylesheet" type="text/css"
+            href="../styles.css">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link rel="shortcut icon" href="../favicon.ico">
+        
+        </head>
+        <body data-library="xml" data-type="XmlName">
+        <div class="page">
+        <div class="header">
+          <a href="../index.html"><div class="logo"></div></a>
+          <a href="../index.html">Dart Documentation</a>
+         &rsaquo; <a href="../xml.html">xml</a> &rsaquo; <a href="../xml/XmlName.html">XmlName</a>        <div id="search-box">
+          <input type="search" name="q" id="q" autocomplete="off"
+              class="search-input" placeholder="Search API">
+        </div>
+        
+      </div>
+      <div class="drop-down" id="drop-down"></div>
+      
+        <div class="nav">
+        
+</div>
+<div class="content">
+        <h2><strong>XmlName</strong>
+          class
+        </h2>
+        
+<button id="show-inherited" class="show-inherited">Hide inherited</button>
+<div class="doc">
+<p>XML entity name.</p>
+<pre class="source">
+class XmlName {
+
+ final String _prefix;
+ final String _local;
+
+ XmlName._internal(this._prefix, this._local);
+
+ factory XmlName(String name) {
+   var index = name.indexOf(':');
+   if (index &lt; 0) {
+     return new XmlName._internal(null, name);
+   } else {
+     return new XmlName._internal(
+       name.substring(0, index),
+       name.substring(index + 1, name.length));
+   }
+ }
+
+ String get local =&gt; _local;
+ String get prefix =&gt; _prefix;
+ String get qualified =&gt; toString();
+
+ String toString() {
+   var buffer = new StringBuffer();
+   writeTo(buffer);
+   return buffer.toString();
+ }
+
+ void writeTo(StringBuffer buffer) {
+   if (prefix != null) {
+     buffer.write(prefix);
+     buffer.write(':');
+   }
+   buffer.write(local);
+ }
+
+ bool operator == (XmlName obj) {
+   return obj is XmlName &amp;&amp; obj.local == local &amp;&amp; obj.prefix == prefix;
+ }
+
+}
+</pre>
+</div>
+<div>
+<h3>Constructors</h3>
+<div class="method"><h4 id="XmlName">
+<button class="show-code">Code</button>
+factory <strong>XmlName</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name) <a class="anchor-link" href="#XmlName"
+              title="Permalink to XmlName.XmlName">#</a></h4>
+<div class="doc">
+<pre class="source">
+factory XmlName(String name) {
+ var index = name.indexOf(':');
+ if (index &lt; 0) {
+   return new XmlName._internal(null, name);
+ } else {
+   return new XmlName._internal(
+     name.substring(0, index),
+     name.substring(index + 1, name.length));
+ }
+}
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Properties</h3>
+<div class="field"><h4 id="local">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/String.html">String</a>         <strong>local</strong> <a class="anchor-link"
+            href="#local"
+            title="Permalink to XmlName.local">#</a>
+        </h4>
+        <div class="doc">
+<pre class="source">
+String get local =&gt; _local;
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="prefix">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/String.html">String</a>         <strong>prefix</strong> <a class="anchor-link"
+            href="#prefix"
+            title="Permalink to XmlName.prefix">#</a>
+        </h4>
+        <div class="doc">
+<pre class="source">
+String get prefix =&gt; _prefix;
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="qualified">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/String.html">String</a>         <strong>qualified</strong> <a class="anchor-link"
+            href="#qualified"
+            title="Permalink to XmlName.qualified">#</a>
+        </h4>
+        <div class="doc">
+<pre class="source">
+String get qualified =&gt; toString();
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Operators</h3>
+<div class="method"><h4 id="==">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>operator ==</strong>(<a href="../xml/XmlName.html">XmlName</a> obj) <a class="anchor-link" href="#=="
+              title="Permalink to XmlName.operator ==">#</a></h4>
+<div class="doc">
+<div class="inherited">
+<p>The equality operator.</p>
+<p>The default behavior for all <code>Object</code>s is to return true if and
+only if <code>this</code> and <code>other</code> are the same object.</p>
+<p>If a subclass overrides the equality operator it should override
+the <code>hashCode</code> method as well to maintain consistency.</p>
+<div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
+<pre class="source">
+bool operator == (XmlName obj) {
+ return obj is XmlName &amp;&amp; obj.local == local &amp;&amp; obj.prefix == prefix;
+}
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Methods</h3>
+<div class="method"><h4 id="toString">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/String.html">String</a> <strong>toString</strong>() <a class="anchor-link" href="#toString"
+              title="Permalink to XmlName.toString">#</a></h4>
+<div class="doc">
+<div class="inherited">
+<p>Returns a string representation of this object.</p>
+<div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
+<pre class="source">
+String toString() {
+ var buffer = new StringBuffer();
+ writeTo(buffer);
+ return buffer.toString();
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="writeTo">
+<button class="show-code">Code</button>
+void <strong>writeTo</strong>(<a href="http://api.dartlang.org/dart_core/StringBuffer.html">StringBuffer</a> buffer) <a class="anchor-link" href="#writeTo"
+              title="Permalink to XmlName.writeTo">#</a></h4>
+<div class="doc">
+<pre class="source">
+void writeTo(StringBuffer buffer) {
+ if (prefix != null) {
+   buffer.write(prefix);
+   buffer.write(':');
+ }
+ buffer.write(local);
+}
+</pre>
+</div>
+</div>
+</div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        <div class="footer">
+          
+        </div>
+        <script async src="../client-live-nav.js"></script>
+        </body></html>
+        

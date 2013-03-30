@@ -1,0 +1,135 @@
+        <!DOCTYPE html>
+        <html>
+        <head>
+                <meta charset="utf-8">
+        <title>Transformations class / petitparser Library / Dart Documentation</title>
+        <link rel="stylesheet" type="text/css"
+            href="../styles.css">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link rel="shortcut icon" href="../favicon.ico">
+        
+        </head>
+        <body data-library="petitparser" data-type="Transformations">
+        <div class="page">
+        <div class="header">
+          <a href="../index.html"><div class="logo"></div></a>
+          <a href="../index.html">Dart Documentation</a>
+         &rsaquo; <a href="../petitparser.html">petitparser</a> &rsaquo; <a href="../petitparser/Transformations.html">Transformations</a>        <div id="search-box">
+          <input type="search" name="q" id="q" autocomplete="off"
+              class="search-input" placeholder="Search API">
+        </div>
+        
+      </div>
+      <div class="drop-down" id="drop-down"></div>
+      
+        <div class="nav">
+        
+</div>
+<div class="content">
+        <h2><strong>Transformations</strong>
+          class
+        </h2>
+        
+<button id="show-inherited" class="show-inherited">Hide inherited</button>
+<div class="doc">
+<p>Collection of various common transformations. </p>
+<pre class="source">
+class Transformations {
+
+ /** Pluggable transformation starting at [root]. */
+ static Parser transform(Parser root, Parser function(Parser parser)) {
+   var sources = new List(), targets = new List();
+   do {
+     sources.clear(); targets.clear();
+     var parsers = new List.from(new ParserIterable(root));
+     parsers.forEach((source) {
+       var target = function(source);
+       if (target != null &amp;&amp; !identical(source, target)) {
+         if (identical(source, root)) {
+           root = target;
+         }
+         sources.add(source);
+         targets.add(target);
+       }
+     });
+     parsers.forEach((parser) {
+       for (var i = 0; i &lt; sources.length; i++) {
+         parser.replace(sources[i], targets[i]);
+       }
+     });
+   } while (!sources.isEmpty);
+   return root;
+ }
+
+ /** Removes all settables starting at [root]. */
+ static Parser removeSetables(Parser root) {
+   return transform(root, (each) {
+     return each is SetableParser ? each.children[0] : each;
+   });
+ }
+
+}
+</pre>
+</div>
+<div>
+<h3>Static Methods</h3>
+<div class="method"><h4 id="transform">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>transform</strong>(<a href="../petitparser/Parser.html">Parser</a> root, <a href="../petitparser/Parser.html">Parser</a> function(<a href="../petitparser/Parser.html">Parser</a> parser)) <a class="anchor-link" href="#transform"
+              title="Permalink to Transformations.transform">#</a></h4>
+<div class="doc">
+<p>Pluggable transformation starting at 
+<span class="param">root</span>. </p>
+<pre class="source">
+static Parser transform(Parser root, Parser function(Parser parser)) {
+ var sources = new List(), targets = new List();
+ do {
+   sources.clear(); targets.clear();
+   var parsers = new List.from(new ParserIterable(root));
+   parsers.forEach((source) {
+     var target = function(source);
+     if (target != null &amp;&amp; !identical(source, target)) {
+       if (identical(source, root)) {
+         root = target;
+       }
+       sources.add(source);
+       targets.add(target);
+     }
+   });
+   parsers.forEach((parser) {
+     for (var i = 0; i &lt; sources.length; i++) {
+       parser.replace(sources[i], targets[i]);
+     }
+   });
+ } while (!sources.isEmpty);
+ return root;
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="removeSetables">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>removeSetables</strong>(<a href="../petitparser/Parser.html">Parser</a> root) <a class="anchor-link" href="#removeSetables"
+              title="Permalink to Transformations.removeSetables">#</a></h4>
+<div class="doc">
+<p>Removes all settables starting at 
+<span class="param">root</span>. </p>
+<pre class="source">
+static Parser removeSetables(Parser root) {
+ return transform(root, (each) {
+   return each is SetableParser ? each.children[0] : each;
+ });
+}
+</pre>
+</div>
+</div>
+</div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        <div class="footer">
+          
+        </div>
+        <script async src="../client-live-nav.js"></script>
+        </body></html>
+        

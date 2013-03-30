@@ -1,0 +1,139 @@
+        <!DOCTYPE html>
+        <html>
+        <head>
+                <meta charset="utf-8">
+        <title>ParserIterator class / petitparser Library / Dart Documentation</title>
+        <link rel="stylesheet" type="text/css"
+            href="../styles.css">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link rel="shortcut icon" href="../favicon.ico">
+        
+        </head>
+        <body data-library="petitparser" data-type="ParserIterator">
+        <div class="page">
+        <div class="header">
+          <a href="../index.html"><div class="logo"></div></a>
+          <a href="../index.html">Dart Documentation</a>
+         &rsaquo; <a href="../petitparser.html">petitparser</a> &rsaquo; <a href="../petitparser/ParserIterator.html">ParserIterator</a>        <div id="search-box">
+          <input type="search" name="q" id="q" autocomplete="off"
+              class="search-input" placeholder="Search API">
+        </div>
+        
+      </div>
+      <div class="drop-down" id="drop-down"></div>
+      
+        <div class="nav">
+        
+</div>
+<div class="content">
+        <h2><strong>ParserIterator</strong>
+          class
+        </h2>
+        
+<button id="show-inherited" class="show-inherited">Hide inherited</button>
+<div class="doc">
+<p>Iterator over all parsers reachable from a 
+<span class="param">root</span>. </p>
+<pre class="source">
+class ParserIterator implements Iterator&lt;Parser&gt; {
+
+ final List&lt;Parser&gt; _todo;
+ final Set&lt;Parser&gt; _done;
+ Parser _current;
+
+ ParserIterator(Parser root)
+     : _todo = new List.from([root]),
+       _done = new Set();
+
+ bool moveNext() {
+   if (_todo.isEmpty) {
+     _current = null;
+     return false;
+   }
+   _current = _todo.removeLast();
+   _done.add(_current);
+   _todo.addAll(_current.children.where((each) =&gt; !_done.contains(each)));
+   return true;
+ }
+
+ Parser get current =&gt; _current;
+
+}
+</pre>
+</div>
+<h3>Implements</h3>
+<p>
+<span class="type-box"><span class="icon-class"></span><a href="../dart_core/Iterator.html">Iterator&lt;Parser&gt;</a></span></p>
+<div>
+<h3>Constructors</h3>
+<div class="method"><h4 id="ParserIterator">
+<button class="show-code">Code</button>
+new <strong>ParserIterator</strong>(<a href="../petitparser/Parser.html">Parser</a> root) <a class="anchor-link" href="#ParserIterator"
+              title="Permalink to ParserIterator.ParserIterator">#</a></h4>
+<div class="doc">
+<pre class="source">
+ParserIterator(Parser root)
+   : _todo = new List.from([root]),
+     _done = new Set();
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Properties</h3>
+<div class="field"><h4 id="current">
+<button class="show-code">Code</button>
+final <a href="../petitparser/Parser.html">Parser</a>         <strong>current</strong> <a class="anchor-link"
+            href="#current"
+            title="Permalink to ParserIterator.current">#</a>
+        </h4>
+        <div class="doc">
+<div class="inherited">
+<p>Returns the current element.</p>
+<p>Return <code>null</code> if the iterator has not yet been moved to the first
+element, or if the iterator has been moved after the last element of the
+<code>Iterable</code>.</p>
+<div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Iterator.html">Iterator</a>&lt;<a href="../petitparser/Parser.html">Parser</a>&gt; </div></div>
+<pre class="source">
+Parser get current =&gt; _current;
+</pre>
+</div>
+</div>
+</div>
+<div>
+<h3>Methods</h3>
+<div class="method"><h4 id="moveNext">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>moveNext</strong>() <a class="anchor-link" href="#moveNext"
+              title="Permalink to ParserIterator.moveNext">#</a></h4>
+<div class="doc">
+<div class="inherited">
+<p>Moves to the next element. Returns true if <a class="crossref" href="../petitparser/ParserIterator.html#current">current</a> contains the next
+element. Returns false, if no element was left.</p>
+<p>It is safe to invoke <a class="crossref" href="../petitparser/ParserIterator.html#moveNext">moveNext</a> even when the iterator is already
+positioned after the last element. In this case <a class="crossref" href="../petitparser/ParserIterator.html#moveNext">moveNext</a> has no effect.</p>
+<div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Iterator.html">Iterator</a>&lt;<a href="../petitparser/Parser.html">Parser</a>&gt; </div></div>
+<pre class="source">
+bool moveNext() {
+ if (_todo.isEmpty) {
+   _current = null;
+   return false;
+ }
+ _current = _todo.removeLast();
+ _done.add(_current);
+ _todo.addAll(_current.children.where((each) =&gt; !_done.contains(each)));
+ return true;
+}
+</pre>
+</div>
+</div>
+</div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        <div class="footer">
+          
+        </div>
+        <script async src="../client-live-nav.js"></script>
+        </body></html>
+        
