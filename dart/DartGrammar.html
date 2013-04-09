@@ -2,19 +2,19 @@
         <html>
         <head>
                 <meta charset="utf-8">
-        <title>LispParser class / lisp Library / Dart Documentation</title>
+        <title>DartGrammar class / dart Library / Dart Documentation</title>
         <link rel="stylesheet" type="text/css"
             href="../styles.css">
         <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
         <link rel="shortcut icon" href="../favicon.ico">
         
         </head>
-        <body data-library="lisp" data-type="LispParser">
+        <body data-library="dart" data-type="DartGrammar">
         <div class="page">
         <div class="header">
           <a href="../index.html"><div class="logo"></div></a>
           <a href="../index.html">Dart Documentation</a>
-         &rsaquo; <a href="../lisp.html">lisp</a> &rsaquo; <a href="../lisp/LispParser.html">LispParser</a>        <div id="search-box">
+         &rsaquo; <a href="../dart.html">dart</a> &rsaquo; <a href="../dart/DartGrammar.html">DartGrammar</a>        <div id="search-box">
           <input type="search" name="q" id="q" autocomplete="off"
               class="search-input" placeholder="Search API">
         </div>
@@ -26,40 +26,689 @@
         
 </div>
 <div class="content">
-        <h2><strong>LispParser</strong>
+        <h2><strong>DartGrammar</strong>
           class
         </h2>
         
 <button id="show-inherited" class="show-inherited">Hide inherited</button>
 <div class="doc">
-<p>LISP parser definition.</p>
+<p>Dart grammar definition.</p>
 <pre class="source">
-class LispParser extends LispGrammar {
+class DartGrammar extends CompositeParser2 {
 
  void initialize() {
-   super.initialize();
+   _lexemes();
+   _keywords();
+   _types();
+   _declarations();
+   _expressions();
+   _statements();
+   _libraries();
+ }
 
-   action('list', (each) =&gt; each[1]);
+ Parser _token(String name) {
+   var parser = name.length == 1 ? char(name) : string(name);
+   return parser.token().trim();
+ }
 
-   action('cell', (each) =&gt; new Cons(each[0], each[1]));
-   action('null', (each) =&gt; null);
+ void _lexemes() {
+   backSlash = _token('\\');
+   colon = _token(':');
+   comma = _token(',');
+   dollar = _token('\$');
+   dot = _token('.');
+   doubleQuote = _token('"');
+   equalSign = _token('=');
+   lparen = _token('(');
+   minus = _token('-');
+   pluz = _token('+');
+   rparen = _token(')');
+   semicolon = _token(';');
+   singleQuote = _token("'");
+   tripleDoubleQuote = _token('"""');
+   tripleSingleQuote = _token("'''");
 
-   action('string', (each) =&gt; new String.fromCharCodes(each[1]));
-   action('character escape', (each) =&gt; each[1].codeUnitAt(0));
-   action('character raw', (each) =&gt; each.codeUnitAt(0));
+   DIGIT = range('0', '9');
+   LETTER = letter();
+   HEX_DIGIT =
+       range('a','f')
+       | range('A','F')
+       | DIGIT
+       ;
 
-   action('symbol', (each) =&gt; new Symbol(each));
-   action('number', (each) {
-     var floating = double.parse(each);
-     var integral = floating.toInt();
-     if (floating == integral &amp;&amp; each.indexOf('.') == -1) {
-       return integral;
-     } else {
-       return floating;
-     }
-   });
+   HEX_NUMBER =
+       _token('0x') &amp; HEX_DIGIT.plus()
+   | _token('0X') &amp; HEX_DIGIT.plus()
+   ;
 
-   action('quote', (each) =&gt; new Cons(Natives.find('quote'), each[1]));
+   EXPONENT =
+     (_token('e') | _token('E')) &amp; (pluz | minus).optional() &amp; DIGIT.plus()
+   ;
+
+   NUMBER =
+     DIGIT.plus() &amp; (dot &amp; DIGIT.plus()).optional() &amp; EXPONENT.optional()
+   |  dot &amp; DIGIT.plus() &amp; EXPONENT.optional()
+   ;
+
+   HEX_DIGIT_SEQUENCE =
+     HEX_DIGIT &amp; HEX_DIGIT.optional() &amp; HEX_DIGIT.optional() &amp; HEX_DIGIT.optional() &amp; HEX_DIGIT.optional() &amp; HEX_DIGIT.optional();
+
+   ESCAPE_SEQUENCE =
+       _token('\n')
+     | _token('\r')
+     | _token('\f')
+     | _token('\b')
+     | _token('\t')
+     | _token('\v')
+     | _token('\\x') &amp; HEX_DIGIT &amp; HEX_DIGIT
+     | _token('\\u') &amp; HEX_DIGIT &amp; HEX_DIGIT &amp; HEX_DIGIT &amp; HEX_DIGIT
+     | _token('\\u{') &amp; HEX_DIGIT_SEQUENCE &amp; _token('}')
+     ;
+
+ }
+
+ void _keywords() {
+   ASSERT = _token('assert');
+   BREAK = _token('break');
+   CASE = _token('case');
+   CATCH = _token('catch');
+   CLASS = _token('class');
+   CONST = _token('const');
+   CONTINUE = _token('continue');
+   DEFAULT = _token('default');
+   DO = _token('do');
+   ELSE = _token('else');
+   EXTENDS = _token('extends');
+   FALSE = _token('false');
+   FINAL = _token('final');
+   FINALLY = _token('finally');
+   FOR = _token('for');
+   IF = _token('if');
+   IN = _token('in');
+   IS = _token('is');
+   NEW = _token('new');
+   NULL = _token('null');
+   RETHROW = _token('rethrow');
+   RETURN = _token('return');
+   SUPER = _token('super');
+   SWITCH = _token('switch');
+   THIS = _token('this');
+   THROW = _token('throw');
+   TRUE = _token('true');
+   TRY = _token('try');
+   VAR = _token('var');
+   VOID = _token('void');
+   WHILE = _token('while');
+   WITH = _token('with');
+
+   // built-in identifiers
+
+   ABSTRACT = _token('abstract');
+   AS = _token('as');
+   DYNAMIC = _token('dynamic');
+   EXPORT = _token('export');
+   EXTERNAL = _token('external');
+   FACTORY = _token('factory');
+   GET = _token('get');
+   IMPLEMENTS = _token('implements');
+   IMPORT = _token('import');
+   LIBRARY = _token('library');
+   OPERATOR = _token('operator');
+   PART = _token('part');
+   SET = _token('set');
+   STATIC = _token('static');
+   TYPEDEF = _token('typedef');
+
+   // special cases
+   HIDE = _token('hide');
+   SHOW = _token('show');
+   OF = _token('of');
+   ON = _token('on');
+
+ }
+
+ void _types() {
+
+   typeArguments = _token('&lt;') &amp; typeList &amp; _token('&gt;');
+   typeName = qualified;
+   type = typeName &amp; typeArguments.optional();
+   typeList = type.separatedBy(comma).optional();
+   functionPrefix = returnType.optional() &amp; identifier;
+   functionTypeAlias = functionPrefix &amp; typeParameters.optional() &amp; formalParameterList &amp; semicolon;
+   typeAliasBody = identifier &amp; typeParameters.optional() &amp; equalSign &amp; ABSTRACT.optional() &amp; mixinApplication | functionTypeAlias;
+   typeAlias = metadata &amp; TYPEDEF &amp; typeAliasBody;
+
+ }
+
+ void _declarations() {
+   metadata = (_token('@') &amp; qualified &amp; (dot &amp; identifier).optional() &amp; arguments.optional()).star();
+
+   typeParameter = metadata &amp; identifier &amp; (EXTENDS &amp; type).optional();
+   typeParameters = _token('&lt;') &amp; typeParameter.separatedBy(comma) &amp; _token('&gt;');
+
+   returnType =
+     VOID
+     | type
+   ;
+
+   varOrType =
+       VAR
+       | type
+       ;
+
+   finalConstVarOrType =
+     FINAL &amp; type.optional()
+     | CONST &amp; type.optional()
+     | varOrType
+   ;
+
+   declaredIdentifier = metadata &amp; finalConstVarOrType &amp; identifier;
+   variableDeclaration = declaredIdentifier.separatedBy(comma);
+   initializedIdentifier = identifier &amp; (equalSign &amp; expression).optional();
+   initializedVariableDeclaration = declaredIdentifier &amp; (equalSign &amp; expression).optional() &amp; (comma &amp; initializedIdentifier).star();
+   initializedIdentifierList = initializedIdentifier.separatedBy(comma);
+
+
+   fieldFormalParameter = metadata &amp; finalConstVarOrType.optional() &amp; THIS &amp; dot &amp; identifier;
+
+   simpleFormalParameter =
+     declaredIdentifier
+   | metadata &amp; identifier
+   ;
+
+   normalFormalParameter =
+     functionSignature
+   | fieldFormalParameter
+   | simpleFormalParameter
+   ;
+
+   normalFormalParameters = normalFormalParameter.separatedBy(comma);
+   defaultFormalParameter = normalFormalParameter &amp; (equalSign &amp; expression).optional();
+   defaultNamedParameter = normalFormalParameter &amp; (colon &amp; expression).optional();
+   optionalPositionalFormalParameters = _token('[') &amp; defaultFormalParameter.separatedBy(comma) &amp; _token(']');
+
+   optionalFormalParameters =
+     optionalPositionalFormalParameters |
+     namedFormalParameters
+   ;
+
+   formalParameterList =
+     lparen &amp; rparen
+     | lparen &amp; normalFormalParameters &amp; (comma &amp; optionalFormalParameters).optional() &amp; rparen
+     | lparen &amp; optionalFormalParameters &amp; rparen
+   ;
+
+   namedFormalParameters = _token('{') &amp; defaultNamedParameter.separatedBy(comma) &amp; _token('}');
+
+   functionSignature = metadata &amp; returnType.optional() &amp; identifier &amp; formalParameterList;
+   block = _token('{') &amp; statements &amp; _token('}');
+
+   functionBody =
+     _token('=&gt;') &amp; expression &amp; semicolon
+     | block
+   ;
+
+
+   interfaces = IMPLEMENTS &amp; typeList;
+   superclass = EXTENDS &amp; type;
+   ;
+
+   constantConstructorSignature = CONST &amp; qualified &amp; formalParameterList;
+   redirectingFactoryConstructorSignature =
+     CONST.optional() &amp; FACTORY &amp; identifier &amp; (dot &amp; identifier).optional() &amp;  formalParameterList &amp; equalSign &amp; type &amp; (dot &amp; identifier).optional()
+   ;
+   factoryConstructorSignature =
+       FACTORY &amp; identifier &amp; (dot &amp; identifier).optional() &amp; formalParameterList
+   ;
+
+
+   fieldInitializer = (THIS &amp; dot).optional() &amp; identifier &amp; equalSign &amp; conditionalExpression &amp; cascadeSection.star();
+   superCallOrFieldInitializer =
+     SUPER &amp; arguments
+     | SUPER &amp; dot &amp; identifier &amp; arguments
+     | fieldInitializer
+   ;
+
+   initializers = colon &amp; superCallOrFieldInitializer.separatedBy(comma);
+   redirection = colon &amp; THIS &amp; (dot &amp; identifier).optional() &amp; arguments;
+   constructorSignature = identifier &amp; (dot &amp; identifier).optional() &amp; formalParameterList;
+   setterSignature = returnType.optional() &amp; SET &amp; identifier &amp; formalParameterList;
+   getterSignature = type.optional() &amp; GET &amp; identifier;
+
+   binaryOperator =
+     multiplicativeOperator
+   | additiveOperator
+   | shiftOperator
+   | relationalOperator
+   | _token('==')
+   | bitwiseOperator
+   ;
+
+   operator =
+     _token('~')
+   | binaryOperator
+   | _token('[') &amp; _token(']')
+   | _token('[') &amp; _token(']') &amp; equalSign
+   ;
+
+   operatorSignature = returnType.optional() &amp; OPERATOR &amp; operator &amp; formalParameterList;
+
+   mixins = WITH &amp; typeList;
+
+   methodSignature =
+     constructorSignature &amp; initializers.optional()
+   | factoryConstructorSignature
+   | STATIC.optional() &amp; functionSignature
+   | STATIC.optional() &amp; getterSignature
+   | STATIC.optional() &amp; setterSignature
+   | operatorSignature
+   ;
+
+   staticFinalDeclaration = identifier &amp; equalSign &amp; expression;
+   staticFinalDeclarationList = staticFinalDeclaration.separatedBy(comma);
+
+   declaration =
+     constantConstructorSignature &amp; (redirection | initializers).optional()
+   | constructorSignature &amp; (redirection | initializers).optional()
+   | EXTERNAL &amp; constantConstructorSignature
+   | EXTERNAL &amp; constructorSignature
+   | EXTERNAL &amp; factoryConstructorSignature
+   | (EXTERNAL &amp; STATIC.optional()).optional() &amp; getterSignature
+   | (EXTERNAL &amp; STATIC.optional()).optional() &amp; setterSignature
+   | EXTERNAL.optional() &amp; operatorSignature
+   | (EXTERNAL &amp; STATIC.optional()).optional() &amp; functionSignature
+   | getterSignature
+   | setterSignature
+   | operatorSignature
+   | functionSignature
+   | STATIC &amp; (FINAL | CONST) &amp; type.optional() &amp; staticFinalDeclarationList
+   | CONST &amp; type.optional() &amp; staticFinalDeclarationList
+   | FINAL &amp; type.optional() &amp; initializedIdentifierList
+   | STATIC.optional() &amp; (VAR | type) &amp; initializedIdentifierList
+   ;
+
+
+
+   classMemberDefinition =
+     declaration &amp; semicolon
+     | methodSignature &amp; functionBody
+   ;
+
+   classDefinition =
+       metadata &amp; ABSTRACT.optional() &amp; CLASS &amp; identifier &amp; typeParameters.optional() &amp; (superclass &amp; mixins.optional()).optional() &amp; interfaces.optional()
+       &amp; _token('{') &amp; (metadata &amp; classMemberDefinition).star() &amp; _token('}')
+       ;
+
+   mixinApplication = type &amp; mixins &amp; interfaces.optional();
+
+ }
+
+ void _expressions() {
+
+   IDENTIFIER_START_NO_DOLLAR =
+     LETTER
+   | _token('_')
+   ;
+
+   IDENTIFIER_START =
+     IDENTIFIER_START_NO_DOLLAR
+   | dollar
+   ;
+
+   IDENTIFIER_PART_NO_DOLLAR =
+     IDENTIFIER_START_NO_DOLLAR
+   | DIGIT
+   ;
+
+
+   IDENTIFIER_PART =
+     IDENTIFIER_START
+   | DIGIT
+   ;
+
+   IDENTIFIER_NO_DOLLAR = IDENTIFIER_START_NO_DOLLAR &amp; IDENTIFIER_PART_NO_DOLLAR.star();
+
+   IDENTIFIER = IDENTIFIER_START &amp; IDENTIFIER_PART.star();
+
+   identifier = IDENTIFIER.flatten().token().trim();
+   qualified = identifier.separatedBy(dot);
+
+   assignableSelector =
+     _token('[') &amp; expression &amp; _token(']')
+   | dot &amp; identifier
+   ;
+
+   assignableExpression =
+     primary &amp; (arguments.star() &amp; assignableSelector).plus()
+   | SUPER &amp; assignableSelector
+   | identifier
+   ;
+
+   incrementOperator = _token('++') | _token('--');
+   selector = assignableSelector | arguments;
+   postfixOperator = incrementOperator;
+
+   postfixExpression =
+     assignableExpression &amp; postfixOperator
+   | primary &amp; selector.star()
+   ;
+
+   unaryOperator = _token('!') | _token('~');
+   prefixOperator = minus | unaryOperator;
+   unaryExpression =
+     prefixOperator &amp; unaryExpression
+   | postfixExpression
+   | prefixOperator &amp; SUPER
+   | incrementOperator &amp; assignableExpression
+   ;
+
+   multiplicativeOperator = _token('*') | _token('/') | _token('%') | _token('~/');
+   multiplicativeExpression =
+     unaryExpression &amp; (multiplicativeOperator &amp; unaryExpression).star()
+   | SUPER &amp; (multiplicativeOperator &amp; unaryExpression).plus()
+   ;
+
+   additiveOperator = pluz | minus;
+
+   additiveExpression =
+     multiplicativeExpression &amp; (additiveOperator &amp; multiplicativeExpression).star()
+   | SUPER &amp; (additiveOperator &amp; multiplicativeExpression).plus()
+   ;
+
+   shiftOperator = _token('&lt;&lt;') | _token('&gt;&gt;');
+   shiftExpression =
+     additiveExpression &amp; (shiftOperator &amp; additiveExpression).star()
+   | SUPER &amp; (shiftOperator &amp; additiveExpression).plus()
+   ;
+
+   relationalOperator = _token('&lt;') | _token('&gt;') | _token('&lt;=') | _token('&gt;=');
+   relationalExpression =
+     shiftExpression &amp; (typeTest | typeCast | relationalOperator &amp; shiftExpression).optional()
+   | SUPER &amp; relationalOperator &amp; shiftExpression
+   ;
+
+   equalityOperator = _token('==') | _token('!=');
+   equalityExpression =
+     relationalExpression &amp; (equalityOperator &amp; relationalExpression).optional()
+   | SUPER &amp; equalityOperator &amp; relationalExpression
+   ;
+
+   bitwiseOperator = _token('|') | _token('&amp;') | _token('^');
+   bitwiseAndExpression =
+     equalityExpression &amp; (_token('&amp;') &amp; equalityExpression).star()
+   | SUPER &amp; (_token('&amp;') &amp; equalityExpression).plus()
+   ;
+   bitwiseXorExpression =
+     bitwiseAndExpression &amp; (_token('^') &amp; bitwiseAndExpression).star()
+   | SUPER &amp; (_token('^') &amp; bitwiseAndExpression).plus()
+   ;
+   bitwiseOrExpression =
+       bitwiseXorExpression &amp; (_token('|') &amp; bitwiseXorExpression).star()
+       | SUPER &amp; (_token('|') &amp; bitwiseXorExpression).plus()
+       ;
+
+   logicalAndExpression = bitwiseOrExpression &amp; (_token('&amp;&amp;') &amp; bitwiseOrExpression).star();
+   logicalOrExpression = logicalAndExpression &amp; (_token('||') &amp; logicalAndExpression).star();
+
+   conditionalExpression = logicalOrExpression &amp; (_token('?') &amp; expressionWithoutCascade &amp; colon &amp; expressionWithoutCascade).optional();
+
+   compoundAssignmentOperator =
+     _token('*=')
+   | _token('/=')
+   | _token('~/=')
+   | _token('%=')
+   | _token('+=')
+   | _token('-=')
+   | _token('&lt;&lt;=')
+   | _token('&gt;&gt;=')
+   | _token('&amp;=')
+   | _token('^=')
+   | _token('|=')
+   ;
+   assignmentOperator = equalSign | compoundAssignmentOperator;
+
+   cascadeSelector =
+     _token('[') &amp; expression &amp; _token(']')
+     | identifier
+     ;
+   cascadeSection =
+     _token('..')  &amp;
+     (cascadeSelector &amp; arguments.star()) &amp;
+     (assignableSelector &amp; arguments.star()).star() &amp;
+     (assignmentOperator &amp; expressionWithoutCascade).optional()
+   ;
+
+   namedArgument = label &amp; expression;
+   argumentList =
+     namedArgument.separatedBy(comma)
+   | expressionList.separatedBy(comma)
+   ;
+   arguments = lparen &amp; argumentList.optional() &amp; rparen;
+
+   isOperator = IS &amp; _token('!').optional();
+   typeTest = isOperator &amp; type;
+   typeCast = AS &amp; type;
+   argumentDefinitionTest = _token('?') &amp; identifier;
+
+   constObjectExpression = CONST &amp; type &amp; (dot &amp; identifier).optional() &amp; arguments;
+   newExpression = NEW &amp; type &amp; (dot &amp; identifier).optional() &amp; arguments;
+
+   thisExpression = THIS;
+
+   functionExpressionBody =
+     _token('=&gt;') &amp; expression
+   | block
+   ;
+   functionExpression = formalParameterList &amp; functionExpressionBody;
+
+   rethrowExpression = RETHROW;
+   throwExpression = THROW &amp; expression;
+   throwExpressionWithoutCascade = THROW &amp; expressionWithoutCascade;
+
+   mapLiteralEntry = stringLiteral &amp; colon &amp; expression;
+   mapLiteral =
+     CONST.optional() &amp;
+     typeArguments.optional() &amp;
+     _token('{') &amp;
+     (mapLiteralEntry &amp; (dot &amp; mapLiteralEntry).star() &amp; comma.optional()).optional() &amp;
+     _token('}');
+
+   listLiteral =
+       CONST.optional() &amp; typeArguments.optional() &amp; _token('[') &amp; (expressionList &amp; comma.optional()).optional() &amp; _token(']');
+
+   stringInterpolation = dollar &amp; IDENTIFIER_NO_DOLLAR |
+       dollar &amp; _token('{') &amp; expression &amp; _token('}');
+   NEWLINE = _token('\\n') | _token('\r');
+   stringContentDQ = (backSlash | doubleQuote | dollar | NEWLINE).not() |
+       backSlash &amp; NEWLINE.not() |
+       stringInterpolation;
+   stringContentSQ = (backSlash | singleQuote | dollar | NEWLINE).not() |
+       backSlash &amp; NEWLINE.not() |
+       stringInterpolation;
+   stringContentTDQ = (backSlash | tripleDoubleQuote | dollar | NEWLINE).not() |
+       backSlash &amp; NEWLINE.not() |
+       stringInterpolation;
+   stringContentTSQ = (backSlash | tripleSingleQuote | dollar | NEWLINE).not() |
+       backSlash &amp; NEWLINE.not() |
+       stringInterpolation;
+
+   multilineString =
+     tripleDoubleQuote &amp; stringContentTDQ.star() &amp; tripleDoubleQuote
+     | tripleSingleQuote &amp; stringContentTSQ.star() &amp; tripleSingleQuote
+     | _token('r') &amp; tripleDoubleQuote &amp; doubleQuote.not().star() &amp; tripleDoubleQuote
+     | _token('r') &amp; tripleSingleQuote &amp; singleQuote.not().star() &amp; tripleSingleQuote
+   ;
+
+   singleLineString =
+       doubleQuote &amp; stringContentDQ.star() &amp; doubleQuote
+       | singleQuote &amp; stringContentSQ.star() &amp; singleQuote
+       | _token('r') &amp; doubleQuote &amp; ( doubleQuote | NEWLINE ).not().star() &amp; doubleQuote
+       | _token('r') &amp; singleQuote &amp; ( singleQuote | NEWLINE ).not().star() &amp; singleQuote
+       ;
+
+
+   stringLiteral =
+     multilineString.plus()
+   | singleLineString.plus()
+   ;
+
+   numericLiteral =
+     NUMBER
+     | HEX_NUMBER
+   ;
+
+   booleanLiteral =
+     TRUE
+   | FALSE
+   ;
+
+   nullLiteral = NULL;
+
+   literal =
+     nullLiteral
+   | booleanLiteral
+   | numericLiteral
+   | stringLiteral
+   | mapLiteral
+   | listLiteral
+   ;
+
+   expression =
+     assignableExpression &amp; assignmentOperator &amp; expression
+     | conditionalExpression &amp; cascadeSection.star()
+     | throwExpression
+     | rethrowExpression
+   ;
+
+
+
+   expressionWithoutCascade =
+     assignableExpression &amp; assignmentOperator &amp; expressionWithoutCascade
+     | conditionalExpression
+     | throwExpressionWithoutCascade
+     | rethrowExpression
+   ;
+
+   expressionList =  expression.separatedBy(comma);
+
+
+   primary =
+     thisExpression
+     | SUPER &amp; assignableSelector
+     | functionExpression
+     | literal
+     | identifier
+     | newExpression
+     | constObjectExpression
+     | lparen &amp; expression &amp; rparen
+     | argumentDefinitionTest
+   ;
+
+ }
+
+ void _statements() {
+
+   assertStatement = ASSERT &amp; lparen &amp; conditionalExpression &amp; rparen &amp; semicolon;
+   continueStatement = CONTINUE &amp; identifier.optional() &amp; semicolon;
+   breakStatement = BREAK &amp; identifier.optional() &amp; semicolon;
+   label = identifier &amp; colon;
+   returnStatement = RETURN &amp; expression.optional() &amp; semicolon;
+
+   finallyPart = FINALLY &amp; block;
+   catchPart = CATCH &amp; lparen &amp; identifier &amp; (comma &amp; identifier).optional() &amp; rparen;
+   onPart =
+       catchPart &amp;  block
+       | ON &amp; type &amp; catchPart.optional() &amp; block
+   ;
+
+   tryStatement = TRY &amp; block &amp; (onPart.plus() &amp; finallyPart.optional() | finallyPart);
+
+   defaultCase = label.star() &amp; DEFAULT &amp; colon &amp; statements;
+   switchCase = label.star() &amp; (CASE &amp; expression &amp; colon) &amp; statements;
+   switchStatement = SWITCH &amp; lparen &amp; expression &amp; rparen &amp; _token('{') &amp; switchCase.star() &amp; defaultCase.optional() &amp; _token('}');
+   doStatement = DO &amp; statement &amp; WHILE &amp; lparen &amp; expression &amp; rparen &amp; semicolon;
+   whileStatement = WHILE &amp; lparen &amp; expression &amp; rparen &amp; statement;
+
+   forInitializerStatement =
+     localVariableDeclaration &amp; semicolon
+   | expression.optional() &amp; semicolon
+   ;
+
+   forLoopParts =
+     forInitializerStatement &amp; expression.optional() &amp; semicolon &amp; expressionList.optional()
+   | declaredIdentifier &amp; IN &amp; expression
+   | identifier &amp; IN &amp; expression
+   ;
+
+   forStatement = FOR &amp; lparen &amp; forLoopParts &amp; rparen &amp; statement;
+   ifStatement = IF &amp; lparen &amp; expression &amp; rparen &amp; statement &amp; (ELSE &amp; statement).optional();
+   localFunctionDeclaration = functionSignature &amp; functionBody;
+   localVariableDeclaration = initializedVariableDeclaration &amp; semicolon;
+   expressionStatement = expression.optional() &amp; semicolon;
+
+   nonLabelledStatement =
+         block
+         | localVariableDeclaration &amp; semicolon
+         | forStatement
+         | whileStatement
+         | doStatement
+         | switchStatement
+         | ifStatement
+         | tryStatement
+         | breakStatement
+         | continueStatement
+         | returnStatement
+         | expressionStatement
+         | assertStatement
+         | localFunctionDeclaration;
+
+
+   statement = label.star() &amp; nonLabelledStatement;
+   statements = statement.star();
+
+ }
+
+ void _libraries() {
+
+   uri = stringLiteral;
+   getOrSet = GET | SET;
+
+   topLevelDefinition =
+       classDefinition
+       | mixinApplication
+       | typeAlias
+       | EXTERNAL &amp; functionSignature
+       | EXTERNAL &amp; getterSignature
+       | EXTERNAL &amp; setterSignature
+       | functionSignature &amp; functionBody
+       | returnType.optional() &amp; getOrSet &amp; identifier &amp; formalParameterList &amp; functionBody
+       | (FINAL | CONST) &amp; type.optional() &amp; staticFinalDeclarationList &amp; semicolon
+       | variableDeclaration &amp; semicolon
+       ;
+
+   identifierList = identifier.separatedBy(comma).optional();
+   combinator =
+       SHOW &amp; identifierList
+       | HIDE &amp; identifierList;
+
+
+   libraryImport = metadata &amp; IMPORT &amp; (AS &amp; identifier).optional() &amp; combinator.star() &amp; semicolon;
+   libraryExport = metadata &amp; EXPORT &amp; uri &amp; combinator.star() &amp; semicolon;
+   importOrExport = libraryImport | libraryExport;
+
+   libraryName = metadata &amp; LIBRARY &amp; identifier.separatedBy(dot) &amp; semicolon;
+
+   partDirective = metadata &amp; PART &amp; stringLiteral &amp; semicolon;
+   partHeader = metadata &amp; PART &amp; OF &amp; identifier.separatedBy(dot) &amp; semicolon;
+   partDeclaration = partHeader &amp; topLevelDefinition.star();
+
+   libraryDefinition = libraryName.optional() &amp; importOrExport.star() &amp; partDirective.star() &amp; topLevelDefinition.star();
+
+   scriptTag = _token('#!') &amp; NEWLINE.not().star() &amp; NEWLINE;
+   scriptDefinition = scriptTag.optional() &amp; libraryDefinition;
+
+   start = scriptDefinition.end();
+
  }
 
 }
@@ -67,14 +716,17 @@ class LispParser extends LispGrammar {
 </div>
 <h3>Extends</h3>
 <p>
-<span class="type-box"><span class="icon-class"></span><a href="../petitparser/Parser.html">Parser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/_DelegateParser.html">_DelegateParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/_SetableParser.html">_SetableParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/CompositeParser.html">CompositeParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../lisp/LispGrammar.html">LispGrammar</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><strong>LispParser</strong></span></p>
+<span class="type-box"><span class="icon-class"></span><a href="../petitparser/Parser.html">Parser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/_DelegateParser.html">_DelegateParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/_SetableParser.html">_SetableParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/CompositeParser.html">CompositeParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/CompositeParser2.html">CompositeParser2</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><strong>DartGrammar</strong></span></p>
+<h3>Subclasses</h3>
+<p>
+<span class="type-box"><span class="icon-class"></span><a href="../dart/DartParser.html">DartParser</a></span></p>
 <div class="inherited">
 <h3>Properties</h3>
 <div class="field inherited"><h4 id="children">
 <button class="show-code">Code</button>
 final <a href="http://api.dartlang.org/dart_core/List.html">List</a>&lt;<a href="../petitparser/Parser.html">Parser</a>&gt;         <strong>children</strong> <a class="anchor-link"
             href="#children"
-            title="Permalink to LispParser.children">#</a>
+            title="Permalink to DartGrammar.children">#</a>
         </h4>
         <div class="inherited-from">inherited from <a href="../petitparser/_DelegateParser.html">_DelegateParser</a> </div><div class="doc">
 <div class="inherited">
@@ -96,7 +748,7 @@ List&lt;Parser&gt; get children =&gt; [_delegate];
 <div class="method inherited"><h4 id="[]">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>operator []</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name) <a class="anchor-link" href="#[]"
-              title="Permalink to LispParser.operator []">#</a></h4>
+              title="Permalink to DartGrammar.operator []">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/CompositeParser.html">CompositeParser</a> </div><div class="doc">
 <p>Convenience operator returning a reference to a production with
 a 
@@ -109,7 +761,7 @@ Parser operator [](String name) =&gt; ref(name);
 <div class="method inherited"><h4 id="&">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>operator &</strong>(<a href="../petitparser/Parser.html">Parser</a> other) <a class="anchor-link" href="#&"
-              title="Permalink to LispParser.operator &">#</a></h4>
+              title="Permalink to DartGrammar.operator &">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Convenience operator returning a parser accepts the receiver followed
 by 
@@ -122,7 +774,7 @@ Parser operator &amp; (Parser other) =&gt; this.seq(other);
 <div class="method inherited"><h4 id="|">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>operator |</strong>(<a href="../petitparser/Parser.html">Parser</a> other) <a class="anchor-link" href="#|"
-              title="Permalink to LispParser.operator |">#</a></h4>
+              title="Permalink to DartGrammar.operator |">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Convenience operator returning a parser accepts the receiver or
 
@@ -138,7 +790,7 @@ Parser operator | (Parser other) =&gt; this.or(other);
 <div class="method inherited"><h4 id="accept">
 <button class="show-code">Code</button>
 <a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>accept</strong>(input) <a class="anchor-link" href="#accept"
-              title="Permalink to LispParser.accept">#</a></h4>
+              title="Permalink to DartGrammar.accept">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Tests if the 
 <span class="param">input</span> can be successfully parsed.</p>
@@ -154,14 +806,14 @@ bool accept(dynamic input) {
 <div class="method inherited"><h4 id="action">
 <button class="show-code">Code</button>
 void <strong>action</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name, function(Dynamic)) <a class="anchor-link" href="#action"
-              title="Permalink to LispParser.action">#</a></h4>
+              title="Permalink to DartGrammar.action">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/CompositeParser.html">CompositeParser</a> </div><div class="doc">
 <p>Attaches an action 
 <span class="param">function</span> to an existing production 
 <span class="param">name</span>. The code
 raises an <code>UndefinedProductionError</code> if 
 <span class="param">name</span> is an undefined production.
-Only call this method from <a class="crossref" href="../lisp/LispParser.html#initialize">initialize</a>.</p>
+Only call this method from <a class="crossref" href="../dart/DartGrammar.html#initialize">initialize</a>.</p>
 <p>The following example attaches an action returning the size of list of
 the previously defined list production:</p>
 <pre><code>action('list', (list) =&gt; list.length);
@@ -176,7 +828,7 @@ void action(String name, dynamic function(Dynamic)) {
 <div class="method inherited"><h4 id="and">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>and</strong>() <a class="anchor-link" href="#and"
-              title="Permalink to LispParser.and">#</a></h4>
+              title="Permalink to DartGrammar.and">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser (logical and-predicate) that succeeds whenever the
 receiver does, but never consumes input.</p>
@@ -189,30 +841,15 @@ Parser and() =&gt; new _AndParser(this);
 </pre>
 </div>
 </div>
-<div class="method inherited"><h4 id="bracket">
-<button class="show-code">Code</button>
-<a href="../petitparser/Parser.html">Parser</a> <strong>bracket</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> brackets, <a href="http://api.dartlang.org/dart_core/String.html">String</a> reference) <a class="anchor-link" href="#bracket"
-              title="Permalink to LispParser.bracket">#</a></h4>
-<div class="inherited-from">inherited from <a href="../lisp/LispGrammar.html">LispGrammar</a> </div><div class="doc">
-<p>Defines a bracketed reference. </p>
-<pre class="source">
-Parser bracket(String brackets, String reference) {
- return char(brackets[0])
-     .seq(ref(reference))
-     .seq(char(brackets[1]));
-}
-</pre>
-</div>
-</div>
 <div class="method inherited"><h4 id="def">
 <button class="show-code">Code</button>
 void <strong>def</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name, <a href="../petitparser/Parser.html">Parser</a> parser) <a class="anchor-link" href="#def"
-              title="Permalink to LispParser.def">#</a></h4>
+              title="Permalink to DartGrammar.def">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/CompositeParser.html">CompositeParser</a> </div><div class="doc">
 <p>Defines a production with a 
 <span class="param">name</span> and a 
 <span class="param">parser</span>. Only call this method
-from <a class="crossref" href="../lisp/LispParser.html#initialize">initialize</a>.</p>
+from <a class="crossref" href="../dart/DartGrammar.html#initialize">initialize</a>.</p>
 <p>The following example defines a list production that consumes
 several elements separated by a comma.</p>
 <pre><code>def('list', ref('element').separatedBy(char(',')));
@@ -233,7 +870,7 @@ void def(String name, Parser parser) {
 <div class="method inherited"><h4 id="end">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>end</strong>({<a href="http://api.dartlang.org/dart_core/String.html">String</a> message: 'end of input expected'}) <a class="anchor-link" href="#end"
-              title="Permalink to LispParser.end">#</a></h4>
+              title="Permalink to DartGrammar.end">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that succeeds only if the receiver consumes the complete
 input, otherwise return a failure with the optional 
@@ -251,7 +888,7 @@ Parser end({String message: 'end of input expected'}) {
 <div class="method inherited"><h4 id="flatten">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>flatten</strong>() <a class="anchor-link" href="#flatten"
-              title="Permalink to LispParser.flatten">#</a></h4>
+              title="Permalink to DartGrammar.flatten">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that discards the result of the receiver, and returns
 a sub-string of the consumed elements in the string/list being parsed.</p>
@@ -266,36 +903,20 @@ Parser flatten() =&gt; new _FlattenParser(this);
 <div class="method"><h4 id="initialize">
 <button class="show-code">Code</button>
 void <strong>initialize</strong>() <a class="anchor-link" href="#initialize"
-              title="Permalink to LispParser.initialize">#</a></h4>
+              title="Permalink to DartGrammar.initialize">#</a></h4>
 <div class="doc">
 <div class="inherited">
 <p>Initializes the composite grammar.</p>
 <div class="docs-inherited-from">docs inherited from <a href="../petitparser/CompositeParser.html">CompositeParser</a> </div></div>
 <pre class="source">
 void initialize() {
- super.initialize();
-
- action('list', (each) =&gt; each[1]);
-
- action('cell', (each) =&gt; new Cons(each[0], each[1]));
- action('null', (each) =&gt; null);
-
- action('string', (each) =&gt; new String.fromCharCodes(each[1]));
- action('character escape', (each) =&gt; each[1].codeUnitAt(0));
- action('character raw', (each) =&gt; each.codeUnitAt(0));
-
- action('symbol', (each) =&gt; new Symbol(each));
- action('number', (each) {
-   var floating = double.parse(each);
-   var integral = floating.toInt();
-   if (floating == integral &amp;&amp; each.indexOf('.') == -1) {
-     return integral;
-   } else {
-     return floating;
-   }
- });
-
- action('quote', (each) =&gt; new Cons(Natives.find('quote'), each[1]));
+ _lexemes();
+ _keywords();
+ _types();
+ _declarations();
+ _expressions();
+ _statements();
+ _libraries();
 }
 </pre>
 </div>
@@ -303,7 +924,7 @@ void initialize() {
 <div class="method inherited"><h4 id="map">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>map</strong>(<a href="http://api.dartlang.org/dart_core/Function.html">Function</a> function) <a class="anchor-link" href="#map"
-              title="Permalink to LispParser.map">#</a></h4>
+              title="Permalink to DartGrammar.map">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that evaluates 
 <span class="param">function</span> as action handler on success
@@ -318,7 +939,7 @@ Parser map(Function function) =&gt; new _ActionParser(this, function);
 <div class="method inherited"><h4 id="matches">
 <button class="show-code">Code</button>
 <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> <strong>matches</strong>(input) <a class="anchor-link" href="#matches"
-              title="Permalink to LispParser.matches">#</a></h4>
+              title="Permalink to DartGrammar.matches">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a list of all successful overlapping parses of the 
 <span class="param">input</span>.</p>
@@ -337,7 +958,7 @@ Iterable matches(dynamic input) {
 <div class="method inherited"><h4 id="matchesSkipping">
 <button class="show-code">Code</button>
 <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> <strong>matchesSkipping</strong>(input) <a class="anchor-link" href="#matchesSkipping"
-              title="Permalink to LispParser.matchesSkipping">#</a></h4>
+              title="Permalink to DartGrammar.matchesSkipping">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a list of all successful non-overlapping parses of the input.</p>
 <p>For example, <code>letter().plus().matchesSkipping('abc de')</code> results in the
@@ -355,7 +976,7 @@ Iterable matchesSkipping(dynamic input) {
 <div class="method inherited"><h4 id="neg">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>neg</strong>([<a href="http://api.dartlang.org/dart_core/String.html">String</a> message]) <a class="anchor-link" href="#neg"
-              title="Permalink to LispParser.neg">#</a></h4>
+              title="Permalink to DartGrammar.neg">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that consumes any input token (character), but the
 receiver.</p>
@@ -367,10 +988,50 @@ Parser neg([String message]) =&gt; not(message).seq(any()).pick(1);
 </pre>
 </div>
 </div>
+<div class="method inherited"><h4 id="noSuchMethod">
+<button class="show-code">Code</button>
+dynamic<strong>noSuchMethod</strong>(<a href="http://api.dartlang.org/dart_core/InvocationMirror.html">InvocationMirror</a> mirror) <a class="anchor-link" href="#noSuchMethod"
+              title="Permalink to DartGrammar.noSuchMethod">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/CompositeParser2.html">CompositeParser2</a> </div><div class="doc">
+<div class="inherited">
+<p><code>noSuchMethod</code> is invoked when users invoke a non-existant method
+on an object. The name of the method and the arguments of the
+invocation are passed to <code>noSuchMethod</code> in an <code>InvocationMirror</code>.
+If <code>noSuchMethod</code> returns a value, that value becomes the result of
+the original invocation.</p>
+<p>The default behavior of <code>noSuchMethod</code> is to throw a
+<code>noSuchMethodError</code>.</p>
+<div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
+<pre class="source">
+dynamic noSuchMethod(InvocationMirror mirror) {
+ if (!mirror.memberName.startsWith('_')) {
+   // only consider public members
+   if (mirror.isGetter) {
+     // productions can be accessed any time
+     return ref(mirror.memberName);
+   } else if (!_completed) {
+     if (mirror.isSetter) {
+       // production can only be defined during initialization
+       return def(mirror.memberName.substring(0, mirror.memberName.length - 1),
+           mirror.positionalArguments.first);
+     } else if (mirror.isMethod &amp;&amp; mirror.positionalArguments.length == 1) {
+       // productions can only be redefined during initialization
+       var argument = mirror.positionalArguments.first;
+       return argument is Parser
+           ? redef(mirror.memberName, argument)
+           : action(mirror.memberName, argument);
+     }
+   }
+ }
+ return super.noSuchMethod(mirror);
+}
+</pre>
+</div>
+</div>
 <div class="method inherited"><h4 id="not">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>not</strong>([<a href="http://api.dartlang.org/dart_core/String.html">String</a> message]) <a class="anchor-link" href="#not"
-              title="Permalink to LispParser.not">#</a></h4>
+              title="Permalink to DartGrammar.not">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser (logical not-predicate) that succeeds whenever the
 receiver fails, but never consumes input.</p>
@@ -387,7 +1048,7 @@ Parser not([String message]) =&gt; new _NotParser(this, message);
 <div class="method inherited"><h4 id="optional">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>optional</strong>([otherwise]) <a class="anchor-link" href="#optional"
-              title="Permalink to LispParser.optional">#</a></h4>
+              title="Permalink to DartGrammar.optional">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns new parser that accepts the receiver, if possible. The resulting
 parser returns the result of the receiver, or <code>null</code> if not applicable.
@@ -404,7 +1065,7 @@ Parser optional([dynamic otherwise]) =&gt; new _OptionalParser(this, otherwise);
 <div class="method inherited"><h4 id="or">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>or</strong>(<a href="../petitparser/Parser.html">Parser</a> other) <a class="anchor-link" href="#or"
-              title="Permalink to LispParser.or">#</a></h4>
+              title="Permalink to DartGrammar.or">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that accepts the receiver or 
 <span class="param">other</span>. The resulting
@@ -425,7 +1086,7 @@ Parser or(Parser other) =&gt; new _ChoiceParser([this, other]);
 <div class="method inherited"><h4 id="parse">
 <button class="show-code">Code</button>
 <a href="../petitparser/Result.html">Result</a> <strong>parse</strong>(input) <a class="anchor-link" href="#parse"
-              title="Permalink to LispParser.parse">#</a></h4>
+              title="Permalink to DartGrammar.parse">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns the parse result of the 
 <span class="param">input</span>.</p>
@@ -447,7 +1108,7 @@ Result parse(dynamic input) {
 <div class="method inherited"><h4 id="permute">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>permute</strong>(<a href="http://api.dartlang.org/dart_core/List.html">List</a>&lt;<a href="http://api.dartlang.org/dart_core/int.html">int</a>&gt; indexes) <a class="anchor-link" href="#permute"
-              title="Permalink to LispParser.permute">#</a></h4>
+              title="Permalink to DartGrammar.permute">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that transforms a successful parse result by returning
 the permuted elements at 
@@ -470,7 +1131,7 @@ Parser permute(List&lt;int&gt; indexes) {
 <div class="method inherited"><h4 id="pick">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>pick</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> index) <a class="anchor-link" href="#pick"
-              title="Permalink to LispParser.pick">#</a></h4>
+              title="Permalink to DartGrammar.pick">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that transform a successful parse result by returning
 the element at 
@@ -490,7 +1151,7 @@ Parser pick(int index) {
 <div class="method inherited"><h4 id="plus">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>plus</strong>() <a class="anchor-link" href="#plus"
-              title="Permalink to LispParser.plus">#</a></h4>
+              title="Permalink to DartGrammar.plus">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that accepts the receiver one or more times. The
 resulting parser returns a list of the parse results of the receiver.</p>
@@ -506,7 +1167,7 @@ Parser plus() =&gt; repeat(1, 65536);
 <div class="method inherited"><h4 id="redef">
 <button class="show-code">Code</button>
 void <strong>redef</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name, replacement) <a class="anchor-link" href="#redef"
-              title="Permalink to LispParser.redef">#</a></h4>
+              title="Permalink to DartGrammar.redef">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/CompositeParser.html">CompositeParser</a> </div><div class="doc">
 <p>Redefinies an existing production with a 
 <span class="param">name</span> and a 
@@ -514,7 +1175,7 @@ void <strong>redef</strong>(<a href="http://api.dartlang.org/dart_core/String.ht
 parser or function producing a new parser. The code raises an
 <code>UndefinedProductionError</code> if 
 <span class="param">name</span> is an undefined production. Only call
-this method from <a class="crossref" href="../lisp/LispParser.html#initialize">initialize</a>.</p>
+this method from <a class="crossref" href="../dart/DartGrammar.html#initialize">initialize</a>.</p>
 <p>The following example redefines the previously defined list production
 by making it optional:</p>
 <pre><code>redef('list', (parser) =&gt; parser.optional());
@@ -536,7 +1197,7 @@ void redef(String name, dynamic replacement) {
 <div class="method inherited"><h4 id="ref">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>ref</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name) <a class="anchor-link" href="#ref"
-              title="Permalink to LispParser.ref">#</a></h4>
+              title="Permalink to DartGrammar.ref">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/CompositeParser.html">CompositeParser</a> </div><div class="doc">
 <p>Returns a reference to a production with a 
 <span class="param">name</span>.</p>
@@ -564,7 +1225,7 @@ Parser ref(String name) {
 <div class="method inherited"><h4 id="repeat">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>repeat</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> min, <a href="http://api.dartlang.org/dart_core/int.html">int</a> max) <a class="anchor-link" href="#repeat"
-              title="Permalink to LispParser.repeat">#</a></h4>
+              title="Permalink to DartGrammar.repeat">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that accepts the receiver between 
 <span class="param">min</span> and 
@@ -582,7 +1243,7 @@ Parser repeat(int min, int max) =&gt; new _RepeatingParser(this, min, max);
 <div class="method inherited"><h4 id="replace">
 <button class="show-code">Code</button>
 void <strong>replace</strong>(<a href="../petitparser/Parser.html">Parser</a> source, <a href="../petitparser/Parser.html">Parser</a> target) <a class="anchor-link" href="#replace"
-              title="Permalink to LispParser.replace">#</a></h4>
+              title="Permalink to DartGrammar.replace">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/_DelegateParser.html">_DelegateParser</a> </div><div class="doc">
 <div class="inherited">
 <p>Changes the receiver by replacing 
@@ -613,7 +1274,7 @@ void replace(Parser source, Parser target) {
 <div class="method inherited"><h4 id="separatedBy">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>separatedBy</strong>(<a href="../petitparser/Parser.html">Parser</a> separator, {<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> includeSeparators: true, <a href="http://api.dartlang.org/dart_core/bool.html">bool</a> optionalSeparatorAtEnd: false}) <a class="anchor-link" href="#separatedBy"
-              title="Permalink to LispParser.separatedBy">#</a></h4>
+              title="Permalink to DartGrammar.separatedBy">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that consumes the receiver one or more times separated
 by the 
@@ -658,7 +1319,7 @@ Parser separatedBy(Parser separator, {bool includeSeparators: true,
 <div class="method inherited"><h4 id="seq">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>seq</strong>(<a href="../petitparser/Parser.html">Parser</a> other) <a class="anchor-link" href="#seq"
-              title="Permalink to LispParser.seq">#</a></h4>
+              title="Permalink to DartGrammar.seq">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that accepts the receiver followed by 
 <span class="param">other</span>. The
@@ -677,7 +1338,7 @@ Parser seq(Parser other) =&gt; new _SequenceParser([this, other]);
 <div class="method inherited"><h4 id="set">
 <button class="show-code">Code</button>
 void <strong>set</strong>(<a href="../petitparser/Parser.html">Parser</a> parser) <a class="anchor-link" href="#set"
-              title="Permalink to LispParser.set">#</a></h4>
+              title="Permalink to DartGrammar.set">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/_SetableParser.html">_SetableParser</a> </div><div class="doc">
 <div class="inherited">
 <p>Sets the receiver to delegate to 
@@ -691,7 +1352,7 @@ void set(Parser parser) =&gt; replace(children[0], parser);
 <div class="method inherited"><h4 id="setable">
 <button class="show-code">Code</button>
 <a href="../petitparser/SetableParser.html">SetableParser</a> <strong>setable</strong>() <a class="anchor-link" href="#setable"
-              title="Permalink to LispParser.setable">#</a></h4>
+              title="Permalink to DartGrammar.setable">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that points to the receiver, but can be changed to point
 to something else at a later point in time.</p>
@@ -706,7 +1367,7 @@ SetableParser setable() =&gt; new _SetableParser(this);
 <div class="method inherited"><h4 id="star">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>star</strong>() <a class="anchor-link" href="#star"
-              title="Permalink to LispParser.star">#</a></h4>
+              title="Permalink to DartGrammar.star">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that accepts the receiver zero or more times. The
 resulting parser returns a list of the parse results of the receiver.</p>
@@ -723,7 +1384,7 @@ Parser star() =&gt; repeat(0, 65536);
 <div class="method inherited"><h4 id="times">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>times</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> count) <a class="anchor-link" href="#times"
-              title="Permalink to LispParser.times">#</a></h4>
+              title="Permalink to DartGrammar.times">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that accepts the receiver exactly 
 <span class="param">count</span> times. The
@@ -738,7 +1399,7 @@ Parser times(int count) =&gt; repeat(count, count);
 <div class="method inherited"><h4 id="token">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>token</strong>() <a class="anchor-link" href="#token"
-              title="Permalink to LispParser.token">#</a></h4>
+              title="Permalink to DartGrammar.token">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that discards the result of the receiver and returns
 a <code>Token</code>. The token carries information about where the token started and
@@ -753,7 +1414,7 @@ Parser token() =&gt; new _TokenParser(this);
 <div class="method inherited"><h4 id="trim">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>trim</strong>([<a href="../petitparser/Parser.html">Parser</a> trimmer]) <a class="anchor-link" href="#trim"
-              title="Permalink to LispParser.trim">#</a></h4>
+              title="Permalink to DartGrammar.trim">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that consumes input before and after the receiver. The
 optional argument 

@@ -155,7 +155,7 @@ final <a href="http://api.dartlang.org/dart_core/String.html">String</a>        
         </h4>
         <div class="doc">
 <pre class="source">
-NAME_CHARS = '-.0-9\u00B7\u0300-\u036F\u203F-\u2040$NAME_START_CHARS'
+static final String NAME_CHARS = '-.0-9\u00B7\u0300-\u036F\u203F-\u2040$NAME_START_CHARS'
 </pre>
 </div>
 </div>
@@ -167,9 +167,9 @@ final <a href="http://api.dartlang.org/dart_core/String.html">String</a>        
         </h4>
         <div class="doc">
 <pre class="source">
-NAME_START_CHARS = ':A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF'
-'\u0370-\u037D\u037F-\u1FFF\u200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001\uD7FF'
-'\uF900-\uFDCF\uFDF0-\uFFFD'
+static final String NAME_START_CHARS = ':A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF'
+   '\u0370-\u037D\u037F-\u1FFF\u200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001\uD7FF'
+   '\uF900-\uFDCF\uFDF0-\uFFFD'
 </pre>
 </div>
 </div>
@@ -206,7 +206,7 @@ List&lt;Parser&gt; get children =&gt; [_delegate];
 <div class="inherited-from">inherited from <a href="../petitparser/CompositeParser.html">CompositeParser</a> </div><div class="doc">
 <p>Convenience operator returning a reference to a production with
 a 
-<span class="param">name</span>. See <code>CompositeParser#ref</code> for details.</p>
+<span class="param">name</span>. See <code>CompositeParser.ref</code> for details.</p>
 <pre class="source">
 Parser operator [](String name) =&gt; ref(name);
 </pre>
@@ -219,7 +219,7 @@ Parser operator [](String name) =&gt; ref(name);
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Convenience operator returning a parser accepts the receiver followed
 by 
-<span class="param">other</span>. See <code>Parser#seq</code> for details.</p>
+<span class="param">other</span>. See <code>Parser.seq</code> for details.</p>
 <pre class="source">
 Parser operator &amp; (Parser other) =&gt; this.seq(other);
 </pre>
@@ -232,7 +232,7 @@ Parser operator &amp; (Parser other) =&gt; this.seq(other);
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Convenience operator returning a parser accepts the receiver or
 
-<span class="param">other</span>. See <code>Parser#or</code> for details.</p>
+<span class="param">other</span>. See <code>Parser.or</code> for details.</p>
 <pre class="source">
 Parser operator | (Parser other) =&gt; this.or(other);
 </pre>
@@ -265,9 +265,9 @@ void <strong>action</strong>(<a href="http://api.dartlang.org/dart_core/String.h
 <p>Attaches an action 
 <span class="param">function</span> to an existing production 
 <span class="param">name</span>. The code
-raises a <code>StateError</code> if 
-<span class="param">name</span> is an undefined production. Only call this
-method from <a class="crossref" href="../xml/XmlGrammar.html#initialize">initialize</a>.</p>
+raises an <code>UndefinedProductionError</code> if 
+<span class="param">name</span> is an undefined production.
+Only call this method from <a class="crossref" href="../xml/XmlGrammar.html#initialize">initialize</a>.</p>
 <p>The following example attaches an action returning the size of list of
 the previously defined list production:</p>
 <pre><code>action('list', (list) =&gt; list.length);
@@ -311,9 +311,9 @@ several elements separated by a comma.</p>
 <pre class="source">
 void def(String name, Parser parser) {
  if (_completed) {
-   throw new StateError('Completed parsers cannot be changed');
+   throw new CompletedParserError();
  } else if (_defined.containsKey(name)) {
-   throw new StateError('Duplicate production: $name');
+   throw new RedefinedProductionError(name);
  } else {
    _defined[name] = parser;
  }
@@ -592,10 +592,10 @@ Parser or(Parser other) =&gt; new _ChoiceParser([this, other]);
 <p>The implementation creates a default parse context on the input and calls
 the internal parsing logic of the receiving parser.</p>
 <p>For example, <code>letter().plus().parse('abc')</code> results in an instance of
-<code>Success</code>, where <code>Result#position</code> is <code>3</code> and <code>Success.result</code> is
+<code>Success</code>, where <code>Result.position</code> is <code>3</code> and <code>Success.result</code> is
 <code>[a, b, c]</code>.</p>
 <p>Similarly, <code>letter().plus().parse('123')</code> results in an instance of
-<code>Failure</code>, where <code>Result#position</code> is <code>0</code> and <code>Failure.message</code> is
+<code>Failure</code>, where <code>Result.position</code> is <code>0</code> and <code>Failure.message</code> is
 <code>'letter expected'</code>.</p>
 <pre class="source">
 Result parse(dynamic input) {
@@ -671,10 +671,10 @@ void <strong>redef</strong>(<a href="http://api.dartlang.org/dart_core/String.ht
 <p>Redefinies an existing production with a 
 <span class="param">name</span> and a 
 <span class="param">replacement</span>
-parser or function producing a new parser. The code raises a <code>StateError</code>
-if 
-<span class="param">name</span> is an undefined production. Only call this method from
-<a class="crossref" href="../xml/XmlGrammar.html#initialize">initialize</a>.</p>
+parser or function producing a new parser. The code raises an
+<code>UndefinedProductionError</code> if 
+<span class="param">name</span> is an undefined production. Only call
+this method from <a class="crossref" href="../xml/XmlGrammar.html#initialize">initialize</a>.</p>
 <p>The following example redefines the previously defined list production
 by making it optional:</p>
 <pre><code>redef('list', (parser) =&gt; parser.optional());
@@ -682,9 +682,9 @@ by making it optional:</p>
 <pre class="source">
 void redef(String name, dynamic replacement) {
  if (_completed) {
-   throw new StateError('Completed parsers cannot be changed');
+   throw new CompletedParserError();
  } else if (!_defined.containsKey(name)) {
-   throw new StateError('Undefined production: $name');
+   throw new UndefinedProductionError(name);
  } else {
    _defined[name] = replacement is Parser ? replacement
        : replacement(_defined[name]);
@@ -710,7 +710,7 @@ Parser ref(String name) {
    if (_defined.containsKey(name)) {
      return _defined[name];
    } else {
-     throw new StateError('Undefined production: $name');
+     throw new UndefinedProductionError(name);
    }
  } else {
    return _undefined.putIfAbsent(name, () {
@@ -749,7 +749,7 @@ void <strong>replace</strong>(<a href="../petitparser/Parser.html">Parser</a> so
 <span class="param">source</span> with 
 <span class="param">target</span>. Does nothing
 if 
-<span class="param">source</span> does not exist in <code>Parser#children</code>.</p>
+<span class="param">source</span> does not exist in <code>Parser.children</code>.</p>
 <p>The following example creates a letter parser and then defines a parser
 called <code>example</code> that accepts one or more letters. Eventually the parser
 <code>example</code> is modified by replacing the <code>letter</code> parser with a new
@@ -824,7 +824,7 @@ Parser separatedBy(Parser separator, {bool includeSeparators: true,
 <span class="param">other</span>. The
 resulting parser returns a list of the parse result of the receiver
 followed by the parse result of 
-<span class="param">other</span>. Calling <code>SequenceParser#seq</code>
+<span class="param">other</span>. Calling <code>SequenceParser.seq</code>
 causes the sequences to be concatenated instead of nested.</p>
 <p>For example, the parser <code>letter().seq(digit()).seq(letter())</code> accepts a
 letter followed by a digit and another letter. The parse result of the
@@ -857,7 +857,7 @@ void set(Parser parser) =&gt; replace(children[0], parser);
 to something else at a later point in time.</p>
 <p>For example, the parser <code>letter().setable()</code> behaves exactly the same
 as <code>letter()</code>, but it can be replaced with another parser using
-<code>SetableParser#set</code>.</p>
+<code>SetableParser.set</code>.</p>
 <pre class="source">
 SetableParser setable() =&gt; new _SetableParser(this);
 </pre>

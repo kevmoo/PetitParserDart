@@ -36,32 +36,29 @@
 <pre class="source">
 class Context {
 
- const Context(this.buffer, this.position);
+ final dynamic _buffer;
+ final int _position;
+
+ const Context(this._buffer, this._position);
 
  /** The buffer we are working on. */
- final dynamic buffer;
+ dynamic get buffer =&gt; _buffer;
 
  /** The current position in the buffer. */
- final int position;
+ int get position =&gt; _position;
 
- /** Returns [true] if this context indicates a parse success. */
- bool get isSuccess =&gt; false;
-
- /** Returns [true] if this context indicates a parse failure. */
- bool get isFailure =&gt; false;
-
- /** Copies the current context to indicate a parse success. */
- Success success(dynamic result, [int pos]) {
-   return new Success(buffer, pos == null ? position : pos, result);
+ /** Returns a result indicating a parse success. */
+ Result success(dynamic result, [int position]) {
+   return new Success(_buffer, position == null ? _position : position, result);
  }
 
- /** Copies the current context to indicate a parse failure. */
- Failure failure(String message, [int pos]) {
-   return new Failure(buffer, pos == null ? position : pos, message);
+ /** Returns a result indicating a parse failure. */
+ Result failure(String message, [int position]) {
+   return new Failure(_buffer, position == null ? _position : position, message);
  }
 
  /** Returns a human readable string of the current context */
- String toString() =&gt; 'Context[$position]';
+ String toString() =&gt; 'Context[$_position]';
 
 }
 </pre>
@@ -73,11 +70,11 @@ class Context {
 <h3>Constructors</h3>
 <div class="method"><h4 id="Context">
 <button class="show-code">Code</button>
-const <strong>Context</strong>(buffer, <a href="http://api.dartlang.org/dart_core/int.html">int</a> position) <a class="anchor-link" href="#Context"
+const <strong>Context</strong>(_buffer, <a href="http://api.dartlang.org/dart_core/int.html">int</a> _position) <a class="anchor-link" href="#Context"
               title="Permalink to Context.Context">#</a></h4>
 <div class="doc">
 <pre class="source">
-const Context(this.buffer, this.position);
+const Context(this._buffer, this._position);
 </pre>
 </div>
 </div>
@@ -91,34 +88,9 @@ final         <strong>buffer</strong> <a class="anchor-link"
             title="Permalink to Context.buffer">#</a>
         </h4>
         <div class="doc">
+<p>The buffer we are working on. </p>
 <pre class="source">
-buffer
-</pre>
-</div>
-</div>
-<div class="field"><h4 id="isFailure">
-<button class="show-code">Code</button>
-final <a href="http://api.dartlang.org/dart_core/bool.html">bool</a>         <strong>isFailure</strong> <a class="anchor-link"
-            href="#isFailure"
-            title="Permalink to Context.isFailure">#</a>
-        </h4>
-        <div class="doc">
-<p>Returns <code>true</code> if this context indicates a parse failure. </p>
-<pre class="source">
-bool get isFailure =&gt; false;
-</pre>
-</div>
-</div>
-<div class="field"><h4 id="isSuccess">
-<button class="show-code">Code</button>
-final <a href="http://api.dartlang.org/dart_core/bool.html">bool</a>         <strong>isSuccess</strong> <a class="anchor-link"
-            href="#isSuccess"
-            title="Permalink to Context.isSuccess">#</a>
-        </h4>
-        <div class="doc">
-<p>Returns <code>true</code> if this context indicates a parse success. </p>
-<pre class="source">
-bool get isSuccess =&gt; false;
+dynamic get buffer =&gt; _buffer;
 </pre>
 </div>
 </div>
@@ -129,8 +101,9 @@ final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <stro
             title="Permalink to Context.position">#</a>
         </h4>
         <div class="doc">
+<p>The current position in the buffer. </p>
 <pre class="source">
-position
+int get position =&gt; _position;
 </pre>
 </div>
 </div>
@@ -139,26 +112,26 @@ position
 <h3>Methods</h3>
 <div class="method"><h4 id="failure">
 <button class="show-code">Code</button>
-<a href="../petitparser/Failure.html">Failure</a> <strong>failure</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> message, [<a href="http://api.dartlang.org/dart_core/int.html">int</a> pos]) <a class="anchor-link" href="#failure"
+<a href="../petitparser/Result.html">Result</a> <strong>failure</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> message, [<a href="http://api.dartlang.org/dart_core/int.html">int</a> position]) <a class="anchor-link" href="#failure"
               title="Permalink to Context.failure">#</a></h4>
 <div class="doc">
-<p>Copies the current context to indicate a parse failure. </p>
+<p>Returns a result indicating a parse failure. </p>
 <pre class="source">
-Failure failure(String message, [int pos]) {
- return new Failure(buffer, pos == null ? position : pos, message);
+Result failure(String message, [int position]) {
+ return new Failure(_buffer, position == null ? _position : position, message);
 }
 </pre>
 </div>
 </div>
 <div class="method"><h4 id="success">
 <button class="show-code">Code</button>
-<a href="../petitparser/Success.html">Success</a> <strong>success</strong>(result, [<a href="http://api.dartlang.org/dart_core/int.html">int</a> pos]) <a class="anchor-link" href="#success"
+<a href="../petitparser/Result.html">Result</a> <strong>success</strong>(result, [<a href="http://api.dartlang.org/dart_core/int.html">int</a> position]) <a class="anchor-link" href="#success"
               title="Permalink to Context.success">#</a></h4>
 <div class="doc">
-<p>Copies the current context to indicate a parse success. </p>
+<p>Returns a result indicating a parse success. </p>
 <pre class="source">
-Success success(dynamic result, [int pos]) {
- return new Success(buffer, pos == null ? position : pos, result);
+Result success(dynamic result, [int position]) {
+ return new Success(_buffer, position == null ? _position : position, result);
 }
 </pre>
 </div>
@@ -170,7 +143,7 @@ Success success(dynamic result, [int pos]) {
 <div class="doc">
 <p>Returns a human readable string of the current context </p>
 <pre class="source">
-String toString() =&gt; 'Context[$position]';
+String toString() =&gt; 'Context[$_position]';
 </pre>
 </div>
 </div>

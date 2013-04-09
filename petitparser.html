@@ -37,11 +37,11 @@ a letter followed by zero or more letter or digits is defined as follows:</p>
 that the code above buils a tree of parser objects:</p><ul><li>Sequence: This parser accepts a sequence of parsers.</li><li><ul><li>Predicate: This parser accepts a single letter.</li></ul></li><li><ul><li>Repeater: This parser accepts zero or more times another parser.</li></ul></li><li><ul><li><ul><li>Choice: This parser accepts a single word character.</li></ul></li></ul></li><li><ul><li><ul><li><ul><li>Predicate: This parser accepts a single letter.</li></ul></li></ul></li></ul></li><li><ul><li><ul><li><ul><li>Predicate: This parser accepts a single digit.</li></ul></li></ul></li></ul></li></ul>
 <h1>Parsing Some Input</h1>
 <p>To actually parse a <code>String</code> (or <code>List</code>) we can use the method
-<code>Parser#parse</code>:</p>
+<a class="crossref" href="petitparser/Parser.html#parse">Parser.parse</a>:</p>
 <pre><code>Result id1 = id.parse('yeah');
 Result id2 = id.parse('f12');
 </code></pre>
-<p>The method <code>Parser#parse</code> returns a parse <a class="crossref" href="petitparser/Result.html">Result</a>, which is either an
+<p>The method <a class="crossref" href="petitparser/Parser.html#parse">Parser.parse</a> returns a parse <a class="crossref" href="petitparser/Result.html">Result</a>, which is either an
 instance of <a class="crossref" href="petitparser/Success.html">Success</a> or <a class="crossref" href="petitparser/Failure.html">Failure</a>. In both examples above we are
 successful and can retrieve the parse result using <a class="crossref" href="petitparser/Success.html#result">Success.result</a>:</p>
 <pre><code>print(id1.result);                  // ['y', ['e', 'a', 'h']]
@@ -58,7 +58,7 @@ print(id3.message);                // 'letter expected'
 print(id3.position);               // 0
 </code></pre>
 <p>Trying to retrieve the parse result by calling <a class="crossref" href="petitparser/Failure.html#result">Failure.result</a> would throw
-the exception <code>UnsupportedError</code>. <code>Result.isSuccess</code> and <code>Result.isFailure</code>
+the exception <code>UnsupportedError</code>. <a class="crossref" href="petitparser/Result.html#isSuccess">Result.isSuccess</a> and <a class="crossref" href="petitparser/Result.html#isFailure">Result.isFailure</a>
 can be used to decide if the parse was successful.</p>
 <p>If you are only interested if a given string matches or not you can use the
 helper method <a class="crossref" href="petitparser/Parser.html#accept">Parser.accept</a>:</p>
@@ -68,14 +68,14 @@ print(id.accept('123'));            // false
 <h1>Different Kinds of Parsers</h1>
 <p>PetitParser provide a large set of ready-made parser that you can compose
 to consume and transform arbitrarily complex languages. The terminal parsers
-are the most simple ones. We've already seen a few of those:</p><ul><li><code>char('a')</code> parses the character a.</li><li><code>string('abc')</code> parses the string =='abc'==.</li><li><code>any()</code> parses any character.</li><li><code>digit()</code> parses any digit from 0 to 9.</li><li><code>letter()</code> parses any letter from a to z and A to Z.</li><li><code>word()</code> parses any letter or digit.</li></ul>
+are the most simple ones. We've already seen a few of those:</p><ul><li><code>char('a')</code> parses the character <em>a</em>.</li><li><code>string('abc')</code> parses the string <em>abc</em>.</li><li><code>any()</code> parses any character.</li><li><code>digit()</code> parses any digit from <em>0</em> to <em>9</em>.</li><li><code>letter()</code> parses any letter from <em>a</em> to <em>z</em> and <em>A</em> to <em>Z</em>.</li><li><code>word()</code> parses any letter or digit.</li></ul>
 <p>So instead of using the letter and digit predicate, we could have written
 our identifier parser like this:</p>
 <pre><code>var id = letter().seq(word().star());
 </code></pre>
-<p>The next set of parsers are used to combine other parsers together:</p><ul><li><code>p1.seq(p2)</code> parses p1 followed by p2 (sequence).</li><li><code>p1.or(p2)</code> parses p1, if that doesn't work parses p2 (ordered choice).</li><li><code>p.star()</code> parses p zero or more times.</li><li><code>p.plus()</code> parses p one or more times.</li><li><code>p.optional()</code> parses p, if possible.</li><li><code>p.and()</code> parses p, but does not consume its input.</li><li><code>p.not()</code> parses p and succeed when p fails, but does not consume its input.</li><li><code>p.end()</code> parses p and succeed at the end of the input.</li></ul>
+<p>The next set of parsers are used to combine other parsers together:</p><ul><li><code>p1.seq(p2)</code> and <code>p1 &amp; p2</code> parse <em>p1</em> followed by <em>p2</em> (sequence).</li><li><code>p1.or(p2)</code> and <code>p1 | p2</code> parse <em>p1</em>, if that doesn't work parses <em>p2</em> (ordered choice).</li><li><code>p.star()</code> parses <em>p</em> zero or more times.</li><li><code>p.plus()</code> parses <em>p</em> one or more times.</li><li><code>p.optional()</code> parses <em>p</em>, if possible.</li><li><code>p.and()</code> parses <em>p</em>, but does not consume its input.</li><li><code>p.not()</code> parses <em>p</em> and succeed when p fails, but does not consume its input.</li><li><code>p.end()</code> parses <em>p</em> and succeed at the end of the input.</li></ul>
 <p>To attach an action or transformation to a parser we can use the following
-methods:</p><ul><li><code>p.map((value) =&gt; ...)</code> performs the transformation given the function.</li><li><code>p.pick(n)</code> returns the n-th element of the list p returns.</li><li><code>p.flatten()</code> creates a string from the result of p.</li><li><code>p.token()</code> creates a token from the result of p.</li><li><code>p.trim()</code> trims whitespaces before and after p.</li></ul>
+methods:</p><ul><li><code>p.map((value) =&gt; ...)</code> performs the transformation given the function.</li><li><code>p.pick(n)</code> returns the <em>n</em>-th element of the list <em>p</em> returns.</li><li><code>p.flatten()</code> creates a string from the result of <em>p</em>.</li><li><code>p.token()</code> creates a token from the result of <em>p</em>.</li><li><code>p.trim()</code> trims whitespaces before and after <em>p</em>.</li></ul>
 <p>To return a string of the parsed identifier, we can modify our parser like
 this:</p>
 <pre><code>var id = letter().seq(word().star()).flatten();
@@ -411,6 +411,12 @@ Parser char(dynamic element, {String message}) {
 <h3>Classes</h3>
           <div class="type">
           <h4>
+            <a href="petitparser/CompositeParser2.html"><strong>CompositeParser2</strong></a>
+          </h4>
+          </div>
+          
+          <div class="type">
+          <h4>
             <a href="petitparser/Context.html"><strong>Context</strong></a>
           </h4>
           </div>
@@ -456,7 +462,25 @@ Parser char(dynamic element, {String message}) {
 <h3>Exceptions</h3>
           <div class="type">
           <h4>
+            <a href="petitparser/CompletedParserError.html"><strong>CompletedParserError</strong></a>
+          </h4>
+          </div>
+          
+          <div class="type">
+          <h4>
             <a href="petitparser/ParserError.html"><strong>ParserError</strong></a>
+          </h4>
+          </div>
+          
+          <div class="type">
+          <h4>
+            <a href="petitparser/RedefinedProductionError.html"><strong>RedefinedProductionError</strong></a>
+          </h4>
+          </div>
+          
+          <div class="type">
+          <h4>
+            <a href="petitparser/UndefinedProductionError.html"><strong>UndefinedProductionError</strong></a>
           </h4>
           </div>
           

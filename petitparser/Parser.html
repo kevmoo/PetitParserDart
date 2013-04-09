@@ -51,11 +51,11 @@ abstract class Parser {
   * the internal parsing logic of the receiving parser.
   *
   * For example, [:letter().plus().parse('abc'):] results in an instance of
-  * [Success], where [Result#position] is [:3:] and [Success.result] is
+  * [Success], where [Result.position] is [:3:] and [Success.result] is
   * [:[a, b, c]:].
   *
   * Similarly, [:letter().plus().parse('123'):] results in an instance of
-  * [Failure], where [Result#position] is [:0:] and [Failure.message] is
+  * [Failure], where [Result.position] is [:0:] and [Failure.message] is
   * ['letter expected'].
   */
  Result parse(dynamic input) {
@@ -158,7 +158,7 @@ abstract class Parser {
  /**
   * Returns a parser that accepts the receiver followed by [other]. The
   * resulting parser returns a list of the parse result of the receiver
-  * followed by the parse result of [other]. Calling [SequenceParser#seq]
+  * followed by the parse result of [other]. Calling [SequenceParser.seq]
   * causes the sequences to be concatenated instead of nested.
   *
   * For example, the parser [:letter().seq(digit()).seq(letter()):] accepts a
@@ -169,7 +169,7 @@ abstract class Parser {
 
  /**
   * Convenience operator returning a parser accepts the receiver followed
-  * by [other]. See [Parser#seq] for details.
+  * by [other]. See [Parser.seq] for details.
   */
  Parser operator &amp; (Parser other) =&gt; this.seq(other);
 
@@ -189,7 +189,7 @@ abstract class Parser {
 
  /**
   * Convenience operator returning a parser accepts the receiver or
-  * [other]. See [Parser#or] for details.
+  * [other]. See [Parser.or] for details.
   */
  Parser operator | (Parser other) =&gt; this.or(other);
 
@@ -276,7 +276,7 @@ abstract class Parser {
   *
   * For example, the parser [:letter().setable():] behaves exactly the same
   * as [:letter():], but it can be replaced with another parser using
-  * [SetableParser#set].
+  * [SetableParser.set].
   */
  SetableParser setable() =&gt; new _SetableParser(this);
 
@@ -372,7 +372,7 @@ abstract class Parser {
 
  /**
   * Changes the receiver by replacing [source] with [target]. Does nothing
-  * if [source] does not exist in [Parser#children].
+  * if [source] does not exist in [Parser.children].
   *
   * The following example creates a letter parser and then defines a parser
   * called [:example:] that accepts one or more letters. Eventually the parser
@@ -424,7 +424,7 @@ List&lt;Parser&gt; get children =&gt; [];
 <div class="doc">
 <p>Convenience operator returning a parser accepts the receiver followed
 by 
-<span class="param">other</span>. See <code>Parser#seq</code> for details.</p>
+<span class="param">other</span>. See <a class="crossref" href="../petitparser/Parser.html#seq">Parser.seq</a> for details.</p>
 <pre class="source">
 Parser operator &amp; (Parser other) =&gt; this.seq(other);
 </pre>
@@ -437,7 +437,7 @@ Parser operator &amp; (Parser other) =&gt; this.seq(other);
 <div class="doc">
 <p>Convenience operator returning a parser accepts the receiver or
 
-<span class="param">other</span>. See <code>Parser#or</code> for details.</p>
+<span class="param">other</span>. See <a class="crossref" href="../petitparser/Parser.html#or">Parser.or</a> for details.</p>
 <pre class="source">
 Parser operator | (Parser other) =&gt; this.or(other);
 </pre>
@@ -643,10 +643,10 @@ Parser or(Parser other) =&gt; new _ChoiceParser([this, other]);
 <p>The implementation creates a default parse context on the input and calls
 the internal parsing logic of the receiving parser.</p>
 <p>For example, <code>letter().plus().parse('abc')</code> results in an instance of
-<a class="crossref" href="../petitparser/Success.html">Success</a>, where <code>Result#position</code> is <code>3</code> and <a class="crossref" href="../petitparser/Success.html#result">Success.result</a> is
+<a class="crossref" href="../petitparser/Success.html">Success</a>, where <code>Result.position</code> is <code>3</code> and <a class="crossref" href="../petitparser/Success.html#result">Success.result</a> is
 <code>[a, b, c]</code>.</p>
 <p>Similarly, <code>letter().plus().parse('123')</code> results in an instance of
-<a class="crossref" href="../petitparser/Failure.html">Failure</a>, where <code>Result#position</code> is <code>0</code> and <a class="crossref" href="../petitparser/Failure.html#message">Failure.message</a> is
+<a class="crossref" href="../petitparser/Failure.html">Failure</a>, where <code>Result.position</code> is <code>0</code> and <a class="crossref" href="../petitparser/Failure.html#message">Failure.message</a> is
 <code>'letter expected'</code>.</p>
 <pre class="source">
 Result parse(dynamic input) {
@@ -741,7 +741,7 @@ void <strong>replace</strong>(<a href="../petitparser/Parser.html">Parser</a> so
 <span class="param">source</span> with 
 <span class="param">target</span>. Does nothing
 if 
-<span class="param">source</span> does not exist in <code>Parser#children</code>.</p>
+<span class="param">source</span> does not exist in <a class="crossref" href="../petitparser/Parser.html#children">Parser.children</a>.</p>
 <p>The following example creates a letter parser and then defines a parser
 called <code>example</code> that accepts one or more letters. Eventually the parser
 <code>example</code> is modified by replacing the <code>letter</code> parser with a new
@@ -812,7 +812,7 @@ Parser separatedBy(Parser separator, {bool includeSeparators: true,
 <span class="param">other</span>. The
 resulting parser returns a list of the parse result of the receiver
 followed by the parse result of 
-<span class="param">other</span>. Calling <code>SequenceParser#seq</code>
+<span class="param">other</span>. Calling <code>SequenceParser.seq</code>
 causes the sequences to be concatenated instead of nested.</p>
 <p>For example, the parser <code>letter().seq(digit()).seq(letter())</code> accepts a
 letter followed by a digit and another letter. The parse result of the
@@ -831,7 +831,7 @@ Parser seq(Parser other) =&gt; new _SequenceParser([this, other]);
 to something else at a later point in time.</p>
 <p>For example, the parser <code>letter().setable()</code> behaves exactly the same
 as <code>letter()</code>, but it can be replaced with another parser using
-<code>SetableParser#set</code>.</p>
+<a class="crossref" href="../petitparser/SetableParser.html#set">SetableParser.set</a>.</p>
 <pre class="source">
 SetableParser setable() =&gt; new _SetableParser(this);
 </pre>

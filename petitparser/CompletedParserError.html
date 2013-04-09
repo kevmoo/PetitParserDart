@@ -2,19 +2,19 @@
         <html>
         <head>
                 <meta charset="utf-8">
-        <title>ParserError class / petitparser Library / Dart Documentation</title>
+        <title>CompletedParserError class / petitparser Library / Dart Documentation</title>
         <link rel="stylesheet" type="text/css"
             href="../styles.css">
         <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
         <link rel="shortcut icon" href="../favicon.ico">
         
         </head>
-        <body data-library="petitparser" data-type="ParserError">
+        <body data-library="petitparser" data-type="CompletedParserError">
         <div class="page">
         <div class="header">
           <a href="../index.html"><div class="logo"></div></a>
           <a href="../index.html">Dart Documentation</a>
-         &rsaquo; <a href="../petitparser.html">petitparser</a> &rsaquo; <a href="../petitparser/ParserError.html">ParserError</a>        <div id="search-box">
+         &rsaquo; <a href="../petitparser.html">petitparser</a> &rsaquo; <a href="../petitparser/CompletedParserError.html">CompletedParserError</a>        <div id="search-box">
           <input type="search" name="q" id="q" autocomplete="off"
               class="search-input" placeholder="Search API">
         </div>
@@ -26,24 +26,18 @@
         
 </div>
 <div class="content">
-        <h2><strong>ParserError</strong>
+        <h2><strong>CompletedParserError</strong>
           class
         </h2>
         
 <button id="show-inherited" class="show-inherited">Hide inherited</button>
 <div class="doc">
-<p>An exception raised in case of a parse error.</p>
+<p>Error raised when somebody tries to modify a <a class="crossref" href="../petitparser/CompositeParser.html">CompositeParser</a> outside
+the <a class="crossref" href="../petitparser/CompositeParser.html#initialize">CompositeParser.initialize</a> method.</p>
 <pre class="source">
-class ParserError implements Error {
-
- final Failure _failure;
-
- ParserError(this._failure);
-
- Failure get failure =&gt; _failure;
-
- String toString() =&gt; '${_failure.message} at ${_failure.position}';
-
+class CompletedParserError implements Error {
+ CompletedParserError();
+ String toString() =&gt; 'Completed parser error';
 }
 </pre>
 </div>
@@ -52,28 +46,13 @@ class ParserError implements Error {
 <span class="type-box"><span class="icon-exception"></span><a href="../dart_core/Error.html">Error</a></span></p>
 <div>
 <h3>Constructors</h3>
-<div class="method"><h4 id="ParserError">
+<div class="method"><h4 id="CompletedParserError">
 <button class="show-code">Code</button>
-new <strong>ParserError</strong>(<a href="../petitparser/Failure.html">Failure</a> _failure) <a class="anchor-link" href="#ParserError"
-              title="Permalink to ParserError.ParserError">#</a></h4>
+new <strong>CompletedParserError</strong>() <a class="anchor-link" href="#CompletedParserError"
+              title="Permalink to CompletedParserError.CompletedParserError">#</a></h4>
 <div class="doc">
 <pre class="source">
-ParserError(this._failure);
-</pre>
-</div>
-</div>
-</div>
-<div>
-<h3>Properties</h3>
-<div class="field"><h4 id="failure">
-<button class="show-code">Code</button>
-final <a href="../petitparser/Failure.html">Failure</a>         <strong>failure</strong> <a class="anchor-link"
-            href="#failure"
-            title="Permalink to ParserError.failure">#</a>
-        </h4>
-        <div class="doc">
-<pre class="source">
-Failure get failure =&gt; _failure;
+CompletedParserError();
 </pre>
 </div>
 </div>
@@ -83,13 +62,13 @@ Failure get failure =&gt; _failure;
 <div class="method"><h4 id="toString">
 <button class="show-code">Code</button>
 <a href="http://api.dartlang.org/dart_core/String.html">String</a> <strong>toString</strong>() <a class="anchor-link" href="#toString"
-              title="Permalink to ParserError.toString">#</a></h4>
+              title="Permalink to CompletedParserError.toString">#</a></h4>
 <div class="doc">
 <div class="inherited">
 <p>Returns a string representation of this object.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
 <pre class="source">
-String toString() =&gt; '${_failure.message} at ${_failure.position}';
+String toString() =&gt; 'Completed parser error';
 </pre>
 </div>
 </div>

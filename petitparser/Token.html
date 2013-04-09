@@ -38,41 +38,47 @@ in the input buffer.</p>
 <pre class="source">
 class Token {
 
+ final dynamic _value;
+ final dynamic _buffer;
+ final int _start;
+ final int _stop;
+
+ const Token(this._value, this._buffer, this._start, this._stop);
+
+ bool operator == (Token other) {
+   return other is Token
+     &amp;&amp; _value == other._value
+     &amp;&amp; _start == other._start
+     &amp;&amp; _stop == other._stop;
+ }
+
+ int get hashCode =&gt; _value.hashCode + _start.hashCode + _stop.hashCode;
+
  /**
   * Returns the parsed value.
   */
- final dynamic value;
+ dynamic get value =&gt; _value;
+
 
  /**
   * Returns the input buffer.
   */
- final dynamic buffer;
+ dynamic get buffer =&gt; _buffer;
 
  /**
   * Returns the start position in the input buffer.
   */
- final int start;
+ int get start =&gt; _start;
 
  /**
   * Returns the stop position in the input buffer.
   */
- final int stop;
-
- const Token(this.value, this.buffer, this.start, this.stop);
-
- bool operator == (Token other) {
-   return other is Token
-     &amp;&amp; value == other._value
-     &amp;&amp; start == other._start
-     &amp;&amp; stop == other._stop;
- }
-
- int get hashCode =&gt; value.hashCode + start.hashCode + stop.hashCode;
+ int get stop =&gt; _stop;
 
  /**
   * Returns the length of the token.
   */
- int get length =&gt; stop - start;
+ int get length =&gt; _stop - _start;
 
  /**
   * Returns the line number of the token.
@@ -129,11 +135,11 @@ static Parser newlineParser() =&gt; _NEWLINE_PARSER;
 <h3>Constructors</h3>
 <div class="method"><h4 id="Token">
 <button class="show-code">Code</button>
-const <strong>Token</strong>(value, buffer, <a href="http://api.dartlang.org/dart_core/int.html">int</a> start, <a href="http://api.dartlang.org/dart_core/int.html">int</a> stop) <a class="anchor-link" href="#Token"
+const <strong>Token</strong>(_value, _buffer, <a href="http://api.dartlang.org/dart_core/int.html">int</a> _start, <a href="http://api.dartlang.org/dart_core/int.html">int</a> _stop) <a class="anchor-link" href="#Token"
               title="Permalink to Token.Token">#</a></h4>
 <div class="doc">
 <pre class="source">
-const Token(this.value, this.buffer, this.start, this.stop);
+const Token(this._value, this._buffer, this._start, this._stop);
 </pre>
 </div>
 </div>
@@ -147,8 +153,9 @@ final         <strong>buffer</strong> <a class="anchor-link"
             title="Permalink to Token.buffer">#</a>
         </h4>
         <div class="doc">
+<p>Returns the input buffer.</p>
 <pre class="source">
-buffer
+dynamic get buffer =&gt; _buffer;
 </pre>
 </div>
 </div>
@@ -192,7 +199,7 @@ there are no distribution guarantees.</p>
 equality operator as well to maintain consistency.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
 <pre class="source">
-int get hashCode =&gt; value.hashCode + start.hashCode + stop.hashCode;
+int get hashCode =&gt; _value.hashCode + _start.hashCode + _stop.hashCode;
 </pre>
 </div>
 </div>
@@ -205,7 +212,7 @@ final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <stro
         <div class="doc">
 <p>Returns the length of the token.</p>
 <pre class="source">
-int get length =&gt; stop - start;
+int get length =&gt; _stop - _start;
 </pre>
 </div>
 </div>
@@ -238,8 +245,9 @@ final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <stro
             title="Permalink to Token.start">#</a>
         </h4>
         <div class="doc">
+<p>Returns the start position in the input buffer.</p>
 <pre class="source">
-start
+int get start =&gt; _start;
 </pre>
 </div>
 </div>
@@ -250,8 +258,9 @@ final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <stro
             title="Permalink to Token.stop">#</a>
         </h4>
         <div class="doc">
+<p>Returns the stop position in the input buffer.</p>
 <pre class="source">
-stop
+int get stop =&gt; _stop;
 </pre>
 </div>
 </div>
@@ -262,8 +271,9 @@ final         <strong>value</strong> <a class="anchor-link"
             title="Permalink to Token.value">#</a>
         </h4>
         <div class="doc">
+<p>Returns the parsed value.</p>
 <pre class="source">
-value
+dynamic get value =&gt; _value;
 </pre>
 </div>
 </div>
@@ -286,9 +296,9 @@ the <a class="crossref" href="../petitparser/Token.html#hashCode">hashCode</a> m
 <pre class="source">
 bool operator == (Token other) {
  return other is Token
-   &amp;&amp; value == other._value
-   &amp;&amp; start == other._start
-   &amp;&amp; stop == other._stop;
+   &amp;&amp; _value == other._value
+   &amp;&amp; _start == other._start
+   &amp;&amp; _stop == other._stop;
 }
 </pre>
 </div>

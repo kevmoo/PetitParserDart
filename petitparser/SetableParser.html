@@ -32,7 +32,7 @@
         
 <button id="show-inherited" class="show-inherited">Hide inherited</button>
 <div class="doc">
-<p>Interface of a parser that can be redefined using <code>SetableParser#set</code>.</p>
+<p>Interface of a parser that can be redefined using <a class="crossref" href="../petitparser/SetableParser.html#set">SetableParser.set</a>.</p>
 <pre class="source">
 abstract class SetableParser implements Parser {
 
@@ -75,7 +75,7 @@ List&lt;Parser&gt; get children =&gt; [];
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Convenience operator returning a parser accepts the receiver followed
 by 
-<span class="param">other</span>. See <code>Parser#seq</code> for details.</p>
+<span class="param">other</span>. See <a class="crossref" href="../petitparser/Parser.html#seq">Parser.seq</a> for details.</p>
 <pre class="source">
 Parser operator &amp; (Parser other) =&gt; this.seq(other);
 </pre>
@@ -88,7 +88,7 @@ Parser operator &amp; (Parser other) =&gt; this.seq(other);
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Convenience operator returning a parser accepts the receiver or
 
-<span class="param">other</span>. See <code>Parser#or</code> for details.</p>
+<span class="param">other</span>. See <a class="crossref" href="../petitparser/Parser.html#or">Parser.or</a> for details.</p>
 <pre class="source">
 Parser operator | (Parser other) =&gt; this.or(other);
 </pre>
@@ -294,10 +294,10 @@ Parser or(Parser other) =&gt; new _ChoiceParser([this, other]);
 <p>The implementation creates a default parse context on the input and calls
 the internal parsing logic of the receiving parser.</p>
 <p>For example, <code>letter().plus().parse('abc')</code> results in an instance of
-<a class="crossref" href="../petitparser/Success.html">Success</a>, where <code>Result#position</code> is <code>3</code> and <a class="crossref" href="../petitparser/Success.html#result">Success.result</a> is
+<a class="crossref" href="../petitparser/Success.html">Success</a>, where <code>Result.position</code> is <code>3</code> and <a class="crossref" href="../petitparser/Success.html#result">Success.result</a> is
 <code>[a, b, c]</code>.</p>
 <p>Similarly, <code>letter().plus().parse('123')</code> results in an instance of
-<a class="crossref" href="../petitparser/Failure.html">Failure</a>, where <code>Result#position</code> is <code>0</code> and <a class="crossref" href="../petitparser/Failure.html#message">Failure.message</a> is
+<a class="crossref" href="../petitparser/Failure.html">Failure</a>, where <code>Result.position</code> is <code>0</code> and <a class="crossref" href="../petitparser/Failure.html#message">Failure.message</a> is
 <code>'letter expected'</code>.</p>
 <pre class="source">
 Result parse(dynamic input) {
@@ -392,7 +392,7 @@ void <strong>replace</strong>(<a href="../petitparser/Parser.html">Parser</a> so
 <span class="param">source</span> with 
 <span class="param">target</span>. Does nothing
 if 
-<span class="param">source</span> does not exist in <code>Parser#children</code>.</p>
+<span class="param">source</span> does not exist in <a class="crossref" href="../petitparser/Parser.html#children">Parser.children</a>.</p>
 <p>The following example creates a letter parser and then defines a parser
 called <code>example</code> that accepts one or more letters. Eventually the parser
 <code>example</code> is modified by replacing the <code>letter</code> parser with a new
@@ -463,7 +463,7 @@ Parser separatedBy(Parser separator, {bool includeSeparators: true,
 <span class="param">other</span>. The
 resulting parser returns a list of the parse result of the receiver
 followed by the parse result of 
-<span class="param">other</span>. Calling <code>SequenceParser#seq</code>
+<span class="param">other</span>. Calling <code>SequenceParser.seq</code>
 causes the sequences to be concatenated instead of nested.</p>
 <p>For example, the parser <code>letter().seq(digit()).seq(letter())</code> accepts a
 letter followed by a digit and another letter. The parse result of the
@@ -490,7 +490,7 @@ abstract void <strong>set</strong>(<a href="../petitparser/Parser.html">Parser</
 to something else at a later point in time.</p>
 <p>For example, the parser <code>letter().setable()</code> behaves exactly the same
 as <code>letter()</code>, but it can be replaced with another parser using
-<code>SetableParser#set</code>.</p>
+<a class="crossref" href="../petitparser/SetableParser.html#set">SetableParser.set</a>.</p>
 <pre class="source">
 SetableParser setable() =&gt; new _SetableParser(this);
 </pre>
