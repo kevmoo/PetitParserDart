@@ -32,40 +32,73 @@
         
 <button id="show-inherited" class="show-inherited">Hide inherited</button>
 <div class="doc">
-<p>Collection of various common transformations. </p>
+<p>Collection of various common transformations.</p>
 <pre class="source">
 class Transformations {
 
- /** Pluggable transformation starting at [root]. */
+ /**
+  * Transforms all parsers reachable from [root] with the given [function].
+  */
  static Parser transform(Parser root, Parser function(Parser parser)) {
-   var sources = new List(), targets = new List();
+   var mapping = new Map(), transformed = new Set();
    do {
-     sources.clear(); targets.clear();
-     var parsers = new List.from(new ParserIterable(root));
+     mapping.clear();
+     var parsers = new ParserIterable(root).toList();
      parsers.forEach((source) {
-       var target = function(source);
-       if (target != null &amp;&amp; !identical(source, target)) {
-         if (identical(source, root)) {
-           root = target;
+       if (!transformed.contains(source)) {
+         var target = function(source);
+         if (target != null &amp;&amp; !identical(source, target)) {
+           if (identical(source, root)) {
+             root = target;
+           }
+           mapping[source] = target;
          }
-         sources.add(source);
-         targets.add(target);
+         transformed.add(source);
        }
      });
      parsers.forEach((parser) {
-       for (var i = 0; i &lt; sources.length; i++) {
-         parser.replace(sources[i], targets[i]);
-       }
+       mapping.forEach((previous, next) {
+         parser.replace(previous, next);
+       });
      });
-   } while (!sources.isEmpty);
+   } while (!mapping.isEmpty);
    return root;
  }
 
- /** Removes all settables starting at [root]. */
+ /**
+  * Removes all setable parsers reachable from [root].
+  */
  static Parser removeSetables(Parser root) {
-   return transform(root, (each) {
-     return each is SetableParser ? each.children[0] : each;
+   return transform(root, (parser) {
+     return parser is SetableParser ? parser.children[0] : parser;
    });
+ }
+
+ /**
+  * Adds debug handlers to each parser reachable from [root].
+  */
+ static Parser debug(Parser root) {
+   var level = 0;
+   return transform(root, (parser) {
+     return parser is _PluggableParser
+         ? parser
+         : new _PluggableParser((context) {
+             print('${_indent(level)}${parser}');
+             level++;
+             var result = parser._parse(context);
+             level--;
+             print('${_indent(level)}${result}');
+             return result;
+      });
+   });
+ }
+
+ static String _indent(int level) {
+   var result = new StringBuffer();
+   for (var i = 0; i &lt; level; i++) {
+     result.write('  ');
+   }
+   return result.toString();
  }
 
 }
@@ -78,30 +111,33 @@ class Transformations {
 <a href="../petitparser/Parser.html">Parser</a> <strong>transform</strong>(<a href="../petitparser/Parser.html">Parser</a> root, <a href="../petitparser/Parser.html">Parser</a> function(<a href="../petitparser/Parser.html">Parser</a> parser)) <a class="anchor-link" href="#transform"
               title="Permalink to Transformations.transform">#</a></h4>
 <div class="doc">
-<p>Pluggable transformation starting at 
-<span class="param">root</span>. </p>
+<p>Transforms all parsers reachable from 
+<span class="param">root</span> with the given 
+<span class="param">function</span>.</p>
 <pre class="source">
 static Parser transform(Parser root, Parser function(Parser parser)) {
- var sources = new List(), targets = new List();
+ var mapping = new Map(), transformed = new Set();
  do {
-   sources.clear(); targets.clear();
-   var parsers = new List.from(new ParserIterable(root));
+   mapping.clear();
+   var parsers = new ParserIterable(root).toList();
    parsers.forEach((source) {
-     var target = function(source);
-     if (target != null &amp;&amp; !identical(source, target)) {
-       if (identical(source, root)) {
-         root = target;
+     if (!transformed.contains(source)) {
+       var target = function(source);
+       if (target != null &amp;&amp; !identical(source, target)) {
+         if (identical(source, root)) {
+           root = target;
+         }
+         mapping[source] = target;
        }
-       sources.add(source);
-       targets.add(target);
+       transformed.add(source);
      }
    });
    parsers.forEach((parser) {
-     for (var i = 0; i &lt; sources.length; i++) {
-       parser.replace(sources[i], targets[i]);
-     }
+     mapping.forEach((previous, next) {
+       parser.replace(previous, next);
+     });
    });
- } while (!sources.isEmpty);
+ } while (!mapping.isEmpty);
  return root;
 }
 </pre>
@@ -112,12 +148,38 @@ static Parser transform(Parser root, Parser function(Parser parser)) {
 <a href="../petitparser/Parser.html">Parser</a> <strong>removeSetables</strong>(<a href="../petitparser/Parser.html">Parser</a> root) <a class="anchor-link" href="#removeSetables"
               title="Permalink to Transformations.removeSetables">#</a></h4>
 <div class="doc">
-<p>Removes all settables starting at 
-<span class="param">root</span>. </p>
+<p>Removes all setable parsers reachable from 
+<span class="param">root</span>.</p>
 <pre class="source">
 static Parser removeSetables(Parser root) {
- return transform(root, (each) {
-   return each is SetableParser ? each.children[0] : each;
+ return transform(root, (parser) {
+   return parser is SetableParser ? parser.children[0] : parser;
+ });
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="debug">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>debug</strong>(<a href="../petitparser/Parser.html">Parser</a> root) <a class="anchor-link" href="#debug"
+              title="Permalink to Transformations.debug">#</a></h4>
+<div class="doc">
+<p>Adds debug handlers to each parser reachable from 
+<span class="param">root</span>.</p>
+<pre class="source">
+static Parser debug(Parser root) {
+ var level = 0;
+ return transform(root, (parser) {
+   return parser is _PluggableParser
+       ? parser
+       : new _PluggableParser((context) {
+           print('${_indent(level)}${parser}');
+           level++;
+           var result = parser._parse(context);
+           level--;
+           print('${_indent(level)}${result}');
+           return result;
+    });
  });
 }
 </pre>
