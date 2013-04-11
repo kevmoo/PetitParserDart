@@ -181,6 +181,23 @@ Result success(dynamic result, [int position]) {
 </pre>
 </div>
 </div>
+<div class="method inherited"><h4 id="toPositionString">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/String.html">String</a> <strong>toPositionString</strong>() <a class="anchor-link" href="#toPositionString"
+              title="Permalink to Result.toPositionString">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Context.html">Context</a> </div><div class="doc">
+<pre class="source">
+String toPositionString() {
+ if (_buffer is String) {
+   var lineAndColumn = Token.lineAndColumnOf(buffer, position);
+   return '${lineAndColumn[0]}:${lineAndColumn[1]}';
+ } else {
+   return '${position}';
+ }
+}
+</pre>
+</div>
+</div>
 <div class="method inherited"><h4 id="toString">
 <button class="show-code">Code</button>
 <a href="http://api.dartlang.org/dart_core/String.html">String</a> <strong>toString</strong>() <a class="anchor-link" href="#toString"
@@ -188,7 +205,7 @@ Result success(dynamic result, [int position]) {
 <div class="inherited-from">inherited from <a href="../petitparser/Context.html">Context</a> </div><div class="doc">
 <p>Returns a human readable string of the current context </p>
 <pre class="source">
-String toString() =&gt; 'Context[$_position]';
+String toString() =&gt; 'Context[${toPositionString()}]';
 </pre>
 </div>
 </div>
