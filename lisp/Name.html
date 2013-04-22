@@ -2,19 +2,19 @@
         <html>
         <head>
                 <meta charset="utf-8">
-        <title>Symbol class / lisp Library / Dart Documentation</title>
+        <title>Name class / lisp Library / Dart Documentation</title>
         <link rel="stylesheet" type="text/css"
             href="../styles.css">
         <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
         <link rel="shortcut icon" href="../favicon.ico">
         
         </head>
-        <body data-library="lisp" data-type="Symbol">
+        <body data-library="lisp" data-type="Name">
         <div class="page">
         <div class="header">
           <a href="../index.html"><div class="logo"></div></a>
           <a href="../index.html">Dart Documentation</a>
-         &rsaquo; <a href="../lisp.html">lisp</a> &rsaquo; <a href="../lisp/Symbol.html">Symbol</a>        <div id="search-box">
+         &rsaquo; <a href="../lisp.html">lisp</a> &rsaquo; <a href="../lisp/Name.html">Name</a>        <div id="search-box">
           <input type="search" name="q" id="q" autocomplete="off"
               class="search-input" placeholder="Search API">
         </div>
@@ -26,32 +26,31 @@
         
 </div>
 <div class="content">
-        <h2><strong>Symbol</strong>
+        <h2><strong>Name</strong>
           class
         </h2>
         
 <button id="show-inherited" class="show-inherited">Hide inherited</button>
 <div class="doc">
-<p>An unique symbol.</p>
+<p>An unique symbolic name.</p>
 <pre class="source">
-class Symbol {
+class Name {
 
  /** The name of the symbol. */
  final String _name;
 
  /** The interned symbols. */
- static Map&lt;String, Symbol&gt; _interned;
+ static Map&lt;String, Name&gt; _interned = new HashMap();
 
  /** Factory for new symbol cells. */
- factory Symbol(String name) {
-   if (_interned == null) _interned = new HashMap();
-   return _interned.putIfAbsent(name, () =&gt; new Symbol._internal(name));
+ factory Name(String name) {
+   return _interned.putIfAbsent(name, () =&gt; new Name._internal(name));
  }
 
  /** Internal constructor for symbol. */
- Symbol._internal(this._name);
+ Name._internal(this._name);
 
- /** Returns the string representation of the symbol. */
+ /** Returns the string representation of the symbolic name. */
  String toString() =&gt; _name;
 
 }
@@ -59,16 +58,15 @@ class Symbol {
 </div>
 <div>
 <h3>Constructors</h3>
-<div class="method"><h4 id="Symbol">
+<div class="method"><h4 id="Name">
 <button class="show-code">Code</button>
-factory <strong>Symbol</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name) <a class="anchor-link" href="#Symbol"
-              title="Permalink to Symbol.Symbol">#</a></h4>
+factory <strong>Name</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name) <a class="anchor-link" href="#Name"
+              title="Permalink to Name.Name">#</a></h4>
 <div class="doc">
 <p>Factory for new symbol cells. </p>
 <pre class="source">
-factory Symbol(String name) {
- if (_interned == null) _interned = new HashMap();
- return _interned.putIfAbsent(name, () =&gt; new Symbol._internal(name));
+factory Name(String name) {
+ return _interned.putIfAbsent(name, () =&gt; new Name._internal(name));
 }
 </pre>
 </div>
@@ -79,9 +77,9 @@ factory Symbol(String name) {
 <div class="method"><h4 id="toString">
 <button class="show-code">Code</button>
 <a href="http://api.dartlang.org/dart_core/String.html">String</a> <strong>toString</strong>() <a class="anchor-link" href="#toString"
-              title="Permalink to Symbol.toString">#</a></h4>
+              title="Permalink to Name.toString">#</a></h4>
 <div class="doc">
-<p>Returns the string representation of the symbol. </p>
+<p>Returns the string representation of the symbolic name. </p>
 <pre class="source">
 String toString() =&gt; _name;
 </pre>

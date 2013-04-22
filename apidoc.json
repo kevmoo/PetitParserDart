@@ -1,1 +1,1 @@
-{"location":"0","name":"dart:","dependencies":[],"description":"Dart System Libraries","libraries":[{"refId":"dart"},{"refId":"json"},{"refId":"lisp"},{"refId":"petitparser"},{"refId":"xml"}],"revision":"0"}
+{"name":"dart:","dependencies":[],"location":"0","revision":"0","libraries":[{"refId":"dart"},{"refId":"json"},{"refId":"lisp"},{"refId":"meta","name":"package:meta/meta.dart"},{"refId":"petitparser"},{"refId":"smalltalk"},{"refId":"xml"}],"description":"Dart System Libraries"}

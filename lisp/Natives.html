@@ -32,7 +32,7 @@
         
 <button id="show-inherited" class="show-inherited">Hide inherited</button>
 <div class="doc">
-<p>Collection of native functions. </p>
+<p>Collection of native functions.</p>
 <pre class="source">
 class Natives {
 
@@ -48,7 +48,7 @@ class Natives {
  static Environment importNatives(Environment env) {
    _initialize();
    _natives.forEach((key, value) {
-     env.define(new Symbol(key), value);
+     env.define(new Name(key), value);
    });
    return env;
  }
@@ -125,9 +125,9 @@ class Natives {
 
  static void _basicFunctions() {
    _natives['define'] = (Environment env, dynamic args) {
-     if (args.head is Symbol) {
+     if (args.head is Name) {
        return env.define(args.head, evalList(env, args.tail));
-     } else if (args.head.head is Symbol) {
+     } else if (args.head.head is Name) {
        return env.define(args.head.head, _natives['lambda'](env,
            new Cons(args.head.tail, args.tail)));
      } else {
@@ -322,7 +322,7 @@ class Natives {
 <h3>Static Methods</h3>
 <div class="method"><h4 id="find">
 <button class="show-code">Code</button>
-dynamic<strong>find</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name) <a class="anchor-link" href="#find"
+dynamic <strong>find</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name) <a class="anchor-link" href="#find"
               title="Permalink to Natives.find">#</a></h4>
 <div class="doc">
 <p>Looks a native function up. </p>
@@ -344,7 +344,7 @@ static dynamic find(String name) {
 static Environment importNatives(Environment env) {
  _initialize();
  _natives.forEach((key, value) {
-   env.define(new Symbol(key), value);
+   env.define(new Name(key), value);
  });
  return env;
 }

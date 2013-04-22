@@ -47,6 +47,12 @@ class Context {
  /** The current position in the buffer. */
  int get position =&gt; _position;
 
+ /** Returns [true] if this result indicates a parse success. */
+ bool get isSuccess =&gt; false;
+
+ /** Returns [true] if this result indicates a parse failure. */
+ bool get isFailure =&gt; false;
+
  /** Returns a result indicating a parse success. */
  Result success(dynamic result, [int position]) {
    return new Success(_buffer, position == null ? _position : position, result);
@@ -100,6 +106,32 @@ final         <strong>buffer</strong> <a class="anchor-link"
 <p>The buffer we are working on. </p>
 <pre class="source">
 dynamic get buffer =&gt; _buffer;
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="isFailure">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/bool.html">bool</a>         <strong>isFailure</strong> <a class="anchor-link"
+            href="#isFailure"
+            title="Permalink to Context.isFailure">#</a>
+        </h4>
+        <div class="doc">
+<p>Returns <code>true</code> if this result indicates a parse failure. </p>
+<pre class="source">
+bool get isFailure =&gt; false;
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="isSuccess">
+<button class="show-code">Code</button>
+final <a href="http://api.dartlang.org/dart_core/bool.html">bool</a>         <strong>isSuccess</strong> <a class="anchor-link"
+            href="#isSuccess"
+            title="Permalink to Context.isSuccess">#</a>
+        </h4>
+        <div class="doc">
+<p>Returns <code>true</code> if this result indicates a parse success. </p>
+<pre class="source">
+bool get isSuccess =&gt; false;
 </pre>
 </div>
 </div>

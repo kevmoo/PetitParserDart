@@ -42,7 +42,7 @@ class Failure extends Result {
 
  bool get isFailure =&gt; true;
 
- dynamic get result { throw new ParserError(this); }
+ dynamic get value { throw new ParserError(this); }
 
  String get message =&gt; _message;
 
@@ -91,7 +91,7 @@ final <a href="http://api.dartlang.org/dart_core/bool.html">bool</a>         <st
         <div class="doc">
 <div class="inherited">
 <p>Returns <code>true</code> if this result indicates a parse failure. </p>
-<div class="docs-inherited-from">docs inherited from <a href="../petitparser/Result.html">Result</a> </div></div>
+<div class="docs-inherited-from">docs inherited from <a href="../petitparser/Context.html">Context</a> </div></div>
 <pre class="source">
 bool get isFailure =&gt; true;
 </pre>
@@ -103,7 +103,7 @@ final <a href="http://api.dartlang.org/dart_core/bool.html">bool</a>         <st
             href="#isSuccess"
             title="Permalink to Failure.isSuccess">#</a>
         </h4>
-        <div class="inherited-from">inherited from <a href="../petitparser/Result.html">Result</a> </div><div class="doc">
+        <div class="inherited-from">inherited from <a href="../petitparser/Context.html">Context</a> </div><div class="doc">
 <p>Returns <code>true</code> if this result indicates a parse success. </p>
 <pre class="source">
 bool get isSuccess =&gt; false;
@@ -138,18 +138,30 @@ int get position =&gt; _position;
 </pre>
 </div>
 </div>
-<div class="field"><h4 id="result">
+<div class="field inherited"><h4 id="result">
 <button class="show-code">Code</button>
 final         <strong>result</strong> <a class="anchor-link"
             href="#result"
             title="Permalink to Failure.result">#</a>
+        </h4>
+        <div class="inherited-from">inherited from <a href="../petitparser/Result.html">Result</a> </div><div class="doc">
+<pre class="source">
+dynamic get result =&gt; value;
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="value">
+<button class="show-code">Code</button>
+final         <strong>value</strong> <a class="anchor-link"
+            href="#value"
+            title="Permalink to Failure.value">#</a>
         </h4>
         <div class="doc">
 <div class="inherited">
 <p>Returns the parse result of the current context. </p>
 <div class="docs-inherited-from">docs inherited from <a href="../petitparser/Result.html">Result</a> </div></div>
 <pre class="source">
-dynamic get result { throw new ParserError(this); }
+dynamic get value { throw new ParserError(this); }
 </pre>
 </div>
 </div>

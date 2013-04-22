@@ -27,7 +27,9 @@
 </div>
 <div class="content">
 <h2><strong>petitparser</strong> library</h2>
-<div class="doc"><h1>Writing a Simple Grammar</h1>
+<div class="doc"><p>This package contains the core library of PetitParser, a dynamic parser
+combinator framework.</p>
+<h1>Writing a Simple Grammar</h1>
 <p>Writing grammars with PetitParser is simple as writing Dart code. For
 example, to write a grammar that can parse identifiers that start with
 a letter followed by zero or more letter or digits is defined as follows:</p>
@@ -43,9 +45,9 @@ Result id2 = id.parse('f12');
 </code></pre>
 <p>The method <a class="crossref" href="petitparser/Parser.html#parse">Parser.parse</a> returns a parse <a class="crossref" href="petitparser/Result.html">Result</a>, which is either an
 instance of <a class="crossref" href="petitparser/Success.html">Success</a> or <a class="crossref" href="petitparser/Failure.html">Failure</a>. In both examples above we are
-successful and can retrieve the parse result using <a class="crossref" href="petitparser/Success.html#result">Success.result</a>:</p>
-<pre><code>print(id1.result);                  // ['y', ['e', 'a', 'h']]
-print(id2.result);                  // ['f', ['1', '2']]
+successful and can retrieve the parse result using <a class="crossref" href="petitparser/Success.html#value">Success.value</a>:</p>
+<pre><code>print(id1.value);                   // ['y', ['e', 'a', 'h']]
+print(id2.value);                   // ['f', ['1', '2']]
 </code></pre>
 <p>While it seems odd to get these nested arrays with characters as a return
 value, this is the default decomposition of the input into a parse tree.
@@ -54,11 +56,11 @@ We'll see in a while how that can be customized.</p>
 an answer and we can retrieve a descriptive error message using
 <a class="crossref" href="petitparser/Failure.html#message">Failure.message</a>:</p>
 <pre><code>Result id3 = id.parse('123');
-print(id3.message);                // 'letter expected'
-print(id3.position);               // 0
+print(id3.message);                 // 'letter expected'
+print(id3.position);                // 0
 </code></pre>
-<p>Trying to retrieve the parse result by calling <a class="crossref" href="petitparser/Failure.html#result">Failure.result</a> would throw
-the exception <code>UnsupportedError</code>. <a class="crossref" href="petitparser/Result.html#isSuccess">Result.isSuccess</a> and <a class="crossref" href="petitparser/Result.html#isFailure">Result.isFailure</a>
+<p>Trying to retrieve the parse result by calling <a class="crossref" href="petitparser/Failure.html#value">Failure.value</a> would throw
+the exception <code>UnsupportedError</code>. <a class="crossref" href="petitparser/Context.html#isSuccess">Context.isSuccess</a> and <a class="crossref" href="petitparser/Context.html#isFailure">Context.isFailure</a>
 can be used to decide if the parse was successful.</p>
 <p>If you are only interested if a given string matches or not you can use the
 helper method <a class="crossref" href="petitparser/Parser.html#accept">Parser.accept</a>:</p>
@@ -83,7 +85,7 @@ this:</p>
 <p>To conveniently find all matches in a given input string you can use
 <a class="crossref" href="petitparser/Parser.html#matchesSkipping">Parser.matchesSkipping</a>:</p>
 <pre><code>var matches = id.matchesSkipping('foo 123 bar4');
-print(matches);                    // ['foo', 'bar4']
+print(matches);                     // ['foo', 'bar4']
 </code></pre>
 <p>These are the basic elements to build parsers. There are a few more well
 documented and tested factory methods in the <a class="crossref" href="petitparser/Parser.html">Parser</a> class. If you want
@@ -117,8 +119,8 @@ parser into the start production:</p>
 <pre><code>var start = term.end();
 </code></pre>
 <p>That's it, now we can test our parser and evaluator:</p>
-<pre><code>print(start.parse('1 + 2 * 3').result);       // 7
-print(start.parse('(1 + 2) * 3').result);     // 9
+<pre><code>print(start.parse('1 + 2 * 3').value);        // 7
+print(start.parse('(1 + 2) * 3').value);      // 9
 </code></pre>
 <p>As an exercise we could extend the parser to also accept negative numbers
 and floating point numbers, not only integers. Furthermore it would be
@@ -128,7 +130,7 @@ can be added with a few lines of PetitParser code.</p></div>
 <h3>Functions</h3>
 <div class="method"><h4 id="stringIgnoreCase">
 <button class="show-code">Code</button>
-<a href="petitparser/Parser.html">Parser</a> <strong>stringIgnoreCase</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> element, {<a href="http://api.dartlang.org/dart_core/String.html">String</a> message}) <a class="anchor-link" href="#stringIgnoreCase"
+<a href="petitparser/Parser.html">Parser</a> <strong>stringIgnoreCase</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> element, [<a href="http://api.dartlang.org/dart_core/String.html">String</a> message]) <a class="anchor-link" href="#stringIgnoreCase"
               title="Permalink to stringIgnoreCase">#</a></h4>
 <div class="doc">
 <p>Returns a parser that accepts the string 
@@ -136,7 +138,7 @@ can be added with a few lines of PetitParser code.</p></div>
 <p>For example, <code>stringIgnoreCase('foo')</code> succeeds and consumes the input
 string <code>'Foo'</code> or <code>'FOO'</code>. Fails for any other input.</p>
 <pre class="source">
-Parser stringIgnoreCase(String element, {String message}) {
+Parser stringIgnoreCase(String element, [String message]) {
  final lowerElement = element.toLowerCase();
  return new _PredicateParser(element.length,
    (String each) =&gt; lowerElement == each.toLowerCase(),
@@ -147,7 +149,7 @@ Parser stringIgnoreCase(String element, {String message}) {
 </div>
 <div class="method"><h4 id="string">
 <button class="show-code">Code</button>
-<a href="petitparser/Parser.html">Parser</a> <strong>string</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> element, {<a href="http://api.dartlang.org/dart_core/String.html">String</a> message}) <a class="anchor-link" href="#string"
+<a href="petitparser/Parser.html">Parser</a> <strong>string</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> element, [<a href="http://api.dartlang.org/dart_core/String.html">String</a> message]) <a class="anchor-link" href="#string"
               title="Permalink to string">#</a></h4>
 <div class="doc">
 <p>Returns a parser that accepts the string 
@@ -155,7 +157,7 @@ Parser stringIgnoreCase(String element, {String message}) {
 <p>For example, <code>string('foo')</code> succeeds and consumes the input string
 <code>'foo'</code>. Fails for any other input.</p>
 <pre class="source">
-Parser string(String element, {String message}) {
+Parser string(String element, [String message]) {
  return new _PredicateParser(element.length,
    (String each) =&gt; element == each,
    message != null ? message : '$element expected');
@@ -165,7 +167,7 @@ Parser string(String element, {String message}) {
 </div>
 <div class="method"><h4 id="anyIn">
 <button class="show-code">Code</button>
-<a href="petitparser/Parser.html">Parser</a> <strong>anyIn</strong>(elements, {<a href="http://api.dartlang.org/dart_core/String.html">String</a> message}) <a class="anchor-link" href="#anyIn"
+<a href="petitparser/Parser.html">Parser</a> <strong>anyIn</strong>(elements, [<a href="http://api.dartlang.org/dart_core/String.html">String</a> message]) <a class="anchor-link" href="#anyIn"
               title="Permalink to anyIn">#</a></h4>
 <div class="doc">
 <p>Returns a parser that accepts any of the 
@@ -173,7 +175,7 @@ Parser string(String element, {String message}) {
 <p>For example, <code>anyIn('ab')</code> succeeds and consumes either the letter
 <code>'a'</code> or the letter <code>'b'</code>. For any other input the parser fails.</p>
 <pre class="source">
-Parser anyIn(dynamic elements, {String message}) {
+Parser anyIn(dynamic elements, [String message]) {
  return new _PredicateParser(1,
    (each) =&gt; elements.indexOf(each) &gt;= 0,
    message != null ? message : 'any of $elements expected');
@@ -183,24 +185,22 @@ Parser anyIn(dynamic elements, {String message}) {
 </div>
 <div class="method"><h4 id="any">
 <button class="show-code">Code</button>
-<a href="petitparser/Parser.html">Parser</a> <strong>any</strong>({<a href="http://api.dartlang.org/dart_core/String.html">String</a> message}) <a class="anchor-link" href="#any"
+<a href="petitparser/Parser.html">Parser</a> <strong>any</strong>([<a href="http://api.dartlang.org/dart_core/String.html">String</a> message = 'input expected']) <a class="anchor-link" href="#any"
               title="Permalink to any">#</a></h4>
 <div class="doc">
 <p>Returns a parser that accepts any input element.</p>
 <p>For example, <code>any()</code> succeeds and consumes any given letter. It only
 fails for an empty input.</p>
 <pre class="source">
-Parser any({String message}) {
- return new _PredicateParser(1,
-   (each) =&gt; true,
-   message != null ? message : 'input expected');
+Parser any([String message = 'input expected']) {
+ return new _AnyParser(message);
 }
 </pre>
 </div>
 </div>
 <div class="method"><h4 id="undefined">
 <button class="show-code">Code</button>
-<a href="petitparser/SetableParser.html">SetableParser</a> <strong>undefined</strong>({<a href="http://api.dartlang.org/dart_core/String.html">String</a> message: 'undefined parser'}) <a class="anchor-link" href="#undefined"
+<a href="petitparser/SetableParser.html">SetableParser</a> <strong>undefined</strong>([<a href="http://api.dartlang.org/dart_core/String.html">String</a> message = 'undefined parser']) <a class="anchor-link" href="#undefined"
               title="Permalink to undefined">#</a></h4>
 <div class="doc">
 <p>Returns a parser that is not defined, but that can be set at a later
@@ -211,7 +211,7 @@ and that accepts a sequence of a's ended with the letter b.</p>
 p.set(char('a').seq(p).or(char('b')));
 </code></pre>
 <pre class="source">
-SetableParser undefined({String message: 'undefined parser'}) {
+SetableParser undefined([String message = 'undefined parser']) {
  return failure(message).setable();
 }
 </pre>
@@ -233,148 +233,164 @@ Parser failure([String message = 'unable to parse']) {
 </div>
 <div class="method"><h4 id="epsilon">
 <button class="show-code">Code</button>
-<a href="petitparser/Parser.html">Parser</a> <strong>epsilon</strong>({result}) <a class="anchor-link" href="#epsilon"
+<a href="petitparser/Parser.html">Parser</a> <strong>epsilon</strong>([result]) <a class="anchor-link" href="#epsilon"
               title="Permalink to epsilon">#</a></h4>
 <div class="doc">
 <p>Returns a parser that consumes nothing and succeeds.</p>
 <p>For example, <code>char('a').or(epsilon())</code> is equivalent to
 <code>char('a').optional()</code>.</p>
 <pre class="source">
-Parser epsilon({dynamic result}) =&gt; new _EpsilonParser(result);
+Parser epsilon([dynamic result]) =&gt; new _EpsilonParser(result);
 </pre>
 </div>
 </div>
 <div class="method"><h4 id="word">
 <button class="show-code">Code</button>
-<a href="petitparser/Parser.html">Parser</a> <strong>word</strong>({<a href="http://api.dartlang.org/dart_core/String.html">String</a> message}) <a class="anchor-link" href="#word"
+<a href="petitparser/Parser.html">Parser</a> <strong>word</strong>([<a href="http://api.dartlang.org/dart_core/String.html">String</a> message]) <a class="anchor-link" href="#word"
               title="Permalink to word">#</a></h4>
 <div class="doc">
 <p>Returns a parser that accepts any word character. </p>
 <pre class="source">
-Parser word({String message}) {
- return new _WordParser(message != null ? message : 'letter or digit expected');
+Parser word([String message]) {
+ return new _CharacterParser(
+     _wordCharMatcher,
+     message != null ? message : 'letter or digit expected');
 }
 </pre>
 </div>
 </div>
 <div class="method"><h4 id="whitespace">
 <button class="show-code">Code</button>
-<a href="petitparser/Parser.html">Parser</a> <strong>whitespace</strong>({<a href="http://api.dartlang.org/dart_core/String.html">String</a> message}) <a class="anchor-link" href="#whitespace"
+<a href="petitparser/Parser.html">Parser</a> <strong>whitespace</strong>([<a href="http://api.dartlang.org/dart_core/String.html">String</a> message]) <a class="anchor-link" href="#whitespace"
               title="Permalink to whitespace">#</a></h4>
 <div class="doc">
 <p>Returns a parser that accepts any whitespace character. </p>
 <pre class="source">
-Parser whitespace({String message}) {
- return new _WhitespaceParser(message != null ? message : 'whitespace expected');
+Parser whitespace([String message]) {
+ return new _CharacterParser(
+     _whitespaceCharMatcher,
+     message != null ? message : 'whitespace expected');
 }
 </pre>
 </div>
 </div>
 <div class="method"><h4 id="uppercase">
 <button class="show-code">Code</button>
-<a href="petitparser/Parser.html">Parser</a> <strong>uppercase</strong>({<a href="http://api.dartlang.org/dart_core/String.html">String</a> message}) <a class="anchor-link" href="#uppercase"
+<a href="petitparser/Parser.html">Parser</a> <strong>uppercase</strong>([<a href="http://api.dartlang.org/dart_core/String.html">String</a> message]) <a class="anchor-link" href="#uppercase"
               title="Permalink to uppercase">#</a></h4>
 <div class="doc">
 <p>Returns a parser that accepts any uppercase character. </p>
 <pre class="source">
-Parser uppercase({String message}) {
- return new _UppercaseParser(message != null ? message : 'uppercase letter expected');
+Parser uppercase([String message]) {
+ return new _CharacterParser(
+     _uppercaseCharMatcher,
+     message != null ? message : 'uppercase letter expected');
 }
 </pre>
 </div>
 </div>
 <div class="method"><h4 id="range">
 <button class="show-code">Code</button>
-<a href="petitparser/Parser.html">Parser</a> <strong>range</strong>(start, stop, {<a href="http://api.dartlang.org/dart_core/String.html">String</a> message}) <a class="anchor-link" href="#range"
+<a href="petitparser/Parser.html">Parser</a> <strong>range</strong>(start, stop, [<a href="http://api.dartlang.org/dart_core/String.html">String</a> message]) <a class="anchor-link" href="#range"
               title="Permalink to range">#</a></h4>
 <div class="doc">
 <p>Returns a parser that accepts any character in the range between 
 <span class="param">start</span> and 
 <span class="param">stop</span>. </p>
 <pre class="source">
-Parser range(dynamic start, dynamic stop, {String message}) {
- return new _RangeParser( message != null ? message : '$start..$stop expected', _toCharCode(start), _toCharCode(stop));
+Parser range(dynamic start, dynamic stop, [String message]) {
+ return new _CharacterParser(
+     new _RangeCharMatcher(_toCharCode(start), _toCharCode(stop)),
+     message != null ? message : '$start..$stop expected');
 }
 </pre>
 </div>
 </div>
 <div class="method"><h4 id="pattern">
 <button class="show-code">Code</button>
-<a href="petitparser/Parser.html">Parser</a> <strong>pattern</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> element, {<a href="http://api.dartlang.org/dart_core/String.html">String</a> message}) <a class="anchor-link" href="#pattern"
+<a href="petitparser/Parser.html">Parser</a> <strong>pattern</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> element, [<a href="http://api.dartlang.org/dart_core/String.html">String</a> message]) <a class="anchor-link" href="#pattern"
               title="Permalink to pattern">#</a></h4>
 <div class="doc">
 <p>Returns a parser that accepts the given character class pattern. </p>
 <pre class="source">
-Parser pattern(String element, {String message}) {
+Parser pattern(String element, [String message]) {
  if (_pattern == null) {
-   final single = any().map((each) {
-     return char(each);
+   var single = any().map((each) {
+     return new _SingleCharMatcher(_toCharCode(each));
    });
-   final multiple = any().seq(char('-')).seq(any()).map((each) {
-     return range(each[0], each[2]);
+   var multiple = any().seq(char('-')).seq(any()).map((each) {
+     return new _RangeCharMatcher(_toCharCode(each[0]), _toCharCode(each[2]));
    });
-   final positive = multiple.or(single).plus().map((each) {
-     return each.length == 1 ? each[0] : new _AlternativeCharacterParser(each);
+   var positive = multiple.or(single).plus().map((each) {
+     return each.length == 1 ? each[0] : new _AltCharMatcher(each);
    });
    _pattern = char('^').optional().seq(positive).map((each) {
-     return each[0] == null ? each[1] : each[1].neg();
+     return each[0] == null ? each[1] : new _NotCharMatcher(each[1]);
    });
  }
- var parser = _pattern.parse(element).result;
- parser._message = message != null ? message : '[$element] expected';
- return parser;
+ return new _CharacterParser(
+     _pattern.parse(element).value,
+     message != null ? message : '[$element] expected');
 }
 </pre>
 </div>
 </div>
 <div class="method"><h4 id="lowercase">
 <button class="show-code">Code</button>
-<a href="petitparser/Parser.html">Parser</a> <strong>lowercase</strong>({<a href="http://api.dartlang.org/dart_core/String.html">String</a> message}) <a class="anchor-link" href="#lowercase"
+<a href="petitparser/Parser.html">Parser</a> <strong>lowercase</strong>([<a href="http://api.dartlang.org/dart_core/String.html">String</a> message]) <a class="anchor-link" href="#lowercase"
               title="Permalink to lowercase">#</a></h4>
 <div class="doc">
 <p>Returns a parser that accepts any lowercase character. </p>
 <pre class="source">
-Parser lowercase({String message}) {
- return new _LowercaseParser(message != null ? message : 'lowercase letter expected');
+Parser lowercase([String message]) {
+ return new _CharacterParser(
+     _lowercaseCharMatcher,
+     message != null ? message : 'lowercase letter expected');
 }
 </pre>
 </div>
 </div>
 <div class="method"><h4 id="letter">
 <button class="show-code">Code</button>
-<a href="petitparser/Parser.html">Parser</a> <strong>letter</strong>({<a href="http://api.dartlang.org/dart_core/String.html">String</a> message}) <a class="anchor-link" href="#letter"
+<a href="petitparser/Parser.html">Parser</a> <strong>letter</strong>([<a href="http://api.dartlang.org/dart_core/String.html">String</a> message]) <a class="anchor-link" href="#letter"
               title="Permalink to letter">#</a></h4>
 <div class="doc">
 <p>Returns a parser that accepts any letter character. </p>
 <pre class="source">
-Parser letter({String message}) {
- return new _LetterParser(message != null ? message : 'letter expected');
+Parser letter([String message]) {
+ return new _CharacterParser(
+     _letterCharMatcher,
+     message != null ? message : 'letter expected');
 }
 </pre>
 </div>
 </div>
 <div class="method"><h4 id="digit">
 <button class="show-code">Code</button>
-<a href="petitparser/Parser.html">Parser</a> <strong>digit</strong>({<a href="http://api.dartlang.org/dart_core/String.html">String</a> message}) <a class="anchor-link" href="#digit"
+<a href="petitparser/Parser.html">Parser</a> <strong>digit</strong>([<a href="http://api.dartlang.org/dart_core/String.html">String</a> message]) <a class="anchor-link" href="#digit"
               title="Permalink to digit">#</a></h4>
 <div class="doc">
 <p>Returns a parser that accepts any digit character. </p>
 <pre class="source">
-Parser digit({String message}) {
- return new _DigitParser(message != null ? message : 'digit expected');
+Parser digit([String message]) {
+ return new _CharacterParser(
+     _digitCharMatcher,
+     message != null ? message : 'digit expected');
 }
 </pre>
 </div>
 </div>
 <div class="method"><h4 id="char">
 <button class="show-code">Code</button>
-<a href="petitparser/Parser.html">Parser</a> <strong>char</strong>(element, {<a href="http://api.dartlang.org/dart_core/String.html">String</a> message}) <a class="anchor-link" href="#char"
+<a href="petitparser/Parser.html">Parser</a> <strong>char</strong>(element, [<a href="http://api.dartlang.org/dart_core/String.html">String</a> message]) <a class="anchor-link" href="#char"
               title="Permalink to char">#</a></h4>
 <div class="doc">
 <p>Returns a parser that accepts a specific character only. </p>
 <pre class="source">
-Parser char(dynamic element, {String message}) {
- return new _CharParser(message != null ? message : '$element expected', _toCharCode(element));
+Parser char(dynamic element, [String message]) {
+ return new _CharacterParser(
+     new _SingleCharMatcher(_toCharCode(element)),
+     message != null ? message : '$element expected');
 }
 </pre>
 </div>

@@ -32,7 +32,7 @@
         
 <button id="show-inherited" class="show-inherited">Hide inherited</button>
 <div class="doc">
-<p>Environment of bindings. </p>
+<p>Environment of bindings.</p>
 <pre class="source">
 class Environment {
 
@@ -40,7 +40,7 @@ class Environment {
  final Environment _owner;
 
  /** The internal environment bindings. */
- final Map&lt;Symbol, dynamic&gt; _bindings;
+ final Map&lt;Name, dynamic&gt; _bindings;
 
  /** Constructor for the nested environment. */
  Environment([this._owner]) : _bindings = new Map();
@@ -49,7 +49,7 @@ class Environment {
  Environment create() =&gt; new Environment(this);
 
  /** Return the binding for [key]. */
- dynamic operator [](Symbol key) {
+ dynamic operator [](Name key) {
    if (_bindings.containsKey(key)) {
      return _bindings[key];
    } else if (_owner != null) {
@@ -60,7 +60,7 @@ class Environment {
  }
 
  /** Updates the binding for [key] with a [value]. */
- void operator []=(Symbol key, dynamic value) {
+ void operator []=(Name key, dynamic value) {
    if (_bindings.containsKey(key)) {
      _bindings[key] = value;
    } else if (_owner != null) {
@@ -71,18 +71,18 @@ class Environment {
  }
 
  /** Defines a new binding from [key] to [value]. */
- dynamic define(Symbol key, dynamic value) {
+ dynamic define(Name key, dynamic value) {
    return _bindings[key] = value;
  }
 
  /** Returns the keys of the bindings. */
- Iterable&lt;Symbol&gt; get keys =&gt; _bindings.keys;
+ Iterable&lt;Name&gt; get keys =&gt; _bindings.keys;
 
  /** Returns the parent of the bindings. */
  Environment get owner =&gt; _owner;
 
  /** Called when a missing binding is accessed. */
- dynamic _invalidBinding(Symbol key) {
+ dynamic _invalidBinding(Name key) {
    throw new ArgumentError('Unknown binding for $key');
  }
 
@@ -107,14 +107,14 @@ Environment([this._owner]) : _bindings = new Map();
 <h3>Properties</h3>
 <div class="field"><h4 id="keys">
 <button class="show-code">Code</button>
-final <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../lisp/Symbol.html">Symbol</a>&gt;         <strong>keys</strong> <a class="anchor-link"
+final <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="../lisp/Name.html">Name</a>&gt;         <strong>keys</strong> <a class="anchor-link"
             href="#keys"
             title="Permalink to Environment.keys">#</a>
         </h4>
         <div class="doc">
 <p>Returns the keys of the bindings. </p>
 <pre class="source">
-Iterable&lt;Symbol&gt; get keys =&gt; _bindings.keys;
+Iterable&lt;Name&gt; get keys =&gt; _bindings.keys;
 </pre>
 </div>
 </div>
@@ -136,13 +136,13 @@ Environment get owner =&gt; _owner;
 <h3>Operators</h3>
 <div class="method"><h4 id="[]">
 <button class="show-code">Code</button>
-dynamic<strong>operator []</strong>(<a href="../lisp/Symbol.html">Symbol</a> key) <a class="anchor-link" href="#[]"
+dynamic <strong>operator []</strong>(<a href="../lisp/Name.html">Name</a> key) <a class="anchor-link" href="#[]"
               title="Permalink to Environment.operator []">#</a></h4>
 <div class="doc">
 <p>Return the binding for 
 <span class="param">key</span>. </p>
 <pre class="source">
-dynamic operator [](Symbol key) {
+dynamic operator [](Name key) {
  if (_bindings.containsKey(key)) {
    return _bindings[key];
  } else if (_owner != null) {
@@ -156,14 +156,14 @@ dynamic operator [](Symbol key) {
 </div>
 <div class="method"><h4 id="[]=">
 <button class="show-code">Code</button>
-void <strong>operator []=</strong>(<a href="../lisp/Symbol.html">Symbol</a> key, value) <a class="anchor-link" href="#[]="
+void <strong>operator []=</strong>(<a href="../lisp/Name.html">Name</a> key, value) <a class="anchor-link" href="#[]="
               title="Permalink to Environment.operator []=">#</a></h4>
 <div class="doc">
 <p>Updates the binding for 
 <span class="param">key</span> with a 
 <span class="param">value</span>. </p>
 <pre class="source">
-void operator []=(Symbol key, dynamic value) {
+void operator []=(Name key, dynamic value) {
  if (_bindings.containsKey(key)) {
    _bindings[key] = value;
  } else if (_owner != null) {
@@ -191,14 +191,14 @@ Environment create() =&gt; new Environment(this);
 </div>
 <div class="method"><h4 id="define">
 <button class="show-code">Code</button>
-dynamic<strong>define</strong>(<a href="../lisp/Symbol.html">Symbol</a> key, value) <a class="anchor-link" href="#define"
+dynamic <strong>define</strong>(<a href="../lisp/Name.html">Name</a> key, value) <a class="anchor-link" href="#define"
               title="Permalink to Environment.define">#</a></h4>
 <div class="doc">
 <p>Defines a new binding from 
 <span class="param">key</span> to 
 <span class="param">value</span>. </p>
 <pre class="source">
-dynamic define(Symbol key, dynamic value) {
+dynamic define(Name key, dynamic value) {
  return _bindings[key] = value;
 }
 </pre>

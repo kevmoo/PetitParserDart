@@ -27,18 +27,21 @@
 </div>
 <div class="content">
 <h2><strong>lisp</strong> library</h2>
+<div class="doc"><p>This package contains a simple grammar and evaluator for LISP.</p>
+<p>The code is reasonably complete to run and evaluate reasonably complex
+programs from the console and from the web browser.</p></div>
 <div>
 <h3>Functions</h3>
 <div class="method"><h4 id="evalString">
 <button class="show-code">Code</button>
-dynamic<strong>evalString</strong>(<a href="lisp/LispParser.html">LispParser</a> parser, <a href="lisp/Environment.html">Environment</a> env, <a href="http://api.dartlang.org/dart_core/String.html">String</a> script) <a class="anchor-link" href="#evalString"
+dynamic <strong>evalString</strong>(<a href="lisp/LispParser.html">LispParser</a> parser, <a href="lisp/Environment.html">Environment</a> env, <a href="http://api.dartlang.org/dart_core/String.html">String</a> script) <a class="anchor-link" href="#evalString"
               title="Permalink to evalString">#</a></h4>
 <div class="doc">
 <p>Reads and evaluates a script <code>contents</code>. </p>
 <pre class="source">
 dynamic evalString(LispParser parser, Environment env, String script) {
  var result = null;
- for (var cell in parser.parse(script).result) {
+ for (var cell in parser.parse(script).value) {
    result = eval(env, cell);
  }
  return result;
@@ -48,7 +51,7 @@ dynamic evalString(LispParser parser, Environment env, String script) {
 </div>
 <div class="method"><h4 id="evalArguments">
 <button class="show-code">Code</button>
-dynamic<strong>evalArguments</strong>(<a href="lisp/Environment.html">Environment</a> env, args) <a class="anchor-link" href="#evalArguments"
+dynamic <strong>evalArguments</strong>(<a href="lisp/Environment.html">Environment</a> env, args) <a class="anchor-link" href="#evalArguments"
               title="Permalink to evalArguments">#</a></h4>
 <div class="doc">
 <p>The arguments evaluatation function. </p>
@@ -65,7 +68,7 @@ dynamic evalArguments(Environment env, dynamic args) {
 </div>
 <div class="method"><h4 id="evalList">
 <button class="show-code">Code</button>
-dynamic<strong>evalList</strong>(<a href="lisp/Environment.html">Environment</a> env, expr) <a class="anchor-link" href="#evalList"
+dynamic <strong>evalList</strong>(<a href="lisp/Environment.html">Environment</a> env, expr) <a class="anchor-link" href="#evalList"
               title="Permalink to evalList">#</a></h4>
 <div class="doc">
 <p>Evaluate a cons of instructions. </p>
@@ -83,7 +86,7 @@ dynamic evalList(Environment env, dynamic expr) {
 </div>
 <div class="method"><h4 id="eval">
 <button class="show-code">Code</button>
-dynamic<strong>eval</strong>(<a href="lisp/Environment.html">Environment</a> env, expr) <a class="anchor-link" href="#eval"
+dynamic <strong>eval</strong>(<a href="lisp/Environment.html">Environment</a> env, expr) <a class="anchor-link" href="#eval"
               title="Permalink to eval">#</a></h4>
 <div class="doc">
 <p>The evaluation function. </p>
@@ -91,7 +94,7 @@ dynamic<strong>eval</strong>(<a href="lisp/Environment.html">Environment</a> env
 dynamic eval(Environment env, dynamic expr) {
  if (expr is Cons) {
    return eval(env, expr.head)(env, expr.tail);
- } else if (expr is Symbol) {
+ } else if (expr is Name) {
    return env[expr];
  } else {
    return expr;
@@ -129,13 +132,13 @@ dynamic eval(Environment env, dynamic expr) {
           
           <div class="type">
           <h4>
-            <a href="lisp/Natives.html"><strong>Natives</strong></a>
+            <a href="lisp/Name.html"><strong>Name</strong></a>
           </h4>
           </div>
           
           <div class="type">
           <h4>
-            <a href="lisp/Symbol.html"><strong>Symbol</strong></a>
+            <a href="lisp/Natives.html"><strong>Natives</strong></a>
           </h4>
           </div>
           

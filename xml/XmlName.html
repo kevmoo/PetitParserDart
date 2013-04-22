@@ -34,7 +34,7 @@
 <div class="doc">
 <p>XML entity name.</p>
 <pre class="source">
-class XmlName {
+class XmlName extends Object with _XmlWritable {
 
  final String _prefix;
  final String _local;
@@ -56,12 +56,6 @@ class XmlName {
  String get prefix =&gt; _prefix;
  String get qualified =&gt; toString();
 
- String toString() {
-   var buffer = new StringBuffer();
-   writeTo(buffer);
-   return buffer.toString();
- }
-
  void writeTo(StringBuffer buffer) {
    if (prefix != null) {
      buffer.write(prefix);
@@ -77,6 +71,9 @@ class XmlName {
 }
 </pre>
 </div>
+<h3>Extends</h3>
+<p>
+<span class="type-box"><span class="icon-class"></span><a href="../xml/Object__XmlWritable.html">Object__XmlWritable</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><strong>XmlName</strong></span></p>
 <div>
 <h3>Constructors</h3>
 <div class="method"><h4 id="XmlName">
@@ -162,14 +159,12 @@ bool operator == (XmlName obj) {
 </div>
 <div>
 <h3>Methods</h3>
-<div class="method"><h4 id="toString">
+<div class="method inherited"><h4 id="toString">
 <button class="show-code">Code</button>
 <a href="http://api.dartlang.org/dart_core/String.html">String</a> <strong>toString</strong>() <a class="anchor-link" href="#toString"
               title="Permalink to XmlName.toString">#</a></h4>
-<div class="doc">
-<div class="inherited">
-<p>Returns a string representation of this object.</p>
-<div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
+<div class="inherited-from">inherited from <a href="../xml/Object__XmlWritable.html">Object__XmlWritable</a> </div><div class="doc">
+<p>Answer a print string of the receiver.</p>
 <pre class="source">
 String toString() {
  var buffer = new StringBuffer();
@@ -184,6 +179,9 @@ String toString() {
 void <strong>writeTo</strong>(<a href="http://api.dartlang.org/dart_core/StringBuffer.html">StringBuffer</a> buffer) <a class="anchor-link" href="#writeTo"
               title="Permalink to XmlName.writeTo">#</a></h4>
 <div class="doc">
+<div class="inherited">
+<p>Writes the XML string of the receiver to a {@code buffer}.</p>
+<div class="docs-inherited-from">docs inherited from <a href="../xml/Object__XmlWritable.html">Object__XmlWritable</a> </div></div>
 <pre class="source">
 void writeTo(StringBuffer buffer) {
  if (prefix != null) {

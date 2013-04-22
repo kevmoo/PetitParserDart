@@ -2,19 +2,19 @@
         <html>
         <head>
                 <meta charset="utf-8">
-        <title>DartParser class / dart Library / Dart Documentation</title>
+        <title>SmalltalkGrammar class / smalltalk Library / Dart Documentation</title>
         <link rel="stylesheet" type="text/css"
             href="../styles.css">
         <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
         <link rel="shortcut icon" href="../favicon.ico">
         
         </head>
-        <body data-library="dart" data-type="DartParser">
+        <body data-library="smalltalk" data-type="SmalltalkGrammar">
         <div class="page">
         <div class="header">
           <a href="../index.html"><div class="logo"></div></a>
           <a href="../index.html">Dart Documentation</a>
-         &rsaquo; <a href="../dart.html">dart</a> &rsaquo; <a href="../dart/DartParser.html">DartParser</a>        <div id="search-box">
+         &rsaquo; <a href="../smalltalk.html">smalltalk</a> &rsaquo; <a href="../smalltalk/SmalltalkGrammar.html">SmalltalkGrammar</a>        <div id="search-box">
           <input type="search" name="q" id="q" autocomplete="off"
               class="search-input" placeholder="Search API">
         </div>
@@ -26,19 +26,110 @@
         
 </div>
 <div class="content">
-        <h2><strong>DartParser</strong>
+        <h2><strong>SmalltalkGrammar</strong>
           class
         </h2>
         
 <button id="show-inherited" class="show-inherited">Hide inherited</button>
 <div class="doc">
-<p>Dart parser definition.</p>
+<p>Smalltalk grammar definition.</p>
 <pre class="source">
-class DartParser extends DartGrammar {
+class SmalltalkGrammar extends CompositeParser {
 
  void initialize() {
-   super.initialize();
-   // empty stub for now
+   _whitespace();
+   _smalltalk();
+ }
+
+ void _whitespace() {
+   def('whitespace', whitespace()
+     .or(ref('comment')));
+   def('comment', char('"')
+     .seq(string('"').neg().star())
+     .seq(char('"')));
+ }
+
+ Parser _token(String name) {
+   var parser = name.length == 1 ? char(name) : string(name);
+   return parser.token().trim(ref('whitespace'));
+ }
+
+ void _smalltalk() {
+   def('array', char('{', '\${ expected').token().trim().seq(ref('expression').separatedBy(ref('periodToken')).seq(ref('periodToken').optional()).optional()).seq(char('}', '\$} expected').token().trim()));
+   def('arrayItem', ref('literal').or(ref('symbolLiteralArray')).or(ref('arrayLiteralArray')).or(ref('byteLiteralArray')));
+   def('arrayLiteral', string('#(', '\'#(\' expected').token().trim().seq(ref('arrayItem').star()).seq(char(')', '\$) expected').token().trim()));
+   def('arrayLiteralArray', char('(', '\$( expected').token().trim().seq(ref('arrayItem').star()).seq(char(')', '\$) expected').token().trim()));
+   def('assignment', ref('variable').seq(ref('assignmentToken')));
+   def('assignmentToken', string('\u003a=', '\'\u003a=\' expected').token().trim());
+   def('binary', pattern('!%&amp;*+,-/&lt;=&gt;?@\\\u007c\u007e', 'any of \'!%&amp;*+,-/&lt;=&gt;?@\\\u007c\u007e\' expected').plus());
+   def('binaryExpression', ref('unaryExpression').seq(ref('binaryMessage').star()));
+   def('binaryMessage', ref('binaryToken').seq(ref('unaryExpression')));
+   def('binaryMethod', ref('binaryToken').seq(ref('variable')));
+   def('binaryPragma', ref('binaryToken').seq(ref('arrayItem')));
+   def('binaryToken', ref('binary').token().trim());
+   def('block', char('[', '\$[ expected').token().trim().seq(ref('blockBody')).seq(char(']', '\$] expected').token().trim()));
+   def('blockArgument', char('\u003a', '\$\u003a expected').token().trim().seq(ref('variable')));
+   def('blockArguments', ref('blockArgumentsWith').or(ref('blockArgumentsWithout')));
+   def('blockArgumentsWith', ref('blockArgument').plus().seq(char('\u007c', '\$\u007c expected').token().trim().or(char(']', '\$] expected').token().trim().and())));
+   def('blockArgumentsWithout', epsilon());
+   def('blockBody', ref('blockArguments').seq(ref('sequence')));
+   def('byteLiteral', string('#[', '\'#[\' expected').token().trim().seq(ref('numberLiteral').star()).seq(char(']', '\$] expected').token().trim()));
+   def('byteLiteralArray', char('[', '\$[ expected').token().trim().seq(ref('numberLiteral').star()).seq(char(']', '\$] expected').token().trim()));
+   def('cascadeExpression', ref('keywordExpression').seq(ref('cascadeMessage').star()));
+   def('cascadeMessage', char(';', '\$; expected').token().trim().seq(ref('message')));
+   def('char', char('\$', '\$\$ expected').seq(any('input expected')));
+   def('charLiteral', ref('charToken'));
+   def('charToken', ref('char').token().trim());
+   def('expression', ref('assignment').star().seq(ref('cascadeExpression')));
+   def('falseLiteral', ref('falseToken'));
+   def('falseToken', string('false', '\'false\' expected').seq(word('letter or digit expected').not()).token().trim());
+   def('identifier', letter('letter expected').seq(word('letter or digit expected').star()));
+   def('identifierToken', ref('identifier').token().trim());
+   def('keyword', ref('identifier').seq(char('\u003a', '\$\u003a expected')));
+   def('keywordExpression', ref('binaryExpression').seq(ref('keywordMessage').optional()));
+   def('keywordMessage', ref('keywordToken').seq(ref('binaryExpression')).plus());
+   def('keywordMethod', ref('keywordToken').seq(ref('variable')).plus());
+   def('keywordPragma', ref('keywordToken').seq(ref('arrayItem')).plus());
+   def('keywordToken', ref('keyword').token().trim());
+   def('literal', ref('numberLiteral').or(ref('stringLiteral')).or(ref('charLiteral')).or(ref('arrayLiteral')).or(ref('byteLiteral')).or(ref('symbolLiteral')).or(ref('nilLiteral')).or(ref('trueLiteral')).or(ref('falseLiteral')));
+   def('message', ref('keywordMessage').or(ref('binaryMessage')).or(ref('unaryMessage')));
+   def('method', ref('methodDeclaration').seq(ref('methodSequence')));
+   def('methodDeclaration', ref('keywordMethod').or(ref('unaryMethod')).or(ref('binaryMethod')));
+   def('methodSequence', ref('periodToken').star().seq(ref('pragmas')).seq(ref('periodToken').star()).seq(ref('temporaries')).seq(ref('periodToken').star()).seq(ref('pragmas')).seq(ref('periodToken').star()).seq(ref('statements')));
+   def('multiword', ref('keyword').plus());
+   def('nilLiteral', ref('nilToken'));
+   def('nilToken', string('nil', '\'nil\' expected').seq(word('letter or digit expected').not()).token().trim());
+   def('number', char('-', '\$- expected').optional().seq(digit('digit expected').plus()));
+   def('numberLiteral', ref('numberToken'));
+   def('numberToken', ref('number').token().trim());
+   def('parens', char('(', '\$( expected').token().trim().seq(ref('expression')).seq(char(')', '\$) expected').token().trim()));
+   def('period', char('.', '\$. expected'));
+   def('periodToken', ref('period').token().trim());
+   def('pragma', char('&lt;', '\$&lt; expected').token().trim().seq(ref('pragmaMessage')).seq(char('&gt;', '\$&gt; expected').token().trim()));
+   def('pragmaMessage', ref('keywordPragma').or(ref('unaryPragma')).or(ref('binaryPragma')));
+   def('pragmas', ref('pragma').star());
+   def('primary', ref('literal').or(ref('variable')).or(ref('block')).or(ref('parens')).or(ref('array')));
+   def('return', char('^', '\$^ expected').token().trim().seq(ref('expression')));
+   def('sequence', ref('temporaries').seq(ref('periodToken').star()).seq(ref('statements')));
+   def('start', ref('startMethod'));
+   def('startMethod', ref('method').end());
+   def('statements', ref('expression').seq(ref('periodToken').plus().seq(ref('statements')).or(ref('periodToken').star())).or(ref('return').seq(ref('periodToken').star())).or(ref('periodToken').star()));
+   def('string', char('\'', '\$\' expected').seq(string('\'\'', '\'\'\'\'\'\' expected').or(pattern('\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\u0008\u0009\u000a\u000b\u000c\u000d\u000e\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f !"#\$%&amp;()*+,-./0123456789\u003a;&lt;=&gt;?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{\u007c}\u007e\u007f\u0080\u0081\u0082\u0083\u0084\u0085\u0086\u0087\u0088\u0089\u008a\u008b\u008c\u008d\u008e\u008f\u0090\u0091\u0092\u0093\u0094\u0095\u0096\u0097\u0098\u0099\u009a\u009b\u009c\u009d\u009e\u009f\u00a0\u00a1\u00a2\u00a3\u00a4\u00a5\u00a6\u00a7\u00a8\u00a9ª\u00ab\u00ac\u00ad\u00ae\u00af\u00b0\u00b1\u00b2\u00b3\u00b4µ\u00b6\u00b7\u00b8\u00b9º\u00bb\u00bc\u00bd\u00be\u00bfÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ\u00d7ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö\u00f7øùúûüýþÿ', 'no \$\' expected')).star()).seq(char('\'', '\$\' expected')));
+   def('stringLiteral', ref('stringToken'));
+   def('stringToken', ref('string').token().trim());
+   def('symbol', ref('unary').or(ref('binary')).or(ref('multiword')).or(ref('string')));
+   def('symbolLiteral', char('#', '\$# expected').token().trim().plus().seq(ref('symbol').token().trim()));
+   def('symbolLiteralArray', ref('symbol').token().trim());
+   def('temporaries', char('\u007c', '\$\u007c expected').token().trim().seq(ref('variable').star()).seq(char('\u007c', '\$\u007c expected').token().trim()).optional());
+   def('trueLiteral', ref('trueToken'));
+   def('trueToken', string('true', '\'true\' expected').seq(word('letter or digit expected').not()).token().trim());
+   def('unary', ref('identifier').seq(char('\u003a', '\$\u003a expected').not()));
+   def('unaryExpression', ref('primary').seq(ref('unaryMessage').star()));
+   def('unaryMessage', ref('unaryToken'));
+   def('unaryMethod', ref('identifierToken'));
+   def('unaryPragma', ref('identifierToken'));
+   def('unaryToken', ref('unary').token().trim());
+   def('variable', ref('identifierToken'));
  }
 
 }
@@ -46,14 +137,14 @@ class DartParser extends DartGrammar {
 </div>
 <h3>Extends</h3>
 <p>
-<span class="type-box"><span class="icon-class"></span><a href="../petitparser/Parser.html">Parser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/_DelegateParser.html">_DelegateParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/_SetableParser.html">_SetableParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/CompositeParser.html">CompositeParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/CompositeParser2.html">CompositeParser2</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../dart/DartGrammar.html">DartGrammar</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><strong>DartParser</strong></span></p>
+<span class="type-box"><span class="icon-class"></span><a href="../petitparser/Parser.html">Parser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/_DelegateParser.html">_DelegateParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/_SetableParser.html">_SetableParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/CompositeParser.html">CompositeParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><strong>SmalltalkGrammar</strong></span></p>
 <div class="inherited">
 <h3>Properties</h3>
 <div class="field inherited"><h4 id="children">
 <button class="show-code">Code</button>
 final <a href="http://api.dartlang.org/dart_core/List.html">List</a>&lt;<a href="../petitparser/Parser.html">Parser</a>&gt;         <strong>children</strong> <a class="anchor-link"
             href="#children"
-            title="Permalink to DartParser.children">#</a>
+            title="Permalink to SmalltalkGrammar.children">#</a>
         </h4>
         <div class="inherited-from">inherited from <a href="../petitparser/_DelegateParser.html">_DelegateParser</a> </div><div class="doc">
 <div class="inherited">
@@ -75,7 +166,7 @@ List&lt;Parser&gt; get children =&gt; [_delegate];
 <div class="method inherited"><h4 id="[]">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>operator []</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name) <a class="anchor-link" href="#[]"
-              title="Permalink to DartParser.operator []">#</a></h4>
+              title="Permalink to SmalltalkGrammar.operator []">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/CompositeParser.html">CompositeParser</a> </div><div class="doc">
 <p>Convenience operator returning a reference to a production with
 a 
@@ -88,7 +179,7 @@ Parser operator [](String name) =&gt; ref(name);
 <div class="method inherited"><h4 id="&">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>operator &</strong>(<a href="../petitparser/Parser.html">Parser</a> other) <a class="anchor-link" href="#&"
-              title="Permalink to DartParser.operator &">#</a></h4>
+              title="Permalink to SmalltalkGrammar.operator &">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Convenience operator returning a parser accepts the receiver followed
 by 
@@ -101,7 +192,7 @@ Parser operator &amp; (Parser other) =&gt; this.seq(other);
 <div class="method inherited"><h4 id="|">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>operator |</strong>(<a href="../petitparser/Parser.html">Parser</a> other) <a class="anchor-link" href="#|"
-              title="Permalink to DartParser.operator |">#</a></h4>
+              title="Permalink to SmalltalkGrammar.operator |">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Convenience operator returning a parser accepts the receiver or
 
@@ -117,7 +208,7 @@ Parser operator | (Parser other) =&gt; this.or(other);
 <div class="method inherited"><h4 id="accept">
 <button class="show-code">Code</button>
 <a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>accept</strong>(input) <a class="anchor-link" href="#accept"
-              title="Permalink to DartParser.accept">#</a></h4>
+              title="Permalink to SmalltalkGrammar.accept">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Tests if the 
 <span class="param">input</span> can be successfully parsed.</p>
@@ -133,14 +224,14 @@ bool accept(dynamic input) {
 <div class="method inherited"><h4 id="action">
 <button class="show-code">Code</button>
 void <strong>action</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name, function(Dynamic)) <a class="anchor-link" href="#action"
-              title="Permalink to DartParser.action">#</a></h4>
+              title="Permalink to SmalltalkGrammar.action">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/CompositeParser.html">CompositeParser</a> </div><div class="doc">
 <p>Attaches an action 
 <span class="param">function</span> to an existing production 
 <span class="param">name</span>. The code
 raises an <code>UndefinedProductionError</code> if 
 <span class="param">name</span> is an undefined production.
-Only call this method from <a class="crossref" href="../dart/DartParser.html#initialize">initialize</a>.</p>
+Only call this method from <a class="crossref" href="../smalltalk/SmalltalkGrammar.html#initialize">initialize</a>.</p>
 <p>The following example attaches an action returning the size of list of
 the previously defined list production:</p>
 <pre><code>action('list', (list) =&gt; list.length);
@@ -155,7 +246,7 @@ void action(String name, dynamic function(Dynamic)) {
 <div class="method inherited"><h4 id="and">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>and</strong>() <a class="anchor-link" href="#and"
-              title="Permalink to DartParser.and">#</a></h4>
+              title="Permalink to SmalltalkGrammar.and">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser (logical and-predicate) that succeeds whenever the
 receiver does, but never consumes input.</p>
@@ -168,15 +259,28 @@ Parser and() =&gt; new _AndParser(this);
 </pre>
 </div>
 </div>
+<div class="method inherited"><h4 id="copy">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>copy</strong>() <a class="anchor-link" href="#copy"
+              title="Permalink to SmalltalkGrammar.copy">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/_SetableParser.html">_SetableParser</a> </div><div class="doc">
+<div class="inherited">
+<p>Returns a shallow copy of the receiver.</p>
+<div class="docs-inherited-from">docs inherited from <a href="../petitparser/Parser.html">Parser</a> </div></div>
+<pre class="source">
+Parser copy() =&gt; new _SetableParser(_delegate);
+</pre>
+</div>
+</div>
 <div class="method inherited"><h4 id="def">
 <button class="show-code">Code</button>
 void <strong>def</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name, <a href="../petitparser/Parser.html">Parser</a> parser) <a class="anchor-link" href="#def"
-              title="Permalink to DartParser.def">#</a></h4>
+              title="Permalink to SmalltalkGrammar.def">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/CompositeParser.html">CompositeParser</a> </div><div class="doc">
 <p>Defines a production with a 
 <span class="param">name</span> and a 
 <span class="param">parser</span>. Only call this method
-from <a class="crossref" href="../dart/DartParser.html#initialize">initialize</a>.</p>
+from <a class="crossref" href="../smalltalk/SmalltalkGrammar.html#initialize">initialize</a>.</p>
 <p>The following example defines a list production that consumes
 several elements separated by a comma.</p>
 <pre><code>def('list', ref('element').separatedBy(char(',')));
@@ -196,8 +300,8 @@ void def(String name, Parser parser) {
 </div>
 <div class="method inherited"><h4 id="end">
 <button class="show-code">Code</button>
-<a href="../petitparser/Parser.html">Parser</a> <strong>end</strong>({<a href="http://api.dartlang.org/dart_core/String.html">String</a> message: 'end of input expected'}) <a class="anchor-link" href="#end"
-              title="Permalink to DartParser.end">#</a></h4>
+<a href="../petitparser/Parser.html">Parser</a> <strong>end</strong>([<a href="http://api.dartlang.org/dart_core/String.html">String</a> message = 'end of input expected']) <a class="anchor-link" href="#end"
+              title="Permalink to SmalltalkGrammar.end">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that succeeds only if the receiver consumes the complete
 input, otherwise return a failure with the optional 
@@ -206,7 +310,7 @@ input, otherwise return a failure with the optional
 and fails on <code>'ab'</code>. In contrast the parser <code>letter()</code> alone would
 succeed on both inputs, but not consume everything for the second input.</p>
 <pre class="source">
-Parser end({String message: 'end of input expected'}) {
+Parser end([String message = 'end of input expected']) {
  return new _EndOfInputParser(this, message);
 }
 </pre>
@@ -215,7 +319,7 @@ Parser end({String message: 'end of input expected'}) {
 <div class="method inherited"><h4 id="flatten">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>flatten</strong>() <a class="anchor-link" href="#flatten"
-              title="Permalink to DartParser.flatten">#</a></h4>
+              title="Permalink to SmalltalkGrammar.flatten">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that discards the result of the receiver, and returns
 a sub-string of the consumed elements in the string/list being parsed.</p>
@@ -230,15 +334,15 @@ Parser flatten() =&gt; new _FlattenParser(this);
 <div class="method"><h4 id="initialize">
 <button class="show-code">Code</button>
 void <strong>initialize</strong>() <a class="anchor-link" href="#initialize"
-              title="Permalink to DartParser.initialize">#</a></h4>
+              title="Permalink to SmalltalkGrammar.initialize">#</a></h4>
 <div class="doc">
 <div class="inherited">
 <p>Initializes the composite grammar.</p>
 <div class="docs-inherited-from">docs inherited from <a href="../petitparser/CompositeParser.html">CompositeParser</a> </div></div>
 <pre class="source">
 void initialize() {
- super.initialize();
- // empty stub for now
+ _whitespace();
+ _smalltalk();
 }
 </pre>
 </div>
@@ -246,7 +350,7 @@ void initialize() {
 <div class="method inherited"><h4 id="map">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>map</strong>(<a href="http://api.dartlang.org/dart_core/Function.html">Function</a> function) <a class="anchor-link" href="#map"
-              title="Permalink to DartParser.map">#</a></h4>
+              title="Permalink to SmalltalkGrammar.map">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that evaluates 
 <span class="param">function</span> as action handler on success
@@ -258,10 +362,41 @@ Parser map(Function function) =&gt; new _ActionParser(this, function);
 </pre>
 </div>
 </div>
+<div class="method inherited"><h4 id="match">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>match</strong>(<a href="../petitparser/Parser.html">Parser</a> other, [<a href="http://api.dartlang.org/dart_core/Set.html">Set</a>&lt;<a href="../petitparser/Parser.html">Parser</a>&gt; seen]) <a class="anchor-link" href="#match"
+              title="Permalink to SmalltalkGrammar.match">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Recusively tests for the equality of two parsers.</p>
+<p>The code can automatically deals with recursive parsers and parsers that
+refer to other parsers. This code is supposed to be overridden by parsers
+that add other state.</p>
+<pre class="source">
+bool match(Parser other, [Set&lt;Parser&gt; seen]) {
+ if (seen == null) {
+   seen = new Set();
+ }
+ if (this == other || seen.contains(this)) {
+   return true;
+ }
+ seen.add(this);
+ if (runtimeType != other.runtimeType || children.length != other.children.length) {
+   return false;
+ }
+ for (var i = 0; i &lt; children.length; i++) {
+   if (!children[i].match(other.children[i], seen)) {
+     return false;
+   }
+ }
+ return true;
+}
+</pre>
+</div>
+</div>
 <div class="method inherited"><h4 id="matches">
 <button class="show-code">Code</button>
 <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> <strong>matches</strong>(input) <a class="anchor-link" href="#matches"
-              title="Permalink to DartParser.matches">#</a></h4>
+              title="Permalink to SmalltalkGrammar.matches">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a list of all successful overlapping parses of the 
 <span class="param">input</span>.</p>
@@ -280,7 +415,7 @@ Iterable matches(dynamic input) {
 <div class="method inherited"><h4 id="matchesSkipping">
 <button class="show-code">Code</button>
 <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a> <strong>matchesSkipping</strong>(input) <a class="anchor-link" href="#matchesSkipping"
-              title="Permalink to DartParser.matchesSkipping">#</a></h4>
+              title="Permalink to SmalltalkGrammar.matchesSkipping">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a list of all successful non-overlapping parses of the input.</p>
 <p>For example, <code>letter().plus().matchesSkipping('abc de')</code> results in the
@@ -298,7 +433,7 @@ Iterable matchesSkipping(dynamic input) {
 <div class="method inherited"><h4 id="neg">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>neg</strong>([<a href="http://api.dartlang.org/dart_core/String.html">String</a> message]) <a class="anchor-link" href="#neg"
-              title="Permalink to DartParser.neg">#</a></h4>
+              title="Permalink to SmalltalkGrammar.neg">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that consumes any input token (character), but the
 receiver.</p>
@@ -310,50 +445,10 @@ Parser neg([String message]) =&gt; not(message).seq(any()).pick(1);
 </pre>
 </div>
 </div>
-<div class="method inherited"><h4 id="noSuchMethod">
-<button class="show-code">Code</button>
-dynamic<strong>noSuchMethod</strong>(<a href="http://api.dartlang.org/dart_core/InvocationMirror.html">InvocationMirror</a> mirror) <a class="anchor-link" href="#noSuchMethod"
-              title="Permalink to DartParser.noSuchMethod">#</a></h4>
-<div class="inherited-from">inherited from <a href="../petitparser/CompositeParser2.html">CompositeParser2</a> </div><div class="doc">
-<div class="inherited">
-<p><code>noSuchMethod</code> is invoked when users invoke a non-existant method
-on an object. The name of the method and the arguments of the
-invocation are passed to <code>noSuchMethod</code> in an <code>InvocationMirror</code>.
-If <code>noSuchMethod</code> returns a value, that value becomes the result of
-the original invocation.</p>
-<p>The default behavior of <code>noSuchMethod</code> is to throw a
-<code>noSuchMethodError</code>.</p>
-<div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
-<pre class="source">
-dynamic noSuchMethod(InvocationMirror mirror) {
- if (!mirror.memberName.startsWith('_')) {
-   // only consider public members
-   if (mirror.isGetter) {
-     // productions can be accessed any time
-     return ref(mirror.memberName);
-   } else if (!_completed) {
-     if (mirror.isSetter) {
-       // production can only be defined during initialization
-       return def(mirror.memberName.substring(0, mirror.memberName.length - 1),
-           mirror.positionalArguments.first);
-     } else if (mirror.isMethod &amp;&amp; mirror.positionalArguments.length == 1) {
-       // productions can only be redefined during initialization
-       var argument = mirror.positionalArguments.first;
-       return argument is Parser
-           ? redef(mirror.memberName, argument)
-           : action(mirror.memberName, argument);
-     }
-   }
- }
- return super.noSuchMethod(mirror);
-}
-</pre>
-</div>
-</div>
 <div class="method inherited"><h4 id="not">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>not</strong>([<a href="http://api.dartlang.org/dart_core/String.html">String</a> message]) <a class="anchor-link" href="#not"
-              title="Permalink to DartParser.not">#</a></h4>
+              title="Permalink to SmalltalkGrammar.not">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser (logical not-predicate) that succeeds whenever the
 receiver fails, but never consumes input.</p>
@@ -370,7 +465,7 @@ Parser not([String message]) =&gt; new _NotParser(this, message);
 <div class="method inherited"><h4 id="optional">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>optional</strong>([otherwise]) <a class="anchor-link" href="#optional"
-              title="Permalink to DartParser.optional">#</a></h4>
+              title="Permalink to SmalltalkGrammar.optional">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns new parser that accepts the receiver, if possible. The resulting
 parser returns the result of the receiver, or <code>null</code> if not applicable.
@@ -387,7 +482,7 @@ Parser optional([dynamic otherwise]) =&gt; new _OptionalParser(this, otherwise);
 <div class="method inherited"><h4 id="or">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>or</strong>(<a href="../petitparser/Parser.html">Parser</a> other) <a class="anchor-link" href="#or"
-              title="Permalink to DartParser.or">#</a></h4>
+              title="Permalink to SmalltalkGrammar.or">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that accepts the receiver or 
 <span class="param">other</span>. The resulting
@@ -408,14 +503,14 @@ Parser or(Parser other) =&gt; new _ChoiceParser([this, other]);
 <div class="method inherited"><h4 id="parse">
 <button class="show-code">Code</button>
 <a href="../petitparser/Result.html">Result</a> <strong>parse</strong>(input) <a class="anchor-link" href="#parse"
-              title="Permalink to DartParser.parse">#</a></h4>
+              title="Permalink to SmalltalkGrammar.parse">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns the parse result of the 
 <span class="param">input</span>.</p>
 <p>The implementation creates a default parse context on the input and calls
 the internal parsing logic of the receiving parser.</p>
 <p>For example, <code>letter().plus().parse('abc')</code> results in an instance of
-<code>Success</code>, where <code>Result.position</code> is <code>3</code> and <code>Success.result</code> is
+<code>Success</code>, where <code>Result.position</code> is <code>3</code> and <code>Success.value</code> is
 <code>[a, b, c]</code>.</p>
 <p>Similarly, <code>letter().plus().parse('123')</code> results in an instance of
 <code>Failure</code>, where <code>Result.position</code> is <code>0</code> and <code>Failure.message</code> is
@@ -430,7 +525,7 @@ Result parse(dynamic input) {
 <div class="method inherited"><h4 id="permute">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>permute</strong>(<a href="http://api.dartlang.org/dart_core/List.html">List</a>&lt;<a href="http://api.dartlang.org/dart_core/int.html">int</a>&gt; indexes) <a class="anchor-link" href="#permute"
-              title="Permalink to DartParser.permute">#</a></h4>
+              title="Permalink to SmalltalkGrammar.permute">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that transforms a successful parse result by returning
 the permuted elements at 
@@ -453,7 +548,7 @@ Parser permute(List&lt;int&gt; indexes) {
 <div class="method inherited"><h4 id="pick">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>pick</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> index) <a class="anchor-link" href="#pick"
-              title="Permalink to DartParser.pick">#</a></h4>
+              title="Permalink to SmalltalkGrammar.pick">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that transform a successful parse result by returning
 the element at 
@@ -473,7 +568,7 @@ Parser pick(int index) {
 <div class="method inherited"><h4 id="plus">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>plus</strong>() <a class="anchor-link" href="#plus"
-              title="Permalink to DartParser.plus">#</a></h4>
+              title="Permalink to SmalltalkGrammar.plus">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that accepts the receiver one or more times. The
 resulting parser returns a list of the parse results of the receiver.</p>
@@ -489,7 +584,7 @@ Parser plus() =&gt; repeat(1, 65536);
 <div class="method inherited"><h4 id="redef">
 <button class="show-code">Code</button>
 void <strong>redef</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name, replacement) <a class="anchor-link" href="#redef"
-              title="Permalink to DartParser.redef">#</a></h4>
+              title="Permalink to SmalltalkGrammar.redef">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/CompositeParser.html">CompositeParser</a> </div><div class="doc">
 <p>Redefinies an existing production with a 
 <span class="param">name</span> and a 
@@ -497,7 +592,7 @@ void <strong>redef</strong>(<a href="http://api.dartlang.org/dart_core/String.ht
 parser or function producing a new parser. The code raises an
 <code>UndefinedProductionError</code> if 
 <span class="param">name</span> is an undefined production. Only call
-this method from <a class="crossref" href="../dart/DartParser.html#initialize">initialize</a>.</p>
+this method from <a class="crossref" href="../smalltalk/SmalltalkGrammar.html#initialize">initialize</a>.</p>
 <p>The following example redefines the previously defined list production
 by making it optional:</p>
 <pre><code>redef('list', (parser) =&gt; parser.optional());
@@ -519,7 +614,7 @@ void redef(String name, dynamic replacement) {
 <div class="method inherited"><h4 id="ref">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>ref</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name) <a class="anchor-link" href="#ref"
-              title="Permalink to DartParser.ref">#</a></h4>
+              title="Permalink to SmalltalkGrammar.ref">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/CompositeParser.html">CompositeParser</a> </div><div class="doc">
 <p>Returns a reference to a production with a 
 <span class="param">name</span>.</p>
@@ -547,7 +642,7 @@ Parser ref(String name) {
 <div class="method inherited"><h4 id="repeat">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>repeat</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> min, <a href="http://api.dartlang.org/dart_core/int.html">int</a> max) <a class="anchor-link" href="#repeat"
-              title="Permalink to DartParser.repeat">#</a></h4>
+              title="Permalink to SmalltalkGrammar.repeat">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that accepts the receiver between 
 <span class="param">min</span> and 
@@ -565,7 +660,7 @@ Parser repeat(int min, int max) =&gt; new _RepeatingParser(this, min, max);
 <div class="method inherited"><h4 id="replace">
 <button class="show-code">Code</button>
 void <strong>replace</strong>(<a href="../petitparser/Parser.html">Parser</a> source, <a href="../petitparser/Parser.html">Parser</a> target) <a class="anchor-link" href="#replace"
-              title="Permalink to DartParser.replace">#</a></h4>
+              title="Permalink to SmalltalkGrammar.replace">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/_DelegateParser.html">_DelegateParser</a> </div><div class="doc">
 <div class="inherited">
 <p>Changes the receiver by replacing 
@@ -586,7 +681,7 @@ example.replace(letter, digit());
 <pre class="source">
 void replace(Parser source, Parser target) {
  super.replace(source, target);
- if (identical(_delegate, source)) {
+ if (_delegate == source) {
    _delegate = target;
  }
 }
@@ -596,7 +691,7 @@ void replace(Parser source, Parser target) {
 <div class="method inherited"><h4 id="separatedBy">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>separatedBy</strong>(<a href="../petitparser/Parser.html">Parser</a> separator, {<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> includeSeparators: true, <a href="http://api.dartlang.org/dart_core/bool.html">bool</a> optionalSeparatorAtEnd: false}) <a class="anchor-link" href="#separatedBy"
-              title="Permalink to DartParser.separatedBy">#</a></h4>
+              title="Permalink to SmalltalkGrammar.separatedBy">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that consumes the receiver one or more times separated
 by the 
@@ -641,7 +736,7 @@ Parser separatedBy(Parser separator, {bool includeSeparators: true,
 <div class="method inherited"><h4 id="seq">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>seq</strong>(<a href="../petitparser/Parser.html">Parser</a> other) <a class="anchor-link" href="#seq"
-              title="Permalink to DartParser.seq">#</a></h4>
+              title="Permalink to SmalltalkGrammar.seq">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that accepts the receiver followed by 
 <span class="param">other</span>. The
@@ -660,7 +755,7 @@ Parser seq(Parser other) =&gt; new _SequenceParser([this, other]);
 <div class="method inherited"><h4 id="set">
 <button class="show-code">Code</button>
 void <strong>set</strong>(<a href="../petitparser/Parser.html">Parser</a> parser) <a class="anchor-link" href="#set"
-              title="Permalink to DartParser.set">#</a></h4>
+              title="Permalink to SmalltalkGrammar.set">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/_SetableParser.html">_SetableParser</a> </div><div class="doc">
 <div class="inherited">
 <p>Sets the receiver to delegate to 
@@ -674,7 +769,7 @@ void set(Parser parser) =&gt; replace(children[0], parser);
 <div class="method inherited"><h4 id="setable">
 <button class="show-code">Code</button>
 <a href="../petitparser/SetableParser.html">SetableParser</a> <strong>setable</strong>() <a class="anchor-link" href="#setable"
-              title="Permalink to DartParser.setable">#</a></h4>
+              title="Permalink to SmalltalkGrammar.setable">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that points to the receiver, but can be changed to point
 to something else at a later point in time.</p>
@@ -689,7 +784,7 @@ SetableParser setable() =&gt; new _SetableParser(this);
 <div class="method inherited"><h4 id="star">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>star</strong>() <a class="anchor-link" href="#star"
-              title="Permalink to DartParser.star">#</a></h4>
+              title="Permalink to SmalltalkGrammar.star">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that accepts the receiver zero or more times. The
 resulting parser returns a list of the parse results of the receiver.</p>
@@ -706,7 +801,7 @@ Parser star() =&gt; repeat(0, 65536);
 <div class="method inherited"><h4 id="times">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>times</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> count) <a class="anchor-link" href="#times"
-              title="Permalink to DartParser.times">#</a></h4>
+              title="Permalink to SmalltalkGrammar.times">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that accepts the receiver exactly 
 <span class="param">count</span> times. The
@@ -721,7 +816,7 @@ Parser times(int count) =&gt; repeat(count, count);
 <div class="method inherited"><h4 id="token">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>token</strong>() <a class="anchor-link" href="#token"
-              title="Permalink to DartParser.token">#</a></h4>
+              title="Permalink to SmalltalkGrammar.token">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that discards the result of the receiver and returns
 a <code>Token</code>. The token carries information about where the token started and
@@ -736,7 +831,7 @@ Parser token() =&gt; new _TokenParser(this);
 <div class="method inherited"><h4 id="trim">
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>trim</strong>([<a href="../petitparser/Parser.html">Parser</a> trimmer]) <a class="anchor-link" href="#trim"
-              title="Permalink to DartParser.trim">#</a></h4>
+              title="Permalink to SmalltalkGrammar.trim">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that consumes input before and after the receiver. The
 optional argument 

@@ -50,8 +50,7 @@ class ParserIterator implements Iterator&lt;Parser&gt; {
      _current = null;
      return false;
    }
-   _current = _todo.removeLast();
-   _done.add(_current);
+   _done.add(_current = _todo.removeLast());
    _todo.addAll(_current.children.where((each) =&gt; !_done.contains(each)));
    return true;
  }
@@ -119,8 +118,7 @@ bool moveNext() {
    _current = null;
    return false;
  }
- _current = _todo.removeLast();
- _done.add(_current);
+ _done.add(_current = _todo.removeLast());
  _todo.addAll(_current.children.where((each) =&gt; !_done.contains(each)));
  return true;
 }

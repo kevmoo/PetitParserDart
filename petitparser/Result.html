@@ -38,17 +38,14 @@ abstract class Result extends Context {
 
  const Result(buffer, position) : super(buffer, position);
 
- /** Returns [true] if this result indicates a parse success. */
- bool get isSuccess =&gt; false;
-
- /** Returns [true] if this result indicates a parse failure. */
- bool get isFailure =&gt; false;
+ dynamic get result =&gt; value;
 
  /** Returns the parse result of the current context. */
- dynamic get result;
+ dynamic get value;
 
  /** Returns the parse message of the current context. */
  String get message;
+
 
 }
 </pre>
@@ -87,26 +84,26 @@ dynamic get buffer =&gt; _buffer;
 </pre>
 </div>
 </div>
-<div class="field"><h4 id="isFailure">
+<div class="field inherited"><h4 id="isFailure">
 <button class="show-code">Code</button>
 final <a href="http://api.dartlang.org/dart_core/bool.html">bool</a>         <strong>isFailure</strong> <a class="anchor-link"
             href="#isFailure"
             title="Permalink to Result.isFailure">#</a>
         </h4>
-        <div class="doc">
+        <div class="inherited-from">inherited from <a href="../petitparser/Context.html">Context</a> </div><div class="doc">
 <p>Returns <code>true</code> if this result indicates a parse failure. </p>
 <pre class="source">
 bool get isFailure =&gt; false;
 </pre>
 </div>
 </div>
-<div class="field"><h4 id="isSuccess">
+<div class="field inherited"><h4 id="isSuccess">
 <button class="show-code">Code</button>
 final <a href="http://api.dartlang.org/dart_core/bool.html">bool</a>         <strong>isSuccess</strong> <a class="anchor-link"
             href="#isSuccess"
             title="Permalink to Result.isSuccess">#</a>
         </h4>
-        <div class="doc">
+        <div class="inherited-from">inherited from <a href="../petitparser/Context.html">Context</a> </div><div class="doc">
 <p>Returns <code>true</code> if this result indicates a parse success. </p>
 <pre class="source">
 bool get isSuccess =&gt; false;
@@ -146,9 +143,21 @@ final         <strong>result</strong> <a class="anchor-link"
             title="Permalink to Result.result">#</a>
         </h4>
         <div class="doc">
+<pre class="source">
+dynamic get result =&gt; value;
+</pre>
+</div>
+</div>
+<div class="field"><h4 id="value">
+<button class="show-code">Code</button>
+final         <strong>value</strong> <a class="anchor-link"
+            href="#value"
+            title="Permalink to Result.value">#</a>
+        </h4>
+        <div class="doc">
 <p>Returns the parse result of the current context. </p>
 <pre class="source">
-dynamic get result;
+dynamic get value;
 </pre>
 </div>
 </div>

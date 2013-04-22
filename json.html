@@ -27,6 +27,15 @@
 </div>
 <div class="content">
 <h2><strong>json</strong> library</h2>
+<div class="doc"><p>This package contains a complete implementation of <a href="http://json.org/">JSON</a>.</p>
+<p><a class="crossref" href="json/JsonParser.html">JsonParser</a> creates a nested Dart objects from a given JSON string. For
+example the following code prints <code>{a: 1, b: [2, 3.4], c: false}</code>:</p>
+<pre><code>var json = new JsonParser();
+var result = json.parse('{"a": 1, "b": [2, 3.4], "c": false}');
+print(result.value);  // {a: 1, b: [2, 3.4], c: false}
+</code></pre>
+<p>The grammar definition <a class="crossref" href="json/JsonGrammar.html">JsonGrammar</a> can be subclassed to construct other
+objects.</p></div>
 <div>
 <h3>Classes</h3>
           <div class="type">

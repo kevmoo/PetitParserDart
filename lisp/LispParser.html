@@ -48,7 +48,7 @@ class LispParser extends LispGrammar {
    action('character escape', (each) =&gt; each[1].codeUnitAt(0));
    action('character raw', (each) =&gt; each.codeUnitAt(0));
 
-   action('symbol', (each) =&gt; new Symbol(each));
+   action('symbol', (each) =&gt; new Name(each));
    action('number', (each) {
      var floating = double.parse(each);
      var integral = floating.toInt();
@@ -204,6 +204,19 @@ Parser bracket(String brackets, String reference) {
 </pre>
 </div>
 </div>
+<div class="method inherited"><h4 id="copy">
+<button class="show-code">Code</button>
+<a href="../petitparser/Parser.html">Parser</a> <strong>copy</strong>() <a class="anchor-link" href="#copy"
+              title="Permalink to LispParser.copy">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/_SetableParser.html">_SetableParser</a> </div><div class="doc">
+<div class="inherited">
+<p>Returns a shallow copy of the receiver.</p>
+<div class="docs-inherited-from">docs inherited from <a href="../petitparser/Parser.html">Parser</a> </div></div>
+<pre class="source">
+Parser copy() =&gt; new _SetableParser(_delegate);
+</pre>
+</div>
+</div>
 <div class="method inherited"><h4 id="def">
 <button class="show-code">Code</button>
 void <strong>def</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> name, <a href="../petitparser/Parser.html">Parser</a> parser) <a class="anchor-link" href="#def"
@@ -232,7 +245,7 @@ void def(String name, Parser parser) {
 </div>
 <div class="method inherited"><h4 id="end">
 <button class="show-code">Code</button>
-<a href="../petitparser/Parser.html">Parser</a> <strong>end</strong>({<a href="http://api.dartlang.org/dart_core/String.html">String</a> message: 'end of input expected'}) <a class="anchor-link" href="#end"
+<a href="../petitparser/Parser.html">Parser</a> <strong>end</strong>([<a href="http://api.dartlang.org/dart_core/String.html">String</a> message = 'end of input expected']) <a class="anchor-link" href="#end"
               title="Permalink to LispParser.end">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that succeeds only if the receiver consumes the complete
@@ -242,7 +255,7 @@ input, otherwise return a failure with the optional
 and fails on <code>'ab'</code>. In contrast the parser <code>letter()</code> alone would
 succeed on both inputs, but not consume everything for the second input.</p>
 <pre class="source">
-Parser end({String message: 'end of input expected'}) {
+Parser end([String message = 'end of input expected']) {
  return new _EndOfInputParser(this, message);
 }
 </pre>
@@ -284,7 +297,7 @@ void initialize() {
  action('character escape', (each) =&gt; each[1].codeUnitAt(0));
  action('character raw', (each) =&gt; each.codeUnitAt(0));
 
- action('symbol', (each) =&gt; new Symbol(each));
+ action('symbol', (each) =&gt; new Name(each));
  action('number', (each) {
    var floating = double.parse(each);
    var integral = floating.toInt();
@@ -312,6 +325,37 @@ of the receiver.</p>
 the number <code>1</code> for the input string <code>'1'</code>.</p>
 <pre class="source">
 Parser map(Function function) =&gt; new _ActionParser(this, function);
+</pre>
+</div>
+</div>
+<div class="method inherited"><h4 id="match">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> <strong>match</strong>(<a href="../petitparser/Parser.html">Parser</a> other, [<a href="http://api.dartlang.org/dart_core/Set.html">Set</a>&lt;<a href="../petitparser/Parser.html">Parser</a>&gt; seen]) <a class="anchor-link" href="#match"
+              title="Permalink to LispParser.match">#</a></h4>
+<div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
+<p>Recusively tests for the equality of two parsers.</p>
+<p>The code can automatically deals with recursive parsers and parsers that
+refer to other parsers. This code is supposed to be overridden by parsers
+that add other state.</p>
+<pre class="source">
+bool match(Parser other, [Set&lt;Parser&gt; seen]) {
+ if (seen == null) {
+   seen = new Set();
+ }
+ if (this == other || seen.contains(this)) {
+   return true;
+ }
+ seen.add(this);
+ if (runtimeType != other.runtimeType || children.length != other.children.length) {
+   return false;
+ }
+ for (var i = 0; i &lt; children.length; i++) {
+   if (!children[i].match(other.children[i], seen)) {
+     return false;
+   }
+ }
+ return true;
+}
 </pre>
 </div>
 </div>
@@ -432,7 +476,7 @@ Parser or(Parser other) =&gt; new _ChoiceParser([this, other]);
 <p>The implementation creates a default parse context on the input and calls
 the internal parsing logic of the receiving parser.</p>
 <p>For example, <code>letter().plus().parse('abc')</code> results in an instance of
-<code>Success</code>, where <code>Result.position</code> is <code>3</code> and <code>Success.result</code> is
+<code>Success</code>, where <code>Result.position</code> is <code>3</code> and <code>Success.value</code> is
 <code>[a, b, c]</code>.</p>
 <p>Similarly, <code>letter().plus().parse('123')</code> results in an instance of
 <code>Failure</code>, where <code>Result.position</code> is <code>0</code> and <code>Failure.message</code> is
@@ -603,7 +647,7 @@ example.replace(letter, digit());
 <pre class="source">
 void replace(Parser source, Parser target) {
  super.replace(source, target);
- if (identical(_delegate, source)) {
+ if (_delegate == source) {
    _delegate = target;
  }
 }

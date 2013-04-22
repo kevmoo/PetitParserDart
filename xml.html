@@ -27,6 +27,13 @@
 </div>
 <div class="content">
 <h2><strong>xml</strong> library</h2>
+<div class="doc"><p>This package contains a reasonably complete implementation of an XML
+parser and its associated AST.</p>
+<p>Example:</p>
+<pre><code>var xml = new XmlParser();
+var result = xml.parse('&lt;xml attr="foo"&gt;&lt;zork /&gt;&lt;/xml&gt;');
+print(result.value);    // &lt;xml attr="foo"&gt;&lt;zork /&gt;&lt;/xml&gt;
+</code></pre></div>
 <div>
 <h3>Abstract Classes</h3>
           <div class="type">
