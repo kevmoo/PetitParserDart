@@ -128,6 +128,130 @@ useful to support subtraction and division as well. All these features
 can be added with a few lines of PetitParser code.</p></div>
 <div>
 <h3>Functions</h3>
+<div class="method"><h4 id="debug">
+<button class="show-code">Code</button>
+<a href="petitparser/Parser.html">Parser</a> <strong>debug</strong>(<a href="petitparser/Parser.html">Parser</a> root) <a class="anchor-link" href="#debug"
+              title="Permalink to debug">#</a></h4>
+<div class="doc">
+<p>Adds debug handlers to each parser reachable from 
+<span class="param">root</span>.</p>
+<pre class="source">
+Parser debug(Parser root) {
+ var level = 0;
+ return transformParser(root, (parser) {
+   return new _ContinuationParser(parser, (context, continuation) {
+     print('${_debugIndent(level)}${parser}');
+     level++;
+     var result = continuation(context);
+     level--;
+     print('${_debugIndent(level)}${result}');
+     return result;
+    });
+ });
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="removeDuplicates">
+<button class="show-code">Code</button>
+<a href="petitparser/Parser.html">Parser</a> <strong>removeDuplicates</strong>(<a href="petitparser/Parser.html">Parser</a> root) <a class="anchor-link" href="#removeDuplicates"
+              title="Permalink to removeDuplicates">#</a></h4>
+<div class="doc">
+<p>Removes duplicated parsers reachable from 
+<span class="param">root</span> in-place.</p>
+<pre class="source">
+Parser removeDuplicates(Parser root) {
+ var uniques = new Set();
+ allParser(root).forEach((parent) {
+   parent.children.forEach((source) {
+     var target = uniques.firstWhere((each) {
+       return source != each &amp;&amp; source.match(each);
+     }, orElse: () =&gt; null);
+     if (target == null) {
+       uniques.add(source);
+     } else {
+       parent.replace(source, target);
+     }
+   });
+ });
+ return root;
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="removeSetables">
+<button class="show-code">Code</button>
+<a href="petitparser/Parser.html">Parser</a> <strong>removeSetables</strong>(<a href="petitparser/Parser.html">Parser</a> root) <a class="anchor-link" href="#removeSetables"
+              title="Permalink to removeSetables">#</a></h4>
+<div class="doc">
+<p>Removes all setable parsers reachable from 
+<span class="param">root</span> in-place.</p>
+<pre class="source">
+Parser removeSetables(Parser root) {
+ allParser(root).forEach((parent) {
+   parent.children.forEach((source) {
+     var target = _removeSetable(source);
+     if (source != target) {
+       parent.replace(source, target);
+     }
+   });
+ });
+ return _removeSetable(root);
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="transformParser">
+<button class="show-code">Code</button>
+<a href="petitparser/Parser.html">Parser</a> <strong>transformParser</strong>(<a href="petitparser/Parser.html">Parser</a> root, <a href="petitparser/Parser.html">Parser</a> function(<a href="petitparser/Parser.html">Parser</a> parser)) <a class="anchor-link" href="#transformParser"
+              title="Permalink to transformParser">#</a></h4>
+<div class="doc">
+<p>Transforms all parsers reachable from 
+<span class="param">root</span> with the given 
+<span class="param">function</span>.
+The identity function returns a copy of the the incoming parser.</p>
+<p>The implementation first creates a copy of each parser reachable in the
+input grammar; then the resulting grammar is iteratively transfered and
+all old parsers are replaced with the transformed ones until we end up
+with a completely new grammar.</p>
+<pre class="source">
+Parser transformParser(Parser root, Parser function(Parser parser)) {
+ var mapping = new Map();
+ allParser(root).forEach((parser) {
+   mapping[parser] = function(parser.copy());
+ });
+ while (true) {
+   var changed = false;
+   allParser(mapping[root]).forEach((parser) {
+     parser.children.forEach((source) {
+       if (mapping.containsKey(source)) {
+         parser.replace(source, mapping[source]);
+         changed = true;
+       }
+     });
+   });
+   if (!changed) {
+     return mapping[root];
+   }
+ }
+}
+</pre>
+</div>
+</div>
+<div class="method"><h4 id="allParser">
+<button class="show-code">Code</button>
+<a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="petitparser/Parser.html">Parser</a>&gt; <strong>allParser</strong>(<a href="petitparser/Parser.html">Parser</a> root) <a class="anchor-link" href="#allParser"
+              title="Permalink to allParser">#</a></h4>
+<div class="doc">
+<p>Returns an iterable over all parsers reachable from a 
+<span class="param">root</span>.</p>
+<pre class="source">
+Iterable&lt;Parser&gt; allParser(Parser root) {
+ return new _ParserIterable(root);
+}
+</pre>
+</div>
+</div>
 <div class="method"><h4 id="stringIgnoreCase">
 <button class="show-code">Code</button>
 <a href="petitparser/Parser.html">Parser</a> <strong>stringIgnoreCase</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> element, [<a href="http://api.dartlang.org/dart_core/String.html">String</a> message]) <a class="anchor-link" href="#stringIgnoreCase"
@@ -427,12 +551,6 @@ Parser char(dynamic element, [String message]) {
 <h3>Classes</h3>
           <div class="type">
           <h4>
-            <a href="petitparser/CompositeParser2.html"><strong>CompositeParser2</strong></a>
-          </h4>
-          </div>
-          
-          <div class="type">
-          <h4>
             <a href="petitparser/Context.html"><strong>Context</strong></a>
           </h4>
           </div>
@@ -445,18 +563,6 @@ Parser char(dynamic element, [String message]) {
           
           <div class="type">
           <h4>
-            <a href="petitparser/ParserIterable.html"><strong>ParserIterable</strong></a>
-          </h4>
-          </div>
-          
-          <div class="type">
-          <h4>
-            <a href="petitparser/ParserIterator.html"><strong>ParserIterator</strong></a>
-          </h4>
-          </div>
-          
-          <div class="type">
-          <h4>
             <a href="petitparser/Success.html"><strong>Success</strong></a>
           </h4>
           </div>
@@ -464,12 +570,6 @@ Parser char(dynamic element, [String message]) {
           <div class="type">
           <h4>
             <a href="petitparser/Token.html"><strong>Token</strong></a>
-          </h4>
-          </div>
-          
-          <div class="type">
-          <h4>
-            <a href="petitparser/Transformations.html"><strong>Transformations</strong></a>
           </h4>
           </div>
           

@@ -667,8 +667,10 @@ Parser separatedBy(Parser separator, {bool includeSeparators: true,
 <span class="param">other</span>. The
 resulting parser returns a list of the parse result of the receiver
 followed by the parse result of 
-<span class="param">other</span>. Calling <code>SequenceParser.seq</code>
-causes the sequences to be concatenated instead of nested.</p>
+<span class="param">other</span>. Calling this method on an
+existing sequence code not nest this sequence into a new one, but
+instead augments the existing sequence with 
+<span class="param">other</span>.</p>
 <p>For example, the parser <code>letter().seq(digit()).seq(letter())</code> accepts a
 letter followed by a digit and another letter. The parse result of the
 input string <code>'a1b'</code> is the list <code>['a', '1', 'b']</code>.</p>

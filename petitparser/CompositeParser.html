@@ -88,9 +88,7 @@ abstract class CompositeParser extends _SetableParser {
      }
      parser.set(_defined[name]);
    });
-   set(Transformations.removeDuplicates(
-       Transformations.removeSetables(
-       ref('start'))));
+   set(removeDuplicates(removeSetables(ref('start'))));
    _undefined.clear();
    _completed = true;
  }
@@ -186,7 +184,7 @@ abstract class CompositeParser extends _SetableParser {
 <span class="type-box"><span class="icon-class"></span><a href="../petitparser/Parser.html">Parser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/_DelegateParser.html">_DelegateParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/_SetableParser.html">_SetableParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><strong>CompositeParser</strong></span></p>
 <h3>Subclasses</h3>
 <p>
-<span class="type-box"><span class="icon-class"></span><a href="../petitparser/CompositeParser2.html">CompositeParser2</a></span>, <span class="type-box"><span class="icon-class"></span><a href="../smalltalk/SmalltalkGrammar.html">SmalltalkGrammar</a></span></p>
+<span class="type-box"><span class="icon-class"></span><a href="../beta/CompositeParser2.html">CompositeParser2</a></span>, <span class="type-box"><span class="icon-class"></span><a href="../beta/CompositeParser2.html">CompositeParser2</a></span>, <span class="type-box"><span class="icon-class"></span><a href="../json/JsonGrammar.html">JsonGrammar</a></span>, <span class="type-box"><span class="icon-class"></span><a href="../lisp/LispGrammar.html">LispGrammar</a></span>, <span class="type-box"><span class="icon-class"></span><a href="../xml/XmlGrammar.html">XmlGrammar</a></span></p>
 <div>
 <h3>Constructors</h3>
 <div class="method"><h4 id="CompositeParser">
@@ -798,8 +796,10 @@ Parser separatedBy(Parser separator, {bool includeSeparators: true,
 <span class="param">other</span>. The
 resulting parser returns a list of the parse result of the receiver
 followed by the parse result of 
-<span class="param">other</span>. Calling <code>SequenceParser.seq</code>
-causes the sequences to be concatenated instead of nested.</p>
+<span class="param">other</span>. Calling this method on an
+existing sequence code not nest this sequence into a new one, but
+instead augments the existing sequence with 
+<span class="param">other</span>.</p>
 <p>For example, the parser <code>letter().seq(digit()).seq(letter())</code> accepts a
 letter followed by a digit and another letter. The parse result of the
 input string <code>'a1b'</code> is the list <code>['a', '1', 'b']</code>.</p>

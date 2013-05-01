@@ -2,19 +2,19 @@
         <html>
         <head>
                 <meta charset="utf-8">
-        <title>CompositeParser2 class / petitparser Library / Dart Documentation</title>
+        <title>CompositeParser2 class / beta Library / Dart Documentation</title>
         <link rel="stylesheet" type="text/css"
             href="../styles.css">
         <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
         <link rel="shortcut icon" href="../favicon.ico">
         
         </head>
-        <body data-library="petitparser" data-type="CompositeParser2">
+        <body data-library="beta" data-type="CompositeParser2">
         <div class="page">
         <div class="header">
           <a href="../index.html"><div class="logo"></div></a>
           <a href="../index.html">Dart Documentation</a>
-         &rsaquo; <a href="../petitparser.html">petitparser</a> &rsaquo; <a href="../petitparser/CompositeParser2.html">CompositeParser2</a>        <div id="search-box">
+         &rsaquo; <a href="../beta.html">beta</a> &rsaquo; <a href="../beta/CompositeParser2.html">CompositeParser2</a>        <div id="search-box">
           <input type="search" name="q" id="q" autocomplete="off"
               class="search-input" placeholder="Search API">
         </div>
@@ -34,10 +34,10 @@
 <div class="doc">
 <p>Experimental helper to compose complex grammars from various primitive
 parsers using variable references.</p>
-<p>The difference of this implementation to <a class="crossref" href="../petitparser/CompositeParser.html">CompositeParser</a> is that
+<p>The difference of this implementation to <code>CompositeParser</code> is that
 subclasses can define and refer to productions using variables. The
-varibales themselves are not actually implement anywhere, but their
-behavior is defined in <a class="crossref" href="../petitparser/CompositeParser2.html#noSuchMethod">noSuchMethod</a> and mapped to a collection using
+variables themselves are not actually implement anywhere, but their
+behavior is defined in <a class="crossref" href="../beta/CompositeParser2.html#noSuchMethod">noSuchMethod</a> and mapped to a collection using
 the methods defined in the superclass.</p>
 <p>Consider the following example to parse a list of numbers:</p>
 <pre><code>class NumberListGrammar2 extends CompositeParser2 {
@@ -60,39 +60,37 @@ as in the following example:</p>
 as all productions are undefined from the perspective of the analyzer. Pay
 attention with production names that conflict with methods defined in the
 superclasses. The generated JavaScript code is slightly bigger, due to the
-use of <a class="crossref" href="../petitparser/CompositeParser2.html#noSuchMethod">noSuchMethod</a>. However, the resulting parser is identical.</p>
+use of <a class="crossref" href="../beta/CompositeParser2.html#noSuchMethod">noSuchMethod</a>. However, the resulting parser is identical.</p>
 <pre class="source">
 class CompositeParser2 extends CompositeParser {
-
  dynamic noSuchMethod(Invocation mirror) {
-   if (!mirror.memberName.startsWith('_')) {
+   String name = MirrorSystem.getName(mirror.memberName);
+   if (!name.startsWith('_')) {
      // only consider public members
      if (mirror.isGetter) {
        // productions can be accessed any time
-       return ref(mirror.memberName);
-     } else if (!_completed) {
-       if (mirror.isSetter) {
-         // production can only be defined during initialization
-         return def(mirror.memberName.substring(0, mirror.memberName.length - 1),
-             mirror.positionalArguments.first);
-       } else if (mirror.isMethod &amp;&amp; mirror.positionalArguments.length == 1) {
-         // productions can only be redefined during initialization
-         var argument = mirror.positionalArguments.first;
-         return argument is Parser
-             ? redef(mirror.memberName, argument)
-             : action(mirror.memberName, argument);
-       }
+       return ref(name);
+     } else if (mirror.isSetter) {
+       // production can only be defined during initialization
+       return def(name.substring(0, name.length - 1),
+         mirror.positionalArguments.first);
+     } else if (mirror.isMethod &amp;&amp; mirror.positionalArguments.length == 1) {
+       // productions can only be redefined during initialization
+       var argument = mirror.positionalArguments.first;
+       return argument is Parser ? redef(name, argument) : action(name, argument);
      }
    }
    return super.noSuchMethod(mirror);
  }
-
 }
 </pre>
 </div>
 <h3>Extends</h3>
 <p>
 <span class="type-box"><span class="icon-class"></span><a href="../petitparser/Parser.html">Parser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/_DelegateParser.html">_DelegateParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/_SetableParser.html">_SetableParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/CompositeParser.html">CompositeParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><strong>CompositeParser2</strong></span></p>
+<h3>Subclasses</h3>
+<p>
+<span class="type-box"><span class="icon-class"></span><a href="../dart/DartGrammar.html">DartGrammar</a></span></p>
 <div class="inherited">
 <h3>Properties</h3>
 <div class="field inherited"><h4 id="children">
@@ -125,7 +123,7 @@ List&lt;Parser&gt; get children =&gt; [_delegate];
 <div class="inherited-from">inherited from <a href="../petitparser/CompositeParser.html">CompositeParser</a> </div><div class="doc">
 <p>Convenience operator returning a reference to a production with
 a 
-<span class="param">name</span>. See <a class="crossref" href="../petitparser/CompositeParser.html#ref">CompositeParser.ref</a> for details.</p>
+<span class="param">name</span>. See <code>CompositeParser.ref</code> for details.</p>
 <pre class="source">
 Parser operator [](String name) =&gt; ref(name);
 </pre>
@@ -138,7 +136,7 @@ Parser operator [](String name) =&gt; ref(name);
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Convenience operator returning a parser accepts the receiver followed
 by 
-<span class="param">other</span>. See <a class="crossref" href="../petitparser/Parser.html#seq">Parser.seq</a> for details.</p>
+<span class="param">other</span>. See <code>Parser.seq</code> for details.</p>
 <pre class="source">
 Parser operator &amp; (Parser other) =&gt; this.seq(other);
 </pre>
@@ -151,7 +149,7 @@ Parser operator &amp; (Parser other) =&gt; this.seq(other);
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Convenience operator returning a parser accepts the receiver or
 
-<span class="param">other</span>. See <a class="crossref" href="../petitparser/Parser.html#or">Parser.or</a> for details.</p>
+<span class="param">other</span>. See <code>Parser.or</code> for details.</p>
 <pre class="source">
 Parser operator | (Parser other) =&gt; this.or(other);
 </pre>
@@ -184,7 +182,7 @@ void <strong>action</strong>(<a href="http://api.dartlang.org/dart_core/String.h
 <p>Attaches an action 
 <span class="param">function</span> to an existing production 
 <span class="param">name</span>. The code
-raises an <a class="crossref" href="../petitparser/UndefinedProductionError.html">UndefinedProductionError</a> if 
+raises an <code>UndefinedProductionError</code> if 
 <span class="param">name</span> is an undefined production.
 Only call this method from <code>initialize</code>.</p>
 <p>The following example attaches an action returning the size of list of
@@ -348,7 +346,7 @@ bool match(Parser other, [Set&lt;Parser&gt; seen]) {
 <span class="param">input</span>.</p>
 <p>For example, <code>letter().plus().matches('abc de')</code> results in the list
 <code>[['a', 'b', 'c'], ['b', 'c'], ['c'], ['d', 'e'], ['e']]</code>. See
-<a class="crossref" href="../petitparser/Parser.html#matchesSkipping">Parser.matchesSkipping</a> to retrieve non-overlapping parse results.</p>
+<code>Parser.matchesSkipping</code> to retrieve non-overlapping parse results.</p>
 <pre class="source">
 Iterable matches(dynamic input) {
  var list = new List();
@@ -365,7 +363,7 @@ Iterable matches(dynamic input) {
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a list of all successful non-overlapping parses of the input.</p>
 <p>For example, <code>letter().plus().matchesSkipping('abc de')</code> results in the
-list <code>[['a', 'b', 'c'], ['d', 'e']]</code>. See <a class="crossref" href="../petitparser/Parser.html#matches">Parser.matches</a> to retrieve
+list <code>[['a', 'b', 'c'], ['d', 'e']]</code>. See <code>Parser.matches</code> to retrieve
 overlapping parse results.</p>
 <pre class="source">
 Iterable matchesSkipping(dynamic input) {
@@ -397,33 +395,30 @@ dynamic <strong>noSuchMethod</strong>(<a href="http://api.dartlang.org/dart_core
               title="Permalink to CompositeParser2.noSuchMethod">#</a></h4>
 <div class="doc">
 <div class="inherited">
-<p><a class="crossref" href="../petitparser/CompositeParser2.html#noSuchMethod">noSuchMethod</a> is invoked when users invoke a non-existant method
+<p><a class="crossref" href="../beta/CompositeParser2.html#noSuchMethod">noSuchMethod</a> is invoked when users invoke a non-existant method
 on an object. The name of the method and the arguments of the
-invocation are passed to <a class="crossref" href="../petitparser/CompositeParser2.html#noSuchMethod">noSuchMethod</a> in an <code>Invocation</code>.
-If <a class="crossref" href="../petitparser/CompositeParser2.html#noSuchMethod">noSuchMethod</a> returns a value, that value becomes the result of
+invocation are passed to <a class="crossref" href="../beta/CompositeParser2.html#noSuchMethod">noSuchMethod</a> in an <code>Invocation</code>.
+If <a class="crossref" href="../beta/CompositeParser2.html#noSuchMethod">noSuchMethod</a> returns a value, that value becomes the result of
 the original invocation.</p>
-<p>The default behavior of <a class="crossref" href="../petitparser/CompositeParser2.html#noSuchMethod">noSuchMethod</a> is to throw a
+<p>The default behavior of <a class="crossref" href="../beta/CompositeParser2.html#noSuchMethod">noSuchMethod</a> is to throw a
 <code>noSuchMethodError</code>.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
 <pre class="source">
 dynamic noSuchMethod(Invocation mirror) {
- if (!mirror.memberName.startsWith('_')) {
+ String name = MirrorSystem.getName(mirror.memberName);
+ if (!name.startsWith('_')) {
    // only consider public members
    if (mirror.isGetter) {
      // productions can be accessed any time
-     return ref(mirror.memberName);
-   } else if (!_completed) {
-     if (mirror.isSetter) {
-       // production can only be defined during initialization
-       return def(mirror.memberName.substring(0, mirror.memberName.length - 1),
-           mirror.positionalArguments.first);
-     } else if (mirror.isMethod &amp;&amp; mirror.positionalArguments.length == 1) {
-       // productions can only be redefined during initialization
-       var argument = mirror.positionalArguments.first;
-       return argument is Parser
-           ? redef(mirror.memberName, argument)
-           : action(mirror.memberName, argument);
-     }
+     return ref(name);
+   } else if (mirror.isSetter) {
+     // production can only be defined during initialization
+     return def(name.substring(0, name.length - 1),
+       mirror.positionalArguments.first);
+   } else if (mirror.isMethod &amp;&amp; mirror.positionalArguments.length == 1) {
+     // productions can only be redefined during initialization
+     var argument = mirror.positionalArguments.first;
+     return argument is Parser ? redef(name, argument) : action(name, argument);
    }
  }
  return super.noSuchMethod(mirror);
@@ -496,10 +491,10 @@ Parser or(Parser other) =&gt; new _ChoiceParser([this, other]);
 <p>The implementation creates a default parse context on the input and calls
 the internal parsing logic of the receiving parser.</p>
 <p>For example, <code>letter().plus().parse('abc')</code> results in an instance of
-<a class="crossref" href="../petitparser/Success.html">Success</a>, where <code>Result.position</code> is <code>3</code> and <a class="crossref" href="../petitparser/Success.html#value">Success.value</a> is
+<code>Success</code>, where <code>Result.position</code> is <code>3</code> and <code>Success.value</code> is
 <code>[a, b, c]</code>.</p>
 <p>Similarly, <code>letter().plus().parse('123')</code> results in an instance of
-<a class="crossref" href="../petitparser/Failure.html">Failure</a>, where <code>Result.position</code> is <code>0</code> and <a class="crossref" href="../petitparser/Failure.html#message">Failure.message</a> is
+<code>Failure</code>, where <code>Result.position</code> is <code>0</code> and <code>Failure.message</code> is
 <code>'letter expected'</code>.</p>
 <pre class="source">
 Result parse(dynamic input) {
@@ -576,7 +571,7 @@ void <strong>redef</strong>(<a href="http://api.dartlang.org/dart_core/String.ht
 <span class="param">name</span> and a 
 <span class="param">replacement</span>
 parser or function producing a new parser. The code raises an
-<a class="crossref" href="../petitparser/UndefinedProductionError.html">UndefinedProductionError</a> if 
+<code>UndefinedProductionError</code> if 
 <span class="param">name</span> is an undefined production. Only call
 this method from <code>initialize</code>.</p>
 <p>The following example redefines the previously defined list production
@@ -653,7 +648,7 @@ void <strong>replace</strong>(<a href="../petitparser/Parser.html">Parser</a> so
 <span class="param">source</span> with 
 <span class="param">target</span>. Does nothing
 if 
-<span class="param">source</span> does not exist in <a class="crossref" href="../petitparser/Parser.html#children">Parser.children</a>.</p>
+<span class="param">source</span> does not exist in <code>Parser.children</code>.</p>
 <p>The following example creates a letter parser and then defines a parser
 called <code>example</code> that accepts one or more letters. Eventually the parser
 <code>example</code> is modified by replacing the <code>letter</code> parser with a new
@@ -728,8 +723,10 @@ Parser separatedBy(Parser separator, {bool includeSeparators: true,
 <span class="param">other</span>. The
 resulting parser returns a list of the parse result of the receiver
 followed by the parse result of 
-<span class="param">other</span>. Calling <code>SequenceParser.seq</code>
-causes the sequences to be concatenated instead of nested.</p>
+<span class="param">other</span>. Calling this method on an
+existing sequence code not nest this sequence into a new one, but
+instead augments the existing sequence with 
+<span class="param">other</span>.</p>
 <p>For example, the parser <code>letter().seq(digit()).seq(letter())</code> accepts a
 letter followed by a digit and another letter. The parse result of the
 input string <code>'a1b'</code> is the list <code>['a', '1', 'b']</code>.</p>
@@ -761,7 +758,7 @@ void set(Parser parser) =&gt; replace(children[0], parser);
 to something else at a later point in time.</p>
 <p>For example, the parser <code>letter().setable()</code> behaves exactly the same
 as <code>letter()</code>, but it can be replaced with another parser using
-<a class="crossref" href="../petitparser/SetableParser.html#set">SetableParser.set</a>.</p>
+<code>SetableParser.set</code>.</p>
 <pre class="source">
 SetableParser setable() =&gt; new _SetableParser(this);
 </pre>
@@ -805,7 +802,7 @@ Parser times(int count) =&gt; repeat(count, count);
               title="Permalink to CompositeParser2.token">#</a></h4>
 <div class="inherited-from">inherited from <a href="../petitparser/Parser.html">Parser</a> </div><div class="doc">
 <p>Returns a parser that discards the result of the receiver and returns
-a <a class="crossref" href="../petitparser/Token.html">Token</a>. The token carries information about where the token started and
+a <code>Token</code>. The token carries information about where the token started and
 stopped in the input stream.</p>
 <p>For example, the parser <code>letter().plus().token()</code> returns the token
 <code>Token[start: 0, stop: 3, value: abc]</code> for the input <code>'abc'</code>.</p>

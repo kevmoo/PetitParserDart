@@ -45,18 +45,18 @@ class Natives {
  }
 
  /** Imports all the native functions into the [environment]. */
- static Environment importNatives(Environment env) {
+ static Environment importNatives(Environment environment) {
    _initialize();
    _natives.forEach((key, value) {
-     env.define(new Name(key), value);
+     environment.define(new Name(key), value);
    });
-   return env;
+   return environment;
  }
 
- /** Imports the standard library into the [envoronment]. */
- static Environment importStandard(Environment env) {
-   evalString(new LispParser(), env, _standardLibrary);
-   return env;
+ /** Imports the standard library into the [environment]. */
+ static Environment importStandard(Environment environment) {
+   evalString(new LispParser(), environment, _standardLibrary);
+   return environment;
  }
 
  /** A simple standard library, should be moved to external file. */
@@ -336,31 +336,33 @@ static dynamic find(String name) {
 </div>
 <div class="method"><h4 id="importNatives">
 <button class="show-code">Code</button>
-<a href="../lisp/Environment.html">Environment</a> <strong>importNatives</strong>(<a href="../lisp/Environment.html">Environment</a> env) <a class="anchor-link" href="#importNatives"
+<a href="../lisp/Environment.html">Environment</a> <strong>importNatives</strong>(<a href="../lisp/Environment.html">Environment</a> environment) <a class="anchor-link" href="#importNatives"
               title="Permalink to Natives.importNatives">#</a></h4>
 <div class="doc">
-<p>Imports all the native functions into the <code>environment</code>. </p>
+<p>Imports all the native functions into the 
+<span class="param">environment</span>. </p>
 <pre class="source">
-static Environment importNatives(Environment env) {
+static Environment importNatives(Environment environment) {
  _initialize();
  _natives.forEach((key, value) {
-   env.define(new Name(key), value);
+   environment.define(new Name(key), value);
  });
- return env;
+ return environment;
 }
 </pre>
 </div>
 </div>
 <div class="method"><h4 id="importStandard">
 <button class="show-code">Code</button>
-<a href="../lisp/Environment.html">Environment</a> <strong>importStandard</strong>(<a href="../lisp/Environment.html">Environment</a> env) <a class="anchor-link" href="#importStandard"
+<a href="../lisp/Environment.html">Environment</a> <strong>importStandard</strong>(<a href="../lisp/Environment.html">Environment</a> environment) <a class="anchor-link" href="#importStandard"
               title="Permalink to Natives.importStandard">#</a></h4>
 <div class="doc">
-<p>Imports the standard library into the <code>envoronment</code>. </p>
+<p>Imports the standard library into the 
+<span class="param">environment</span>. </p>
 <pre class="source">
-static Environment importStandard(Environment env) {
- evalString(new LispParser(), env, _standardLibrary);
- return env;
+static Environment importStandard(Environment environment) {
+ evalString(new LispParser(), environment, _standardLibrary);
+ return environment;
 }
 </pre>
 </div>

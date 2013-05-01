@@ -730,7 +730,7 @@ class DartGrammar extends CompositeParser2 {
 </div>
 <h3>Extends</h3>
 <p>
-<span class="type-box"><span class="icon-class"></span><a href="../petitparser/Parser.html">Parser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/_DelegateParser.html">_DelegateParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/_SetableParser.html">_SetableParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/CompositeParser.html">CompositeParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/CompositeParser2.html">CompositeParser2</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><strong>DartGrammar</strong></span></p>
+<span class="type-box"><span class="icon-class"></span><a href="../petitparser/Parser.html">Parser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/_DelegateParser.html">_DelegateParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/_SetableParser.html">_SetableParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/CompositeParser.html">CompositeParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../beta/CompositeParser2.html">CompositeParser2</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><strong>DartGrammar</strong></span></p>
 <div class="inherited">
 <h3>Properties</h3>
 <div class="field inherited"><h4 id="children">
@@ -1048,7 +1048,7 @@ Parser neg([String message]) =&gt; not(message).seq(any()).pick(1);
 <button class="show-code">Code</button>
 dynamic <strong>noSuchMethod</strong>(<a href="http://api.dartlang.org/dart_core/Invocation.html">Invocation</a> mirror) <a class="anchor-link" href="#noSuchMethod"
               title="Permalink to DartGrammar.noSuchMethod">#</a></h4>
-<div class="inherited-from">inherited from <a href="../petitparser/CompositeParser2.html">CompositeParser2</a> </div><div class="doc">
+<div class="inherited-from">inherited from <a href="../beta/CompositeParser2.html">CompositeParser2</a> </div><div class="doc">
 <div class="inherited">
 <p><code>noSuchMethod</code> is invoked when users invoke a non-existant method
 on an object. The name of the method and the arguments of the
@@ -1060,23 +1060,20 @@ the original invocation.</p>
 <div class="docs-inherited-from">docs inherited from <a href="http://api.dartlang.org/dart_core/Object.html">Object</a> </div></div>
 <pre class="source">
 dynamic noSuchMethod(Invocation mirror) {
- if (!mirror.memberName.startsWith('_')) {
+ String name = MirrorSystem.getName(mirror.memberName);
+ if (!name.startsWith('_')) {
    // only consider public members
    if (mirror.isGetter) {
      // productions can be accessed any time
-     return ref(mirror.memberName);
-   } else if (!_completed) {
-     if (mirror.isSetter) {
-       // production can only be defined during initialization
-       return def(mirror.memberName.substring(0, mirror.memberName.length - 1),
-           mirror.positionalArguments.first);
-     } else if (mirror.isMethod &amp;&amp; mirror.positionalArguments.length == 1) {
-       // productions can only be redefined during initialization
-       var argument = mirror.positionalArguments.first;
-       return argument is Parser
-           ? redef(mirror.memberName, argument)
-           : action(mirror.memberName, argument);
-     }
+     return ref(name);
+   } else if (mirror.isSetter) {
+     // production can only be defined during initialization
+     return def(name.substring(0, name.length - 1),
+       mirror.positionalArguments.first);
+   } else if (mirror.isMethod &amp;&amp; mirror.positionalArguments.length == 1) {
+     // productions can only be redefined during initialization
+     var argument = mirror.positionalArguments.first;
+     return argument is Parser ? redef(name, argument) : action(name, argument);
    }
  }
  return super.noSuchMethod(mirror);
@@ -1381,8 +1378,10 @@ Parser separatedBy(Parser separator, {bool includeSeparators: true,
 <span class="param">other</span>. The
 resulting parser returns a list of the parse result of the receiver
 followed by the parse result of 
-<span class="param">other</span>. Calling <code>SequenceParser.seq</code>
-causes the sequences to be concatenated instead of nested.</p>
+<span class="param">other</span>. Calling this method on an
+existing sequence code not nest this sequence into a new one, but
+instead augments the existing sequence with 
+<span class="param">other</span>.</p>
 <p>For example, the parser <code>letter().seq(digit()).seq(letter())</code> accepts a
 letter followed by a digit and another letter. The parse result of the
 input string <code>'a1b'</code> is the list <code>['a', '1', 'b']</code>.</p>
