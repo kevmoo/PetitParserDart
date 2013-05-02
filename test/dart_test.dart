@@ -27,6 +27,13 @@ void generateTests(String title, String path) {
 final dart = new DartGrammar();
 
 void main() {
+  testDart(new Configuration());
+}
+
+void testDart(Configuration config) {
+  unittestConfiguration = config;
+  groupSep = ' - ';
+
   test('basic files', () {
     expect(dart.accept('library test;'), isTrue);
     expect(dart.accept('library test; void main() { }'), isTrue);
