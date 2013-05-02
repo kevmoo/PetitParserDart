@@ -379,11 +379,16 @@ abstract class Parser {
      return true;
    }
    seen.add(this);
-   if (runtimeType != other.runtimeType || children.length != other.children.length) {
+   return runtimeType == other.runtimeType &amp;&amp; _matchChildren(other, seen);
+ }
+
+ bool _matchChildren(Parser other, [Set&lt;Parser&gt; seen]) {
+   var thisChildren = children, otherChildren = other.children;
+   if (thisChildren.length != otherChildren.length) {
      return false;
    }
-   for (var i = 0; i &lt; children.length; i++) {
-     if (!children[i].match(other.children[i], seen)) {
+   for (var i = 0; i &lt; thisChildren.length; i++) {
+     if (!thisChildren[i].match(otherChildren[i], seen)) {
        return false;
      }
    }
@@ -583,15 +588,7 @@ bool match(Parser other, [Set&lt;Parser&gt; seen]) {
    return true;
  }
  seen.add(this);
- if (runtimeType != other.runtimeType || children.length != other.children.length) {
-   return false;
- }
- for (var i = 0; i &lt; children.length; i++) {
-   if (!children[i].match(other.children[i], seen)) {
-     return false;
-   }
- }
- return true;
+ return runtimeType == other.runtimeType &amp;&amp; _matchChildren(other, seen);
 }
 </pre>
 </div>

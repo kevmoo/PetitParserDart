@@ -202,15 +202,7 @@ bool match(Parser other, [Set&lt;Parser&gt; seen]) {
    return true;
  }
  seen.add(this);
- if (runtimeType != other.runtimeType || children.length != other.children.length) {
-   return false;
- }
- for (var i = 0; i &lt; children.length; i++) {
-   if (!children[i].match(other.children[i], seen)) {
-     return false;
-   }
- }
- return true;
+ return runtimeType == other.runtimeType &amp;&amp; _matchChildren(other, seen);
 }
 </pre>
 </div>

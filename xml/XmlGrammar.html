@@ -141,7 +141,7 @@ class XmlGrammar extends CompositeParser {
 </div>
 <h3>Extends</h3>
 <p>
-<span class="type-box"><span class="icon-class"></span><a href="../petitparser/Parser.html">Parser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/_DelegateParser.html">_DelegateParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/_SetableParser.html">_SetableParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/CompositeParser.html">CompositeParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><strong>XmlGrammar</strong></span></p>
+<span class="type-box"><span class="icon-class"></span><a href="../petitparser/Parser.html">Parser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/_DelegateParser.html">_DelegateParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><a href="../petitparser/CompositeParser.html">CompositeParser</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><strong>XmlGrammar</strong></span></p>
 <h3>Subclasses</h3>
 <p>
 <span class="type-box"><span class="icon-class"></span><a href="../xml/XmlParser.html">XmlParser</a></span></p>
@@ -299,12 +299,12 @@ Parser and() =&gt; new _AndParser(this);
 <button class="show-code">Code</button>
 <a href="../petitparser/Parser.html">Parser</a> <strong>copy</strong>() <a class="anchor-link" href="#copy"
               title="Permalink to XmlGrammar.copy">#</a></h4>
-<div class="inherited-from">inherited from <a href="../petitparser/_SetableParser.html">_SetableParser</a> </div><div class="doc">
+<div class="inherited-from">inherited from <a href="../petitparser/_DelegateParser.html">_DelegateParser</a> </div><div class="doc">
 <div class="inherited">
 <p>Returns a shallow copy of the receiver.</p>
 <div class="docs-inherited-from">docs inherited from <a href="../petitparser/Parser.html">Parser</a> </div></div>
 <pre class="source">
-Parser copy() =&gt; new _SetableParser(_delegate);
+Parser copy() =&gt; new _DelegateParser(_delegate);
 </pre>
 </div>
 </div>
@@ -506,15 +506,7 @@ bool match(Parser other, [Set&lt;Parser&gt; seen]) {
    return true;
  }
  seen.add(this);
- if (runtimeType != other.runtimeType || children.length != other.children.length) {
-   return false;
- }
- for (var i = 0; i &lt; children.length; i++) {
-   if (!children[i].match(other.children[i], seen)) {
-     return false;
-   }
- }
- return true;
+ return runtimeType == other.runtimeType &amp;&amp; _matchChildren(other, seen);
 }
 </pre>
 </div>
@@ -877,20 +869,6 @@ letter followed by a digit and another letter. The parse result of the
 input string <code>'a1b'</code> is the list <code>['a', '1', 'b']</code>.</p>
 <pre class="source">
 Parser seq(Parser other) =&gt; new _SequenceParser([this, other]);
-</pre>
-</div>
-</div>
-<div class="method inherited"><h4 id="set">
-<button class="show-code">Code</button>
-void <strong>set</strong>(<a href="../petitparser/Parser.html">Parser</a> parser) <a class="anchor-link" href="#set"
-              title="Permalink to XmlGrammar.set">#</a></h4>
-<div class="inherited-from">inherited from <a href="../petitparser/_SetableParser.html">_SetableParser</a> </div><div class="doc">
-<div class="inherited">
-<p>Sets the receiver to delegate to 
-<span class="param">parser</span>. </p>
-<div class="docs-inherited-from">docs inherited from <a href="../petitparser/SetableParser.html">SetableParser</a> </div></div>
-<pre class="source">
-void set(Parser parser) =&gt; replace(children[0], parser);
 </pre>
 </div>
 </div>

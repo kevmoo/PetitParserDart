@@ -243,8 +243,10 @@ Parser transformParser(Parser root, Parser function(Parser parser)) {
 <a href="http://api.dartlang.org/dart_core/Iterable.html">Iterable</a>&lt;<a href="petitparser/Parser.html">Parser</a>&gt; <strong>allParser</strong>(<a href="petitparser/Parser.html">Parser</a> root) <a class="anchor-link" href="#allParser"
               title="Permalink to allParser">#</a></h4>
 <div class="doc">
-<p>Returns an iterable over all parsers reachable from a 
-<span class="param">root</span>.</p>
+<p>Returns a lazy iterable over all parsers reachable from a 
+<span class="param">root</span>. Do
+not modify the grammar while iterating over it, otherwise you might
+get unexpected results.</p>
 <pre class="source">
 Iterable&lt;Parser&gt; allParser(Parser root) {
  return new _ParserIterable(root);
