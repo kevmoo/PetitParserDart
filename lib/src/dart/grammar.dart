@@ -39,7 +39,7 @@ class DartGrammar extends CompositeParser2 {
   }
 
   void _lexemes() {
-    backSlash = _token('\\');
+    backSlash = char('\\');
     colon = _token(':');
     comma = _token(',');
     dollar = _token('\$');
@@ -505,7 +505,7 @@ class DartGrammar extends CompositeParser2 {
 
     stringInterpolation = dollar & IDENTIFIER_NO_DOLLAR |
         dollar & _token('{') & expression & _token('}');
-    NEWLINE = _token('\\n') | _token('\r');
+    NEWLINE = char('\n') | string('\r\n');
     stringContentDQ = (backSlash | doubleQuote | dollar | NEWLINE).not() |
         backSlash & NEWLINE.not() |
         stringInterpolation;
